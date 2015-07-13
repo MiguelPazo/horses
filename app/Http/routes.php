@@ -1,21 +1,27 @@
 <?php
 
-/*
-|--------------------------------------------------------------------------
-| Application Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register all of the routes for an application.
-| It's a breeze. Simply tell Laravel the URIs it should respond to
-| and give it the controller to call when that URI is requested.
-|
-*/
+Route::get('/', 'Auth\AuthController@getLogin');
 
-Route::get('/', 'WelcomeController@index');
+Route::controller('/auth', 'Auth\AuthController');
 
-Route::get('home', 'HomeController@index');
-
-Route::controllers([
-	'auth' => 'Auth\AuthController',
-	'password' => 'Auth\PasswordController',
-]);
+Route::group([
+    'middleware' => 'auth',
+    'prefix' => '/tournament'
+], function () {
+    Route::get('/selection', [
+        'as' => 'tournament.selection',
+        'uses' => 'TournamentController@selection'
+    ]);
+    Route::get('/classify_1', [
+        'as' => 'tournament.classify_1',
+        'uses' => 'TournamentController@classifyFirst'
+    ]);
+    Route::get('/classify_2', [
+        'as' => 'tournament.classify_2',
+        'uses' => 'TournamentController@classifySecond'
+    ]);
+    Route::get('/save_selection', [
+        'as' => 'tournament.save.selection',
+        'uses' => 'TournamentController@saveSelection'
+    ]);
+});

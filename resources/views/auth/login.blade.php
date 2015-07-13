@@ -1,63 +1,80 @@
-@extends('app')
+@extends('layout')
 
 @section('content')
-<div class="container-fluid">
-	<div class="row">
-		<div class="col-md-8 col-md-offset-2">
-			<div class="panel panel-default">
-				<div class="panel-heading">Login</div>
-				<div class="panel-body">
-					@if (count($errors) > 0)
-						<div class="alert alert-danger">
-							<strong>Whoops!</strong> There were some problems with your input.<br><br>
-							<ul>
-								@foreach ($errors->all() as $error)
-									<li>{{ $error }}</li>
-								@endforeach
-							</ul>
-						</div>
-					@endif
+    <div class="row">
+        <div class="col-md-12">
+            <h3 class="text-center text-primary">
+                Sistema de Calificación
+            </h3>
+            <a id="modal-550758" href="#modal-container-550758" role="button" class="btn btn-primary"
+               data-toggle="modal">Configuración</a>
 
-					<form class="form-horizontal" role="form" method="POST" action="/auth/login">
-						<input type="hidden" name="_token" value="{{ csrf_token() }}">
+            <p></p>
 
-						<div class="form-group">
-							<label class="col-md-4 control-label">E-Mail Address</label>
-							<div class="col-md-6">
-								<input type="email" class="form-control" name="email" value="{{ old('email') }}">
-							</div>
-						</div>
+            {!! Form::open(array('url' => 'auth/login', 'id'=>'formLogin')) !!}
+            <div class="modal fade" id="modal-container-550758" role="dialog" aria-labelledby="myModalLabel"
+                 aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
 
-						<div class="form-group">
-							<label class="col-md-4 control-label">Password</label>
-							<div class="col-md-6">
-								<input type="password" class="form-control" name="password">
-							</div>
-						</div>
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                ×
+                            </button>
+                            <h4 class="modal-title" id="myModalLabel">
+                                Configuración
+                            </h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="campeonato">
+                                    Campeonato Activo
+                                </label>
+                                <input type="text" class="form-control" id="campeonato" readonly="yes"
+                                       value="{{ $tournament->nombre }}"/>
 
-						<div class="form-group">
-							<div class="col-md-6 col-md-offset-4">
-								<div class="checkbox">
-									<label>
-										<input type="checkbox" name="remember"> Remember Me
-									</label>
-								</div>
-							</div>
-						</div>
+                                <p></p>
+                                <label for="categoria">
+                                    Categoria
+                                </label>
 
-						<div class="form-group">
-							<div class="col-md-6 col-md-offset-4">
-								<button type="submit" class="btn btn-primary" style="margin-right: 15px;">
-									Login
-								</button>
+                                <select class="form-control" name="category">
+                                    @foreach($lstCategory as $category)
+                                        <option value="{{ $category->id }}">{{ $category->nombre }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
 
-								<a href="/password/email">Forgot Your Password?</a>
-							</div>
-						</div>
-					</form>
-				</div>
-			</div>
-		</div>
-	</div>
-</div>
+                            <button type="button" class="btn btn-default" data-dismiss="modal">
+                                Cerrar
+                            </button>
+                            <button type="button" class="btn btn-primary">
+                                Guardar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="user">
+                    Usuario
+                </label>
+                <input type="text" class="form-control" name="user" id="user"/>
+            </div>
+            <div class="form-group">
+                <label for="password">
+                    Password
+                </label>
+                <input type="password" class="form-control" name="password" id="password"/>
+            </div>
+            <button type="submit" class="btn btn-default">
+                Ingresar
+            </button>
+            {!! Form::close() !!}
+        </div>
+    </div>
+
+    <script src="{{ asset('js/login.js') }}"></script>
 @endsection

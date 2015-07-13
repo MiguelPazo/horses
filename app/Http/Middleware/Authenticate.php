@@ -1,4 +1,4 @@
-<?php namespace App\Http\Middleware;
+<?php namespace Horses\Http\Middleware;
 
 use Closure;
 use Illuminate\Contracts\Auth\Guard;
@@ -40,7 +40,7 @@ class Authenticate {
 			}
 			else
 			{
-				return redirect()->guest('auth/login');
+				return redirect()->guest('/');
 			}
 		}
 
