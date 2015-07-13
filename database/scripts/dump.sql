@@ -106,17 +106,19 @@ CREATE TABLE `etapa` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `participante_id` bigint(20) DEFAULT NULL,
   `jurado_id` bigint(20) DEFAULT NULL,
-  `check` varchar(1) DEFAULT NULL,
-  `puesto` int(11) DEFAULT NULL,
+  `posicion` int(11) DEFAULT NULL,
   `descripcion` varchar(50) DEFAULT NULL,
+  `cerrado` int(11) DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `IX_Relationship7` (`participante_id`),
   KEY `IX_Relationship8` (`jurado_id`),
   CONSTRAINT `jurado_seleccion` FOREIGN KEY (`jurado_id`) REFERENCES `jurado` (`id`) ON DELETE CASCADE,
   CONSTRAINT `participante_seleccion` FOREIGN KEY (`participante_id`) REFERENCES `participante` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=125 DEFAULT CHARSET=utf8;
 
 /*Data for the table `etapa` */
+
+insert  into `etapa`(`id`,`participante_id`,`jurado_id`,`posicion`,`descripcion`,`cerrado`) values (70,1,1,1,'selection',1),(71,2,1,1,'selection',1),(72,3,1,1,'selection',1),(73,4,1,1,'selection',1),(74,5,1,1,'selection',1),(75,6,1,1,'selection',1),(76,7,1,1,'selection',1),(77,8,1,1,'selection',1),(78,9,1,1,'selection',1),(79,10,1,1,'selection',1),(80,11,1,1,'selection',1),(81,12,1,1,'selection',1),(82,1,2,1,'selection',1),(83,2,2,1,'selection',1),(84,3,2,1,'selection',1),(85,4,2,1,'selection',1),(86,5,2,1,'selection',1),(87,6,2,1,'selection',1),(88,7,2,1,'selection',1),(113,1,3,1,'selection',1),(114,2,3,1,'selection',1),(115,3,3,1,'selection',1),(116,4,3,1,'selection',1),(117,5,3,1,'selection',1),(118,6,3,1,'selection',1),(119,7,3,1,'selection',1),(120,8,3,1,'selection',1),(121,12,3,1,'selection',1),(122,13,3,1,'selection',1),(123,14,3,1,'selection',1),(124,15,3,1,'selection',1);
 
 /*Table structure for table `jurado` */
 
@@ -128,12 +130,13 @@ CREATE TABLE `jurado` (
   `usuario` varchar(50) DEFAULT NULL,
   `password` varchar(50) DEFAULT NULL,
   `estado` varchar(1) DEFAULT NULL,
+  `remember_token` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
 /*Data for the table `jurado` */
 
-insert  into `jurado`(`id`,`nombres`,`usuario`,`password`,`estado`) values (1,'Jurado Nombres Apellidos 1','jurado1','12345678','1'),(2,'Jurado Nombres Apellidos 2','jurado2','12345678','1'),(3,'Jurado Nombres Apellidos 3','jurado3','12345678','1');
+insert  into `jurado`(`id`,`nombres`,`usuario`,`password`,`estado`,`remember_token`) values (1,'Jurado 1','jurado1','123','1','4MS6ZvqQHAoniWLhjQgdDh1GOhQFx3VxD7XrCKJ0P1972KxLog'),(2,'Jurado 2','jurado2','123','1','s4Jn1qwOnHKyza63BUuXIeGmGC7XOFp7jpKSdjss0qgStYKPjl'),(3,'Jurado 3','jurado3','123','1',NULL);
 
 /*Table structure for table `participante` */
 
