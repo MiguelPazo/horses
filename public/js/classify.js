@@ -1,30 +1,23 @@
 $(document).ready(function () {
-
     var prepareForm = function () {
-        $('#pane_stage .btn_competitor').each(function (i, e) {
-            if ($(e).hasClass('btn-success')) {
-                $(e).next('input').val('1');
-            }
+        var position = 0;
+
+        $('.comp_classify').find('li').each(function (i, e) {
+            $(e).find('input').val(position);
+            position++;
         });
     };
 
-    $('#pane_stage .btn_competitor').click(function () {
-        var count = 0;
+    $(".ul_comp_list").sortable({
+        connectWith: '.ul_comp_list',
+        placeholder: 'placeholder'
+    }).on('sortreceive', function (e, ui) {
+        var element = ui.item;
 
-        $('#pane_stage .btn_competitor').each(function (i, e) {
-            if ($(e).hasClass('btn-success')) {
-                count++;
-            }
-        });
-
-        if ($(this).hasClass('btn-success')) {
-            $(this).removeClass('btn-success');
+        if (element.parent().parent().hasClass('comp_classify')) {
+            element.find('div').addClass('btn-success');
         } else {
-            if (count < 12) {
-                $(this).addClass('btn-success');
-            } else {
-                alert('Usted ya ha seleccionado a 12 participantes!');
-            }
+            element.find('div').removeClass('btn-success');
         }
     });
 

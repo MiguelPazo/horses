@@ -8,7 +8,7 @@
                 <a href="{{ url('auth/logout') }}" role="button" class="btn btn-danger">SALIR</a>
             </div>
 
-            {!! Form::open(array('url' => route('tournament.save.selection'), 'id'=>'form_pane', 'method' => 'GET')) !!}
+            {!! Form::open(array('url' => route('tournament.save.classify'), 'id'=>'form_pane', 'method' => 'GET')) !!}
             <div class="tabbable">
                 <p><b>Categoria: </b> {{ Session::get('category')->nombre }}</p>
 
@@ -68,5 +68,5 @@
 
     @include('tournament.partials.popup')
 
-    <script src="{{ asset('/js/classify_1.js') }}"></script>
+    <script src="{{ asset('/js/classify.js') }}"></script>
 @endsection

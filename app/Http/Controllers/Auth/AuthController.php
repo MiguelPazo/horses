@@ -117,8 +117,7 @@ class AuthController extends Controller
         return response()->json($response);
     }
 
-    public
-    function redirectPath()
+    public function redirectPath()
     {
         if (property_exists($this, 'redirectPath')) {
             return $this->redirectPath;
@@ -127,14 +126,12 @@ class AuthController extends Controller
         return property_exists($this, 'redirectTo') ? $this->redirectTo : route('tournament.selection');
     }
 
-    public
-    function loginPath()
+    public function loginPath()
     {
         return property_exists($this, 'loginPath') ? $this->loginPath : '/';
     }
 
-    public
-    function getLogout()
+    public function getLogout()
     {
         $oUser = Jury::find($this->auth->user()->id);
         $oUser->estado = Db::JURY_DISCONNECTED;

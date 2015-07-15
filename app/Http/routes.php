@@ -24,4 +24,8 @@ Route::group([
         'as' => 'tournament.save.selection',
         'uses' => 'TournamentController@saveSelection'
     ]);
+    Route::get('/save_classify', [
+        'as' => 'tournament.save.classify',
+        'uses' => 'TournamentController@saveClassify'
+    ]);
 });

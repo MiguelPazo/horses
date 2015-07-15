@@ -8,9 +8,11 @@ use Horses\Constants\Db;
 use Horses\Http\Requests;
 use Horses\Http\Controllers\Controller;
 
+use Horses\Jury;
 use Horses\Stage;
 use Illuminate\Auth\Guard;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 
 class TournamentController extends Controller
 {
@@ -36,110 +38,143 @@ class TournamentController extends Controller
     public function classifyFirst()
     {
         $oCategory = $this->request->session()->get('category');
-        $lstIds = [];
-        $valid = true;
-        $message = '';
         $lstCompetitor = null;
+        $stageStatus = $this->verifyStageClosed($oCategory->id, Db::STAGE_SELECTION);
 
-        $lstCatJury = CategoryJury::where('categoria_id', '=', $oCategory->id)->get();
-        $countJury = $lstCatJury->count();
+        if ($stageStatus->valid) {
+            $lstStageJury = $stageStatus->lstStageJury;
 
-        if ($countJury >= App::MIN_COUNT_JURY) {
+            $lstStageJury->sortBy(function ($item) {
+                return $item->participante_id;
+            });
 
-            foreach ($lstCatJury as $stageJury) {
-                $lstIds[] = $stageJury->jurado_id;
-            }
-
-            $lstStageJury = Stage::whereIn('jurado_id', $lstIds)
-                ->where('descripcion', '=', Db::STAGE_SELECTION)
-                ->where('cerrado', '=', Db::STAGE_STATUS_CLOSE)
-                ->orderBy('jurado_id')
-                ->get();
-
-            $idTemp = 0;
-            $countIds = 0;
+            $idsComp = [];
+            $idTemp = $lstStageJury->first()->participante_id;
+            $count = 0;
 
             foreach ($lstStageJury as $stageJury) {
-                if ($idTemp != $stageJury->jurado_id) {
-                    $countIds++;
-                }
-
-                $idTemp = $stageJury->jurado_id;
-            }
-
-            if ($countIds == $countJury) {
-                $lstStageJury->sortBy(function ($item) {
-                    return $item->participante_id;
-                });
-
-                $idsComp = [];
-                $idTemp = $lstStageJury->first()->participante_id;
-                $count = 0;
-
-                foreach ($lstStageJury as $stageJury) {
-                    if ($idTemp == $stageJury->participante_id) {
-                        $count++;
-                    } else {
-                        if ($count >= App::MIN_VOTE_COMPETITION) {
-                            $idsComp[] = $idTemp;
-                            $count = 1;
-                        }
+                if ($idTemp == $stageJury->participante_id) {
+                    $count++;
+                } else {
+                    if ($count >= App::MIN_VOTE_COMPETITION) {
+                        $idsComp[] = $idTemp;
+                        $count = 1;
                     }
-
-                    $idTemp = $stageJury->participante_id;
                 }
 
-                $lstCompetitor = Competitor::whereIn('id', $idsComp)->get();
-            } else {
-                $valid = false;
-                $message = 'Todos los jueces aún no terminan la primera etapa, espere un momento por favor.';
+                $idTemp = $stageJury->participante_id;
             }
-        } else {
-            $valid = false;
-            $message = 'Aún no se han registrado todos los jueces, espere un momento por favor.';
+
+            $lstCompetitor = Competitor::whereIn('id', $idsComp)
+                ->orderBy('numero')
+                ->get();
         }
 
-        return view('tournament.classify1')
+        return view('tournament.classify')
             ->with('stage', App::STAGE_CLASSIFY_1)
-            ->with('valid', $valid)
-            ->with('message', $message)
+            ->with('valid', $stageStatus->valid)
+            ->with('message', $stageStatus->message)
             ->with('lstCompetitor', $lstCompetitor);
 
     }
 
-    public
-    function classifySecond()
-    {
 
+    public function classifySecond()
+    {
+        $oCategory = $this->request->session()->get('category');
+        $lstCompetitor = null;
+        $stageStatus = $this->verifyStageClosed($oCategory->id, Db::STAGE_CLASSIFY_1);
+
+        if ($stageStatus->valid) {
+            $oDirimente = CategoryJury::where('categoria_id', '=', $oCategory->id)
+                ->where('dirimente', '=', Db::JURY_TYPE_DIRIMENTE)
+                ->first();
+
+            $lstStageJury = $stageStatus->lstStageJury;
+
+            //group competitors by position
+            $lstCompPoints = $lstStageJury->groupBy('participante_id')->map(function ($group) {
+                $acumm = $group[0];
+
+                for ($i = 1; $i < count($group); $i++) {
+                    $acumm->posicion += $group[$i]->posicion;
+                }
+
+                return $acumm;
+            });
+
+            //competitors order by position
+            $lstCompPoints->sortBy(function ($item) {
+                return $item->posicion;
+            });
+
+            //first six
+            $sixIds = [];
+            $count = 0;
+
+            foreach ($lstCompPoints as $compPoints) {
+                if ($count != 6) {
+                    $sixIds[] = $compPoints->participante_id;
+                    $count++;
+                } else {
+                    break;
+                }
+            }
+
+            $lstCompetitor = Competitor::whereIn('id', $sixIds)
+                ->orderBy('numero')
+                ->get();
+        }
+
+        return view('tournament.classify')
+            ->with('stage', App::STAGE_CLASSIFY_2)
+            ->with('valid', $stageStatus->valid)
+            ->with('message', $stageStatus->message)
+            ->with('lstCompetitor', $lstCompetitor);
     }
 
-    public
-    function saveSelection(Guard $guard)
+    public function saveClassify(Guard $guard)
+    {
+        $url = route('tournament.classify_2');
+        $response = $this->save($guard, $this->request, $url, Db::STAGE_CLASSIFY_1);
+
+        return response()->json($response);
+    }
+
+    public function saveSelection(Guard $guard)
+    {
+        $url = route('tournament.classify_1');
+        $response = $this->save($guard, $this->request, $url, Db::STAGE_SELECTION);
+
+        return response()->json($response);
+    }
+
+    public function save($guard, $request, $url, $stage)
     {
         $response = [
             'success' => true,
             'message' => '',
-            'url' => route('tournament.classify_1')
+            'url' => $url
         ];
 
-        $params = $this->request->all();
-        $process = $this->request->get('process');
+        $params = $request->all();
+        $process = $request->get('process');
         $closeProcess = ($process == App::PROCESS_END) ? true : false;
 
         Stage::where('jurado_id', '=', $guard->getUser()->id)
-            ->where('descripcion', '=', Db::STAGE_SELECTION)
+            ->where('descripcion', '=', $stage)
             ->delete();
 
         foreach ($params as $index => $value) {
-            if ($value == '1') {
-                $id = str_replace(App::PREFIX_COMPETITOR, '', $index);
+            $id = str_replace(App::PREFIX_COMPETITOR, '', $index);
 
+            if ($value != '0') {
                 if (is_numeric($id)) {
                     Stage::create([
                         'participante_id' => $id,
                         'jurado_id' => $guard->getUser()->id,
-                        'posicion' => 1,
-                        'descripcion' => Db::STAGE_SELECTION,
+                        'posicion' => $value,
+                        'descripcion' => $stage,
                         'cerrado' => ($closeProcess) ? Db::STAGE_STATUS_CLOSE : Db::STAGE_STATUS_SAVE
                     ]);
                 }
@@ -150,6 +185,52 @@ class TournamentController extends Controller
             $response['url'] = '';
         }
 
-        return response()->json($response);
+        return $response;
+    }
+
+    public function verifyStageClosed($idCategory, $stage)
+    {
+        $stageStatus = new \stdClass();
+        $stageStatus->valid = true;
+        $stageStatus->message = '';
+        $stageStatus->lstStageJury = null;
+
+        $lstCatJury = CategoryJury::where('categoria_id', '=', $idCategory)->get();
+        $countJury = $lstCatJury->count();
+        $lstIds = [];
+
+        if ($countJury >= App::MIN_COUNT_JURY) {
+
+            foreach ($lstCatJury as $stageJury) {
+                $lstIds[] = $stageJury->jurado_id;
+            }
+
+            $stageStatus->lstStageJury = Stage::whereIn('jurado_id', $lstIds)
+                ->where('descripcion', '=', $stage)
+                ->where('cerrado', '=', Db::STAGE_STATUS_CLOSE)
+                ->orderBy('jurado_id')
+                ->get();
+
+            $idTemp = 0;
+            $countIds = 0;
+
+            foreach ($stageStatus->lstStageJury as $stageJury) {
+                if ($idTemp != $stageJury->jurado_id) {
+                    $countIds++;
+                }
+
+                $idTemp = $stageJury->jurado_id;
+            }
+
+            if ($countIds != $countJury) {
+                $stageStatus->valid = false;
+                $stageStatus->message = 'Todos los jueces aún no terminan la etapa anterior, espere un momento por favor.';
+            }
+        } else {
+            $stageStatus->valid = false;
+            $stageStatus->message = 'Aún no se han registrado todos los jueces, espere un momento por favor.';
+        }
+
+        return $stageStatus;
     }
 }
