@@ -10,11 +10,13 @@
     <meta name="description" content="Source code generated using layoutit.com">
     <meta name="author" content="LayoutIt!">
 
-    <link rel="stylesheet" href="{{ asset('js/libs/bootstrap/dist/css/bootstrap.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    <link rel="stylesheet" href="{{ asset('/js/libs/bootstrap/dist/css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('/js/libs/jqueryui/jquery-ui.css') }}">
+    <link rel="stylesheet" href="{{ asset('/css/app.css') }}">
 
-    <script src="{{ asset('js/libs/jquery/dist/jquery.min.js') }}"></script>
-    <script src="{{ asset('js/libs/bootstrap/dist/js/bootstrap.min.js') }}"></script>
+    <script src="{{ asset('/js/libs/jquery/dist/jquery.min.js') }}"></script>
+    <script src="{{ asset('/js/libs/jqueryui/jquery-ui.js') }}"></script>
+    <script src="{{ asset('/js/libs/bootstrap/dist/js/bootstrap.min.js') }}"></script>
 </head>
 <body>
 

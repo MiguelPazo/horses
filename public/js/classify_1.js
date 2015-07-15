@@ -1,61 +1,14 @@
 $(document).ready(function () {
+    $(".ul_comp_list").sortable({
+        connectWith: '.ul_comp_list',
+        placeholder: 'placeholder'
+    }).on('sortreceive', function (e, ui) {
+        var element = ui.item;
 
-    var prepareForm = function () {
-        $('#pane_selec .btn_competitor').each(function (i, e) {
-            if ($(e).hasClass('btn-success')) {
-                console.log(e);
-                $(e).next('input').val('1');
-            }
-        });
-    };
-
-    $('#pane_selec .btn_competitor').click(function () {
-        var count = 0;
-
-        $('#pane_selec .btn_competitor').each(function (i, e) {
-            if ($(e).hasClass('btn-success')) {
-                count++;
-            }
-        });
-
-        if ($(this).hasClass('btn-success')) {
-            $(this).removeClass('btn-success');
+        if (element.parent().parent().hasClass('comp_classify')) {
+            element.find('div').addClass('btn-success');
         } else {
-            if (count < 12) {
-                $(this).addClass('btn-success');
-            } else {
-                alert('Usted ya ha seleccionado a 12 participantes!');
-            }
+            element.find('div').removeClass('btn-success');
         }
-    });
-
-    $('#btn_save').click(function () {
-        prepareForm();
-        $('#process').val('1')
-        $('#form_pane').submit();
-    });
-    $('#btn_end').click(function () {
-        prepareForm();
-        $('#process').val('2')
-        $('#form_pane').submit();
-    });
-
-    $('#form_pane').submit(function (e) {
-        e.preventDefault();
-
-        var url = $(this).attr('action');
-        var data = $(this).serialize();
-
-        $.get(url, data, function (response) {
-            if (response.success) {
-                if (response.url != '') {
-                    location.href = response.url;
-                } else {
-                    alert('Información guardada satisfactoriamente');
-                }
-            } else {
-                alert(response.message);
-            }
-        });
     });
 });

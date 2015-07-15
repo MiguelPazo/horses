@@ -10,3 +10,29 @@
 .title a {
     float: right;
 }
+
+.row_sorteable {
+
+}
+
+.row_sorteable ul {
+    list-style: outside none none;
+    min-height: 45px;
+    padding: 0 0 200px 0;
+    width: 100%;
+}
+
+.row_sorteable li {
+    margin-bottom: 10px;
+}
+
+.row_sorteable ul li.placeholder {
+    width: 100%;
+    height: 45px;
+    border-radius: 6px;
+    background-color: #b9daff;
+}
+
+.btn_competitor {
+    margin-bottom: 10px;
+}

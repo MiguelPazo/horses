@@ -4,7 +4,7 @@
     <div class="row">
         <div class="col-md-12">
             <div class="title">
-                <span> Bienvenido: {{ Auth::user()->nombres }}</span>
+                <span> Bienvenido: {{ Auth::user()->nombres }} {{ Session::get('dirimente') ? '(Juez Dirimente)':''  }}</span>
                 <a href="{{ url('auth/logout') }}" role="button" class="btn btn-danger">SALIR</a>
             </div>
 
@@ -27,7 +27,6 @@
                                 </button>
                                 <input type="hidden" name="comp_{{ $competitor->id }}"
                                        value="0"/>
-                                <p></p>
                             @endforeach
                         </div>
                     </div>
@@ -41,5 +40,5 @@
 
     @include('tournament.partials.popup')
 
-    <script src="{{ asset('js/selection.js') }}"></script>
+    <script src="{{ asset('/js/selection.js') }}"></script>
 @endsection

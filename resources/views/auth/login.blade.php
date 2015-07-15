@@ -28,14 +28,14 @@
                         <div class="modal-body">
                             <div class="form-group">
                                 <label for="campeonato">
-                                    Campeonato Activo
+                                    Campeonato Activo:
                                 </label>
                                 <input type="text" class="form-control" id="campeonato" readonly="yes"
                                        value="{{ $tournament->nombre }}"/>
 
                                 <p></p>
                                 <label for="categoria">
-                                    Categoria
+                                    Categoría:
                                 </label>
 
                                 <select class="form-control" name="category">
@@ -43,14 +43,19 @@
                                         <option value="{{ $category->id }}">{{ $category->nombre }}</option>
                                     @endforeach
                                 </select>
+
+                                <p></p>
+                                <label>Juez Dirimente:</label>
+                                <label class="radio-inline">
+                                    <input type="radio" name="rad_jury_type" value="0" checked="checked"> No
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" name="rad_jury_type" value="1"> Sí
+                                </label>
                             </div>
                         </div>
                         <div class="modal-footer">
-
-                            <button type="button" class="btn btn-default" data-dismiss="modal">
-                                Cerrar
-                            </button>
-                            <button type="button" class="btn btn-primary">
+                            <button type="button" class="btn btn-primary" data-dismiss="modal">
                                 Guardar
                             </button>
                         </div>
@@ -76,5 +81,5 @@
         </div>
     </div>
 
-    <script src="{{ asset('js/login.js') }}"></script>
+    <script src="{{ asset('/js/login.js') }}"></script>
 @endsection

@@ -1,6 +1,8 @@
 <?php namespace Horses\Http\Controllers\Auth;
 
 use Horses\Category;
+use Horses\CategoryJury;
+use Horses\Constants\Db;
 use Horses\Jury;
 use Horses\Tournament;
 use Horses\Http\Controllers\Controller;
@@ -45,7 +47,7 @@ class AuthController extends Controller
         ]);
 
         $response = [
-            'success' => true,
+            'success' => false,
             'message' => '',
             'url' => ''
         ];
@@ -53,27 +55,70 @@ class AuthController extends Controller
         $user = $request->get('user');
         $pass = $request->get('password');
         $category = $request->get('category');
+        $jDirimente = ($request->get('rad_jury_type', Db::JURY_TYPE_NORMAL) == Db::JURY_TYPE_DIRIMENTE) ? true : false;
 
-        $oUser = Jury::where('usuario', '=', $user)->firstOrFail();
+        $oUser = Jury::where('usuario', '=', $user)->first();
 
-        if ($oUser->password == $pass) {
-            $authUser = new GenericUser($oUser->toArray());
-            $this->auth->login($authUser);
+        if ($oUser) {
+            if ($oUser->password == $pass) {
+                if ($oUser->estado == Db::JURY_DISCONNECTED) {
+                    $oCategory = Category::find($category);
+                    $lstCatJury = CategoryJury::where('categoria_id', '=', $oCategory->id)->get();
+                    $processDirimente = true;
 
-            $oCategory = Category::find($category);
+                    if ($jDirimente) {
+                        $oCatJuryDirimente = $lstCatJury->filter(function ($item) {
+                            return $item->dirimente == Db::JURY_TYPE_DIRIMENTE;
+                        })->first();
 
-            $request->session()->put('category', $oCategory);
-            $response['url'] = $this->redirectPath();
+                        if ($oCatJuryDirimente && $oCatJuryDirimente->jurado_id != $oUser->id) {
+                            $processDirimente = false;
+                        }
+                    }
+
+                    if ($processDirimente) {
+                        $oCatJury = $lstCatJury->filter(function ($item) use ($oUser) {
+                            return $item->jurado_id == $oUser->id;
+                        })->first();
+
+                        if (!$oCatJury) {
+                            $oCatJuryNew = CategoryJury::create([
+                                'jurado_id' => $oUser->id,
+                                'categoria_id' => $oCategory->id,
+                                'dirimente' => ($jDirimente) ? Db::JURY_TYPE_DIRIMENTE : Db::JURY_TYPE_NORMAL
+                            ]);
+                        }
+
+                        $oUser->estado = Db::JURY_CONNECTED;
+                        $oUser->save();
+
+                        $authUser = new GenericUser($oUser->toArray());
+                        $this->auth->login($authUser);
+
+                        $request->session()->put('category', $oCategory);
+                        $request->session()->put('dirimente', $jDirimente);
+
+                        $response['success'] = true;
+                        $response['url'] = $this->redirectPath();
+                    } else {
+                        $response['message'] = 'Ya existe un juez dirimente para esta categoría.';
+                    }
+                } else {
+                    $response['message'] = 'El usuario ya se encuentra conectado, comuniquese con el administrador del sistema.';
+                }
+            } else {
+                $response['message'] = 'Ha ocurrido un error, vuelva a intentarlo.';
+            }
         } else {
-            $response['message'] = 'Ha ocurrido un error, vuelva a intentarlo';
-            $response['success'] = false;
+            $response['message'] = 'El usuario ingresado no existe.';
         }
 
 
         return response()->json($response);
     }
 
-    public function redirectPath()
+    public
+    function redirectPath()
     {
         if (property_exists($this, 'redirectPath')) {
             return $this->redirectPath;
@@ -82,13 +127,19 @@ class AuthController extends Controller
         return property_exists($this, 'redirectTo') ? $this->redirectTo : route('tournament.selection');
     }
 
-    public function loginPath()
+    public
+    function loginPath()
     {
         return property_exists($this, 'loginPath') ? $this->loginPath : '/';
     }
 
-    public function getLogout()
+    public
+    function getLogout()
     {
+        $oUser = Jury::find($this->auth->user()->id);
+        $oUser->estado = Db::JURY_DISCONNECTED;
+        $oUser->save();
+
         $this->auth->logout();
 
         return redirect(property_exists($this, 'redirectAfterLogout') ? $this->redirectAfterLogout : '/');

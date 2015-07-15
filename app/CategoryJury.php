@@ -7,5 +7,6 @@ class CategoryJury extends Model
 
     protected $table = 'categoria_jurado';
     public $timestamps = false;
+    protected $guarded = ['id'];
 
 }
