@@ -12,7 +12,7 @@ use Horses\Jury;
 use Horses\Stage;
 use Illuminate\Auth\Guard;
 use Illuminate\Http\Request;
-use Illuminate\Support\Collection;
+use Illuminate\Database\Eloquent\Collection;
 
 class TournamentController extends Controller
 {
@@ -71,6 +71,7 @@ class TournamentController extends Controller
         }
 
         return view('tournament.classify')
+            ->with('post', route('tournament.save.classify_1'))
             ->with('stage', App::STAGE_CLASSIFY_1)
             ->with('valid', $stageStatus->valid)
             ->with('message', $stageStatus->message)
@@ -82,58 +83,186 @@ class TournamentController extends Controller
     public function classifySecond()
     {
         $oCategory = $this->request->session()->get('category');
-        $lstCompetitor = null;
+        $lstCompetitor = new Collection();
         $stageStatus = $this->verifyStageClosed($oCategory->id, Db::STAGE_CLASSIFY_1);
 
         if ($stageStatus->valid) {
-            $oDirimente = CategoryJury::where('categoria_id', '=', $oCategory->id)
-                ->where('dirimente', '=', Db::JURY_TYPE_DIRIMENTE)
-                ->first();
+            $lstCompetitorFinal = $this->filterCompetitorsWithJury($oCategory, $stageStatus);
 
-            $lstStageJury = $stageStatus->lstStageJury;
+            //Filter six first and update others
+            $position = 1;
 
-            //group competitors by position
-            $lstCompPoints = $lstStageJury->groupBy('participante_id')->map(function ($group) {
-                $acumm = $group[0];
-
-                for ($i = 1; $i < count($group); $i++) {
-                    $acumm->posicion += $group[$i]->posicion;
-                }
-
-                return $acumm;
-            });
-
-            //competitors order by position
-            $lstCompPoints->sortBy(function ($item) {
-                return $item->posicion;
-            });
-
-            //first six
-            $sixIds = [];
-            $count = 0;
-
-            foreach ($lstCompPoints as $compPoints) {
-                if ($count != 6) {
-                    $sixIds[] = $compPoints->participante_id;
-                    $count++;
+            foreach ($lstCompetitorFinal as $key => $competitor) {
+                if ($position <= App::MAX_WINNERS) {
+                    $lstCompetitor->add($competitor);
                 } else {
-                    break;
+                    $competitor->puesto = $position;
+                    $competitor->save();
                 }
-            }
 
-            $lstCompetitor = Competitor::whereIn('id', $sixIds)
-                ->orderBy('numero')
-                ->get();
+                $position++;
+            }
         }
 
         return view('tournament.classify')
+            ->with('post', route('tournament.save.classify_2'))
             ->with('stage', App::STAGE_CLASSIFY_2)
             ->with('valid', $stageStatus->valid)
             ->with('message', $stageStatus->message)
             ->with('lstCompetitor', $lstCompetitor);
     }
 
-    public function saveClassify(Guard $guard)
+    public function result()
+    {
+        $oCategory = $this->request->session()->get('category');
+        $lstCompetitorRight = new Collection();
+        $lstCompetitorLeft = new Collection();
+        $stageStatus = $this->verifyStageClosed($oCategory->id, Db::STAGE_CLASSIFY_2);
+
+        if ($stageStatus->valid) {
+            $oCategoryDb = Category::find($oCategory->id)->first();
+
+            if ($oCategoryDb->etapa_actual != Db::STAGE_FINAL) {
+                $lstCompetitorFilter = $this->filterCompetitorsWithJury($oCategory, $stageStatus);
+                $position = 1;
+
+                foreach ($lstCompetitorFilter as $index => $competitorFinal) {
+                    $competitorFinal->puesto = $position;
+                    $competitorFinal->save();
+                    $position++;
+                }
+
+                $oCategoryDb->etapa_actual = Db::STAGE_FINAL;
+                $oCategoryDb->save();
+            }
+
+            $lstCompetitorFinal = Competitor::where('categoria_id', '=', $oCategory->id)
+                ->where('puesto', '<>', '')
+                ->orderBy('puesto')
+                ->get();
+
+            $count = 0;
+
+            foreach ($lstCompetitorFinal as $index => $competitor) {
+                if ($count < App::MAX_WINNERS) {
+                    $lstCompetitorLeft->add($competitor);
+                    $count++;
+                } else {
+                    $lstCompetitorRight->add($competitor);
+                }
+            }
+
+        }
+
+        return view('tournament.result')
+            ->with('post', route('tournament.save.classify_2'))
+            ->with('stage', App::STAGE_RESULTS)
+            ->with('valid', $stageStatus->valid)
+            ->with('message', $stageStatus->message)
+            ->with('lstCompetitorRight', $lstCompetitorRight)
+            ->with('lstCompetitorLeft', $lstCompetitorLeft);
+    }
+
+    public function filterCompetitorsWithJury($oCategory, $stageStatus)
+    {
+        $oDirimente = CategoryJury::where('categoria_id', '=', $oCategory->id)
+            ->where('dirimente', '=', Db::JURY_TYPE_DIRIMENTE)
+            ->first();
+
+        $lstStageJury = $stageStatus->lstStageJury;
+
+        //group competitors by position
+        $lstCompPoints = $lstStageJury->groupBy('participante_id')->map(function ($group) {
+            $acumm = $group[0];
+
+            for ($i = 1; $i < count($group); $i++) {
+                $acumm->posicion += $group[$i]->posicion;
+            }
+
+            return $acumm;
+        });
+
+
+        //competitors order by position
+        $lstCompPoints->sortBy(function ($item) {
+            return $item->posicion;
+        });
+
+        $lstCompOrder = $lstCompPoints->groupBy('posicion')->map(function ($group) use ($lstStageJury, $oDirimente) {
+            $count = count($group);
+
+            if ($count > 1) {
+                $groupOrder = [];
+
+                foreach ($group as $key => $value) {
+                    $stageJury = $lstStageJury->filter(function ($item) use ($value, $oDirimente) {
+                        if ($item->jurado_id == $oDirimente->jurado_id && $item->participante_id == $value->participante_id) {
+                            return $item;
+                        }
+                    })->first();
+
+                    $groupOrder[] = [
+                        'orden' => $stageJury->posicion,
+                        'stageComp' => $value
+                    ];
+                }
+
+                //sort group by orden of jury diriment
+                sort($groupOrder);
+                $newGroup = [];
+
+                for ($i = 0; $i < $count; $i++) {
+                    $newGroup[] = $groupOrder[$i]['stageComp'];
+                }
+
+                $group = $newGroup;
+            }
+
+            return $group;
+        });
+
+        //get competitor list from group
+        $lstCompFinal = new Collection();
+
+        foreach ($lstCompOrder as $i => $compOrder) {
+            foreach ($compOrder as $y => $competitor) {
+                $lstCompFinal->add($competitor);
+            }
+        }
+
+        //get competitor details
+        $allIds = [];
+        foreach ($lstCompFinal as $compFinal) {
+            $allIds[] = $compFinal->participante_id;
+        }
+
+        $lstCompetitorTemp = Competitor::whereIn('id', $allIds)
+            ->get();
+
+        //ranking competitor final
+        $lstCompetitorFinal = new Collection();
+
+        foreach ($allIds as $competitor) {
+            $competitor = $lstCompetitorTemp->filter(function ($item) use ($competitor) {
+                return $item->id == $competitor;
+            })->first();
+
+            $lstCompetitorFinal->add($competitor);
+        }
+
+        return $lstCompetitorFinal;
+    }
+
+
+    public function saveClassify2(Guard $guard)
+    {
+        $url = route('tournament.result');
+        $response = $this->save($guard, $this->request, $url, Db::STAGE_CLASSIFY_2);
+
+        return response()->json($response);
+    }
+
+    public function saveClassify1(Guard $guard)
     {
         $url = route('tournament.classify_2');
         $response = $this->save($guard, $this->request, $url, Db::STAGE_CLASSIFY_1);

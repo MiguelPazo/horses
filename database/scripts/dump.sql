@@ -114,11 +114,11 @@ CREATE TABLE `etapa` (
   KEY `IX_Relationship8` (`jurado_id`),
   CONSTRAINT `jurado_seleccion` FOREIGN KEY (`jurado_id`) REFERENCES `jurado` (`id`) ON DELETE CASCADE,
   CONSTRAINT `participante_seleccion` FOREIGN KEY (`participante_id`) REFERENCES `participante` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=125 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=244 DEFAULT CHARSET=utf8;
 
 /*Data for the table `etapa` */
 
-insert  into `etapa`(`id`,`participante_id`,`jurado_id`,`posicion`,`descripcion`,`cerrado`) values (70,1,1,1,'selection',1),(71,2,1,1,'selection',1),(72,3,1,1,'selection',1),(73,4,1,1,'selection',1),(74,5,1,1,'selection',1),(75,6,1,1,'selection',1),(76,7,1,1,'selection',1),(77,8,1,1,'selection',1),(78,9,1,1,'selection',1),(79,10,1,1,'selection',1),(80,11,1,1,'selection',1),(81,12,1,1,'selection',1),(82,1,2,1,'selection',1),(83,2,2,1,'selection',1),(84,3,2,1,'selection',1),(85,4,2,1,'selection',1),(86,5,2,1,'selection',1),(87,6,2,1,'selection',1),(88,7,2,1,'selection',1),(113,1,3,1,'selection',1),(114,2,3,1,'selection',1),(115,3,3,1,'selection',1),(116,4,3,1,'selection',1),(117,5,3,1,'selection',1),(118,6,3,1,'selection',1),(119,7,3,1,'selection',1),(120,8,3,1,'selection',1),(121,12,3,1,'selection',1),(122,13,3,1,'selection',1),(123,14,3,1,'selection',1),(124,15,3,1,'selection',1);
+insert  into `etapa`(`id`,`participante_id`,`jurado_id`,`posicion`,`descripcion`,`cerrado`) values (82,1,2,1,'selection',1),(83,2,2,1,'selection',1),(84,3,2,1,'selection',1),(85,4,2,1,'selection',1),(86,5,2,1,'selection',1),(87,6,2,1,'selection',1),(88,7,2,1,'selection',1),(113,1,3,1,'selection',1),(114,2,3,1,'selection',1),(115,3,3,1,'selection',1),(116,4,3,1,'selection',1),(117,5,3,1,'selection',1),(118,6,3,1,'selection',1),(119,7,3,1,'selection',1),(120,8,3,1,'selection',1),(121,12,3,1,'selection',1),(122,13,3,1,'selection',1),(123,14,3,1,'selection',1),(124,15,3,1,'selection',1),(211,1,1,1,'selection',1),(212,2,1,1,'selection',1),(213,3,1,1,'selection',1),(214,4,1,1,'selection',1),(215,5,1,1,'selection',1),(216,6,1,1,'selection',1),(217,7,1,1,'selection',1),(218,5,1,1,'classify_1',1),(219,1,1,2,'classify_1',1),(220,7,1,3,'classify_1',1),(221,2,1,4,'classify_1',1),(222,4,1,5,'classify_1',1),(223,3,1,6,'classify_1',1),(224,6,1,7,'classify_1',1),(225,3,2,1,'classify_1',1),(226,2,2,2,'classify_1',1),(227,7,2,3,'classify_1',1),(228,1,2,4,'classify_1',1),(229,5,2,5,'classify_1',1),(230,6,2,6,'classify_1',1),(237,7,3,1,'classify_1',1),(238,6,3,2,'classify_1',1),(239,5,3,3,'classify_1',1),(240,3,3,4,'classify_1',1),(241,1,3,5,'classify_1',1),(242,4,3,6,'classify_1',1),(243,2,3,7,'classify_1',1);
 
 /*Table structure for table `jurado` */
 
@@ -136,7 +136,7 @@ CREATE TABLE `jurado` (
 
 /*Data for the table `jurado` */
 
-insert  into `jurado`(`id`,`nombres`,`usuario`,`password`,`estado`,`remember_token`) values (1,'Jurado 1','jurado1','123','1','4MS6ZvqQHAoniWLhjQgdDh1GOhQFx3VxD7XrCKJ0P1972KxLog'),(2,'Jurado 2','jurado2','123','1','s4Jn1qwOnHKyza63BUuXIeGmGC7XOFp7jpKSdjss0qgStYKPjl'),(3,'Jurado 3','jurado3','123','1',NULL);
+insert  into `jurado`(`id`,`nombres`,`usuario`,`password`,`estado`,`remember_token`) values (1,'Jurado 1','jurado1','123','0','jW0DrXY4D3vLqqkcJPdABJ1CIKboTW50Tjza7IVCcKqSce7mN0'),(2,'Jurado 2','jurado2','123','0','usGITWcfNL79kjnLgwmdwwhiEVSprTi7Gm0tQ7vfvZv5y5yK6a'),(3,'Jurado 3','jurado3','123','1',NULL);
 
 /*Table structure for table `participante` */
 
