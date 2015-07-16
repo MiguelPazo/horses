@@ -9,6 +9,7 @@
 namespace Horses\Http\Controllers;
 
 
+use Horses\Category;
 use Horses\CategoryJury;
 use Horses\Jury;
 use Horses\Stage;
@@ -18,17 +19,24 @@ class ResetController extends Controller
     public function puestaCero()
     {
         $this->unlockJury();
-        
+
         $lstCategory = CategoryJury::all();
 
-        foreach ($lstCategory as $index => $category) {
-            $category->delete();
+        foreach ($lstCategory as $index => $categoryJury) {
+            $categoryJury->delete();
         }
 
         $lstStage = Stage::all();
 
         foreach ($lstStage as $index => $stage) {
             $stage->delete();
+        }
+
+        $lstCategory = Category::all();
+
+        foreach ($lstCategory as $index => $category) {
+            $category->etapa_actual = '';
+            $category->save();
         }
 
         echo 'Puesta cero completa!';

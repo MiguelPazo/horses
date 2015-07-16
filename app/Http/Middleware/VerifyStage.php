@@ -26,7 +26,6 @@ class VerifyStage
      */
     public function handle($request, Closure $next)
     {
-//        return redirect()->guest('/tournament/result');
 //        return new RedirectResponse(route('tournament.result'));
 //        $uri = $this->request->getUri();
 //

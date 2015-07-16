@@ -26,13 +26,27 @@ class TournamentController extends Controller
     public function selection()
     {
         $oCategory = $this->request->session()->get('category');
-        $lstCompetitor = Competitor::where('categoria_id', '=', $oCategory->id)
-            ->orderBy('numero')
-            ->get();
 
-        return view('tournament.selection')
-            ->with('stage', App::STAGE_SELECCTION)
-            ->with('lstCompetitor', $lstCompetitor);
+        switch ($oCategory->etapa_actual) {
+            case Db::STAGE_FINAL:
+                return redirect()->route('tournament.result');
+                break;
+            case Db::STAGE_CLASSIFY_1:
+                return redirect()->route('tournament.classify_1');
+                break;
+            case Db::STAGE_CLASSIFY_2:
+                return redirect()->route('tournament.classify_2');
+                break;
+            default:
+                $lstCompetitor = Competitor::where('categoria_id', '=', $oCategory->id)
+                    ->orderBy('numero')
+                    ->get();
+
+                return view('tournament.selection')
+                    ->with('stage', App::STAGE_SELECCTION)
+                    ->with('lstCompetitor', $lstCompetitor);
+                break;
+        }
     }
 
     public function classifyFirst()
@@ -42,6 +56,10 @@ class TournamentController extends Controller
         $stageStatus = $this->verifyStageClosed($oCategory->id, Db::STAGE_SELECTION);
 
         if ($stageStatus->valid) {
+            $oCategoryDb = Category::find($oCategory->id)->first();
+            $oCategoryDb->etapa_actual = Db::STAGE_CLASSIFY_1;
+            $oCategoryDb->save();
+
             $lstStageJury = $stageStatus->lstStageJury;
 
             $lstStageJury->sortBy(function ($item) {
@@ -87,6 +105,10 @@ class TournamentController extends Controller
         $stageStatus = $this->verifyStageClosed($oCategory->id, Db::STAGE_CLASSIFY_1);
 
         if ($stageStatus->valid) {
+            $oCategoryDb = Category::find($oCategory->id)->first();
+            $oCategoryDb->etapa_actual = Db::STAGE_CLASSIFY_2;
+            $oCategoryDb->save();
+
             $lstCompetitorFinal = $this->filterCompetitorsWithJury($oCategory, $stageStatus);
 
             //Filter six first and update others
@@ -202,10 +224,11 @@ class TournamentController extends Controller
                     })->first();
 
                     $groupOrder[] = [
-                        'orden' => $stageJury->posicion,
+                        'orden' => ($stageJury == null) ? $count : $stageJury->posicion,
                         'stageComp' => $value
                     ];
                 }
+
 
                 //sort group by orden of jury diriment
                 sort($groupOrder);
