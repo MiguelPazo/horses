@@ -4,6 +4,16 @@ Route::get('/', 'Auth\AuthController@getLogin');
 
 Route::controller('/auth', 'Auth\AuthController');
 
+Route::get('/puesta_cero', [
+    'as' => 'puesta.cero',
+    'uses' => 'ResetController@puestaCero'
+]);
+
+Route::get('/unlock', [
+    'as' => 'unlock',
+    'uses' => 'ResetController@unlock'
+]);
+
 Route::group([
     'middleware' => ['auth', 'stage'],
     'prefix' => '/tournament'
