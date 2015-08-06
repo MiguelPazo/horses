@@ -3,10 +3,7 @@
 @section('content')
     <div class="row">
         <div class="col-md-12">
-            <div class="title">
-                <span> Bienvenido: {{ Auth::user()->nombres }}</span>
-                <a href="{{ url('auth/logout') }}" role="button" class="btn btn-danger">SALIR</a>
-            </div>
+            @include('tournament.partials.header')
 
             {!! Form::open(array('url' => $post, 'id'=>'form_pane', 'method' => 'GET')) !!}
             <div class="tabbable">
@@ -25,7 +22,7 @@
 
                                 <div class="row row_sorteable">
                                     <div class="col-md-6">
-                                        <h3> Califique a los Participantes </h3>
+                                        <h3> Clasifique a los Participantes </h3>
 
                                         <div class="comp_list">
                                             <ul class="ul_comp_list">
@@ -44,7 +41,7 @@
 
                                     </div>
                                     <div class="col-md-6">
-                                        <h3> Participantes Calificados </h3>
+                                        <h3> Participantes Clasificados </h3>
 
                                         <div class="comp_classify">
                                             <ul class="ul_comp_list">

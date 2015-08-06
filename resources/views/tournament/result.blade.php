@@ -3,10 +3,7 @@
 @section('content')
     <div class="row">
         <div class="col-md-12">
-            <div class="title">
-                <span> Bienvenido: {{ Auth::user()->nombres }}</span>
-                <a href="{{ url('auth/logout') }}" role="button" class="btn btn-danger">SALIR</a>
-            </div>
+            @include('tournament.partials.header')
 
             <div class="tabbable">
                 <p><b>Categoria: </b> {{ Session::get('category')->nombre }}</p>

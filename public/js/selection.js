@@ -28,11 +28,6 @@ $(document).ready(function () {
         }
     });
 
-    $('#btn_save').click(function () {
-        prepareForm();
-        $('#process').val('1')
-        $('#form_pane').submit();
-    });
     $('#btn_end').click(function () {
         prepareForm();
         $('#process').val('2')

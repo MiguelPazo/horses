@@ -3,10 +3,7 @@
 @section('content')
     <div class="row">
         <div class="col-md-12">
-            <div class="title">
-                <span> Bienvenido: {{ Auth::user()->nombres }} {{ Session::get('dirimente') ? '(Juez Dirimente)':''  }}</span>
-                <a href="{{ url('auth/logout') }}" role="button" class="btn btn-danger">SALIR</a>
-            </div>
+            @include('tournament.partials.header')
 
             {!! Form::open(array('url' => route('tournament.save.selection'), 'id'=>'form_pane', 'method' => 'GET')) !!}
             <div class="tabbable">

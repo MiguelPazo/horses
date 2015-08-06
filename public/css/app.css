@@ -36,3 +36,11 @@
 .btn_competitor {
     margin-bottom: 10px;
 }
+
+.comp_position {
+    background: #000 none repeat scroll 0 0;
+    border-radius: 15px;
+    float: left;
+    font-weight: bold;
+    width: 30px;
+}

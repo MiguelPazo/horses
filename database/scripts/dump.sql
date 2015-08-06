@@ -60,7 +60,7 @@ CREATE TABLE `categoria` (
 
 /*Data for the table `categoria` */
 
-insert  into `categoria`(`id`,`concurso_id`,`nombre`,`seleccion`,`ganadores`,`destino`,`etapa_actual`) values (1,1,'CATEGORIA DE CAPONES DE BOZAL DE 3 A 4 AÑOS','1',1,NULL,'final');
+insert  into `categoria`(`id`,`concurso_id`,`nombre`,`seleccion`,`ganadores`,`destino`,`etapa_actual`) values (1,1,'CATEGORIA DE CAPONES DE BOZAL DE 3 A 4 AÑOS','1',1,NULL,'');
 
 /*Table structure for table `categoria_jurado` */
 
@@ -76,11 +76,9 @@ CREATE TABLE `categoria_jurado` (
   KEY `IX_Relationship3` (`categoria_id`),
   CONSTRAINT `categoria_jurado` FOREIGN KEY (`categoria_id`) REFERENCES `categoria` (`id`) ON DELETE CASCADE,
   CONSTRAINT `jurado_categoria` FOREIGN KEY (`jurado_id`) REFERENCES `jurado` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
 
 /*Data for the table `categoria_jurado` */
-
-insert  into `categoria_jurado`(`id`,`jurado_id`,`categoria_id`,`dirimente`) values (7,1,1,'0'),(8,2,1,'0'),(9,3,1,'1');
 
 /*Table structure for table `concurso` */
 
@@ -115,11 +113,9 @@ CREATE TABLE `etapa` (
   KEY `IX_Relationship8` (`jurado_id`),
   CONSTRAINT `jurado_seleccion` FOREIGN KEY (`jurado_id`) REFERENCES `jurado` (`id`) ON DELETE CASCADE,
   CONSTRAINT `participante_seleccion` FOREIGN KEY (`participante_id`) REFERENCES `participante` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=379 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=415 DEFAULT CHARSET=utf8;
 
 /*Data for the table `etapa` */
-
-insert  into `etapa`(`id`,`participante_id`,`jurado_id`,`posicion`,`descripcion`,`cerrado`) values (300,1,1,1,'selection',1),(301,2,1,1,'selection',1),(302,3,1,1,'selection',1),(303,4,1,1,'selection',1),(304,5,1,1,'selection',1),(305,6,1,1,'selection',1),(306,7,1,1,'selection',1),(307,8,1,1,'selection',1),(308,9,1,1,'selection',1),(309,10,1,1,'selection',1),(310,11,1,1,'selection',1),(311,12,1,1,'selection',1),(312,2,2,1,'selection',1),(313,3,2,1,'selection',1),(314,4,2,1,'selection',1),(315,5,2,1,'selection',1),(316,6,2,1,'selection',1),(317,7,2,1,'selection',1),(318,8,2,1,'selection',1),(319,9,2,1,'selection',1),(320,10,2,1,'selection',1),(321,11,2,1,'selection',1),(322,12,2,1,'selection',1),(323,13,2,1,'selection',1),(324,1,3,1,'selection',1),(325,2,3,1,'selection',1),(326,3,3,1,'selection',1),(327,5,3,1,'selection',1),(328,6,3,1,'selection',1),(329,7,3,1,'selection',1),(330,8,3,1,'selection',1),(331,9,3,1,'selection',1),(332,10,3,1,'selection',1),(333,11,3,1,'selection',1),(334,12,3,1,'selection',1),(335,13,3,1,'selection',1),(336,1,1,1,'classify_1',1),(337,3,1,2,'classify_1',1),(338,8,1,3,'classify_1',1),(339,2,1,4,'classify_1',1),(340,5,1,5,'classify_1',1),(341,6,1,6,'classify_1',1),(342,7,1,7,'classify_1',1),(343,9,1,8,'classify_1',1),(344,10,1,9,'classify_1',1),(345,2,2,1,'classify_1',1),(346,3,2,2,'classify_1',1),(347,1,2,3,'classify_1',1),(348,6,2,4,'classify_1',1),(349,11,2,5,'classify_1',1),(350,10,2,6,'classify_1',1),(351,7,2,7,'classify_1',1),(352,9,2,8,'classify_1',1),(353,5,2,9,'classify_1',1),(354,1,3,1,'classify_1',1),(355,2,3,2,'classify_1',1),(356,4,3,3,'classify_1',1),(357,8,3,4,'classify_1',1),(358,5,3,5,'classify_1',1),(359,7,3,6,'classify_1',1),(360,6,3,7,'classify_1',1),(361,4,3,1,'classify_2',1),(362,1,3,2,'classify_2',1),(363,11,3,3,'classify_2',1),(364,3,3,4,'classify_2',1),(365,8,3,5,'classify_2',1),(366,2,3,6,'classify_2',1),(367,4,2,1,'classify_2',1),(368,3,2,2,'classify_2',1),(369,8,2,3,'classify_2',1),(370,2,2,4,'classify_2',1),(371,1,2,5,'classify_2',1),(372,11,2,6,'classify_2',1),(373,4,1,1,'classify_2',1),(374,3,1,2,'classify_2',1),(375,1,1,3,'classify_2',1),(376,8,1,4,'classify_2',1),(377,11,1,5,'classify_2',1),(378,2,1,6,'classify_2',1);
 
 /*Table structure for table `jurado` */
 
@@ -137,7 +133,7 @@ CREATE TABLE `jurado` (
 
 /*Data for the table `jurado` */
 
-insert  into `jurado`(`id`,`nombres`,`usuario`,`password`,`estado`,`remember_token`) values (1,'Jurado 1','jurado1','123','0','0RzZQxp4ia7MAlS8ThB6QEkEasAjcdmw22PZIB6RevJ9BWcUZX'),(2,'Jurado 2','jurado2','123','1','wRMYLLuWu4Kf5pBI7YfJ4U6qy6Zq04FKm2bU8gjIWTwPOa0a6X'),(3,'Jurado 3','jurado3','123','0','HeouPCiHrKi83sG3PyBTxW3J6YtjsgtnWrO70wksq6d4kcNPJy');
+insert  into `jurado`(`id`,`nombres`,`usuario`,`password`,`estado`,`remember_token`) values (1,'Jurado 1','jurado1','123','0','e4TLtmcX5wq6DarcArwJcJcLM3YbAgaOXnXSacktUMIcSqD6Fp'),(2,'Jurado 2','jurado2','123','0','XDRyBqmVhAmnHToyBuBJULyu6VUx1rH3B3wjQc4pZUmbgv16TN'),(3,'Jurado 3','jurado3','123','0','HeouPCiHrKi83sG3PyBTxW3J6YtjsgtnWrO70wksq6d4kcNPJy');
 
 /*Table structure for table `participante` */
 
