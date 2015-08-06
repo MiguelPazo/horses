@@ -16,6 +16,7 @@
 
     <script src="{{ asset('/js/libs/jquery/dist/jquery.min.js') }}"></script>
     <script src="{{ asset('/js/libs/jqueryui/jquery-ui.js') }}"></script>
+    <script src="https://raw.githubusercontent.com/furf/jquery-ui-touch-punch/master/jquery.ui.touch-punch.min.js"></script>
     <script src="{{ asset('/js/libs/bootstrap/dist/js/bootstrap.min.js') }}"></script>
 </head>
 <body>
