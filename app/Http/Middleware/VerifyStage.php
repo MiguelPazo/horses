@@ -1,7 +1,7 @@
 <?php namespace Horses\Http\Middleware;
 
 use Closure;
-use Horses\Constants\Db;
+use Horses\Constants\ConstDb;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Auth\Guard;

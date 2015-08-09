@@ -4,11 +4,16 @@ use Illuminate\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Database\Eloquent\Model;
 
-class Jury extends Model implements AuthenticatableContract
+class User extends Model implements AuthenticatableContract
 {
     use Authenticatable;
 
-    protected $table = 'jurado';
     public $timestamps = false;
+    protected $guarded = ['id'];
 
+
+    public function scopeUser($query, $user)
+    {
+        return $query->where('user', $user);
+    }
 }

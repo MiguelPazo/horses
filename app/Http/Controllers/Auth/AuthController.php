@@ -2,8 +2,8 @@
 
 use Horses\Category;
 use Horses\CategoryJury;
-use Horses\Constants\Db;
-use Horses\Jury;
+use Horses\Constants\ConstDb;
+use Horses\User;
 use Horses\Tournament;
 use Horses\Http\Controllers\Controller;
 use Illuminate\Auth\GenericUser;
@@ -30,20 +30,14 @@ class AuthController extends Controller
 
     public function getLogin()
     {
-        $tournament = Tournament::where('activo', '=', 1)->firstOrFail();
-        $lstCategory = Category::where('concurso_id', '=', $tournament->id)->get();
-
-        return view('auth.login')
-            ->with('tournament', $tournament)
-            ->with('lstCategory', $lstCategory);
+        return view('auth.login');
     }
 
     public function postLogin(Request $request)
     {
         $this->validate($request, [
             'user' => 'required',
-            'password' => 'required',
-            'category' => 'required'
+            'password' => 'required'
         ]);
 
         $response = [
@@ -54,60 +48,39 @@ class AuthController extends Controller
 
         $user = $request->get('user');
         $pass = $request->get('password');
-        $category = $request->get('category');
-        $jDirimente = ($request->get('rad_jury_type', Db::JURY_TYPE_NORMAL) == Db::JURY_TYPE_DIRIMENTE) ? true : false;
-
-        $oUser = Jury::where('usuario', '=', $user)->first();
+        $oUser = User::user($user)->first();
 
         if ($oUser) {
             if ($oUser->password == $pass) {
-                if ($oUser->estado == Db::JURY_DISCONNECTED) {
-                    $oCategory = Category::find($category);
-                    $lstCatJury = CategoryJury::where('categoria_id', '=', $oCategory->id)->get();
-                    $processDirimente = true;
+                if ($oUser->login != ConstDb::USER_CONECTED) {
 
-                    if ($jDirimente) {
-                        $oCatJuryDirimente = $lstCatJury->filter(function ($item) {
-                            return $item->dirimente == Db::JURY_TYPE_DIRIMENTE;
-                        })->first();
-
-                        if ($oCatJuryDirimente && $oCatJuryDirimente->jurado_id != $oUser->id) {
-                            $processDirimente = false;
-                        }
-                    }
-
-                    if ($processDirimente) {
-                        $oCatJury = $lstCatJury->filter(function ($item) use ($oUser) {
-                            return $item->jurado_id == $oUser->id;
-                        })->first();
-
-                        if (!$oCatJury) {
-                            $oCatJuryNew = CategoryJury::create([
-                                'jurado_id' => $oUser->id,
-                                'categoria_id' => $oCategory->id,
-                                'dirimente' => ($jDirimente) ? Db::JURY_TYPE_DIRIMENTE : Db::JURY_TYPE_NORMAL
-                            ]);
-                        }
-
-                        $oUser->estado = Db::JURY_CONNECTED;
+                    if ($oUser->type == ConstDb::USER_TYPE_OPERATOR || $oUser->type == ConstDb::USER_TYPE_JURY) {
+                        $oUser->login = ConstDb::USER_CONECTED;
                         $oUser->save();
 
                         $authUser = new GenericUser($oUser->toArray());
                         $this->auth->login($authUser);
 
-                        $request->session()->put('category', $oCategory);
-                        $request->session()->put('dirimente', $jDirimente);
-
                         $response['success'] = true;
-                        $response['url'] = $this->redirectPath();
-                    } else {
-                        $response['message'] = 'Ya existe un juez dirimente para esta categoría.';
+                    }
+
+                    switch ($oUser->type) {
+                        case ConstDb::USER_TYPE_OPERATOR:
+
+//                            $request->session()->put('category', $oCategory);
+//                            $request->session()->put('dirimente', $jDirimente);
+                            $response['url'] = route('admin.tournament.index');
+                            break;
+                        case ConstDb::USER_TYPE_JURY:
+//                            $response['url'] = $this->redirectPath();
+                            $response['url'] = route('tournament.selection');
+                            break;
                     }
                 } else {
                     $response['message'] = 'El usuario ya se encuentra conectado, comuniquese con el administrador del sistema.';
                 }
             } else {
-                $response['message'] = 'Ha ocurrido un error, vuelva a intentarlo.';
+                $response['message'] = 'La contraseña es incorrecta, vuelva a intentarlo.';
             }
         } else {
             $response['message'] = 'El usuario ingresado no existe.';
@@ -116,6 +89,7 @@ class AuthController extends Controller
 
         return response()->json($response);
     }
+
 
     public function redirectPath()
     {
@@ -133,8 +107,8 @@ class AuthController extends Controller
 
     public function getLogout()
     {
-        $oUser = Jury::find($this->auth->user()->id);
-        $oUser->estado = Db::JURY_DISCONNECTED;
+        $oUser = User::find($this->auth->user()->id);
+        $oUser->estado = ConstDb::USER_ACTIVE;
         $oUser->save();
 
         $this->auth->logout();

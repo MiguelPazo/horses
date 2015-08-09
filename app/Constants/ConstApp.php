@@ -1,7 +1,8 @@
 <?php namespace Horses\Constants;
 
-class App
+class ConstApp
 {
+
     const STAGE_SELECCTION = 'SELECCIÓN';
     const STAGE_CLASSIFY_1 = 'PRIMERA CLASIFICACIÓN';
     const STAGE_CLASSIFY_2 = 'SEGUNDA CLASIFICACIÓN';

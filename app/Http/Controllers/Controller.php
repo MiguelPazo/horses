@@ -3,9 +3,38 @@
 use Illuminate\Foundation\Bus\DispatchesCommands;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
+use Illuminate\Support\Facades\Validator;
 
-abstract class Controller extends BaseController {
+abstract class Controller extends BaseController
+{
 
-	use DispatchesCommands, ValidatesRequests;
+    use DispatchesCommands, ValidatesRequests;
+
+    protected function validateForms($input, $rules)
+    {
+        $niceNames = [
+            'description' => 'Descripción',
+            'date_begin' => 'Fecha de Inicio',
+            'date_end' => 'Fecha de Cierre',
+            'type' => 'Selección',
+            'count_competitors' => 'Cantidad de Competidores'
+        ];
+
+        $messages = [
+            'required' => 'El campo :attribute es obligatorio.',
+            'min' => 'El campo :attribute no puede tener menos de :min carácteres.',
+            'max' => 'El campo :attribute no puede tener más de :min carácteres.',
+            'date_format' => 'El campo :attribute tiene el formato de fecha incorrecto'
+        ];
+
+        $validation = Validator::make($input, $rules, $messages);
+        $validation->setAttributeNames($niceNames);
+
+        if ($validation->fails()) {
+            return $validation;
+        } else {
+            return true;
+        }
+    }
 
 }

@@ -15,6 +15,32 @@ Route::get('/unlock', [
 ]);
 
 Route::group([
+    'middleware' => ['auth'],
+    'prefix' => '/admin',
+    'namespace' => 'Admin'
+], function () {
+    Route::get('/', [
+        'as' => 'admin.dashboard',
+        'uses' => function () {
+            return View::make('admin.dashboard');
+        }
+    ]);
+
+    Route::resource('/tournament', 'TournamentController');
+    Route::get('/tournament/enable/{tournament}', [
+        'as' => 'admin.tournament.enable',
+        'uses' => 'TournamentController@enable'
+    ]);
+
+    Route::get('/tournament/{tournament}/categories', [
+        'as' => 'admin.tournament.category',
+        'uses' => 'CategoryController@getIndex'
+    ]);
+
+    Route::controller('/category', 'CategoryController');
+});
+
+Route::group([
     'middleware' => ['auth', 'stage'],
     'prefix' => '/tournament'
 ], function () {

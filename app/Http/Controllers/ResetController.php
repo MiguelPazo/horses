@@ -11,14 +11,15 @@ namespace Horses\Http\Controllers;
 
 use Horses\Category;
 use Horses\CategoryJury;
-use Horses\Jury;
+use Horses\Constants\ConstDb;
+use Horses\User;
 use Horses\Stage;
 
 class ResetController extends Controller
 {
     public function puestaCero()
     {
-        $this->unlockJury();
+        $this->unlockUsers();
 
         $lstCategory = CategoryJury::all();
 
@@ -44,18 +45,18 @@ class ResetController extends Controller
 
     public function unlock()
     {
-        $this->unlockJury();
+        $this->unlockUsers();
 
         echo 'Usuarios desbloqueados';
     }
 
-    public function unlockJury()
+    public function unlockUsers()
     {
-        $lstJury = Jury::all();
+        $lstUser = User::all();
 
-        foreach ($lstJury as $index => $jury) {
-            $jury->estado = 0;
-            $jury->save();
+        foreach ($lstUser as $index => $user) {
+            $user->login = ConstDb::USER_DISCONNECTED;
+            $user->save();
         }
     }
 }
