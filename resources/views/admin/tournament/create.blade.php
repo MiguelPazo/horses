@@ -17,11 +17,13 @@
         @endif
 
         {!! Form::open(['route' => 'admin.tournament.store']) !!}
-        @include('admin.tournament.partials.fields')
+
         {!! Form::submit('Guardar', ['class' => 'btn btn-success']) !!}
         <a href="{{ route('admin.tournament.index') }}"
            class="btn btn-danger">Cancelar</a>
 
+        <p></p>
+        @include('admin.tournament.partials.fields')
         {!! Form::close() !!}
     </div>
     <script src="{{ asset('/js/admin.js') }}"></script>

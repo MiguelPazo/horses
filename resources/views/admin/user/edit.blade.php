@@ -17,10 +17,13 @@
         @endif
 
         {!! Form::open(['route' => ['admin.user.update', $oUser->id], 'method' => 'PUT']) !!}
-        @include('admin.user.partials.fields')
+
         {!! Form::submit('Guardar', ['class' => 'btn btn-success']) !!}
         <a href="{{ route('admin.user.index') }}"
            class="btn btn-danger">Cancelar</a>
+
+        <p></p>
+        @include('admin.user.partials.fields')
 
         {!! Form::close() !!}
     </div>
