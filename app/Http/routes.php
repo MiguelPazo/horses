@@ -97,7 +97,16 @@ Route::group([
     ]);
 });
 
-Route::get('/results', [
-    'as' => 'tournament.results',
-    'uses' => 'ResultsController@index'
-]);
+Route::group([
+    'prefix' => '/results'
+], function () {
+    Route::get('/', [
+        'as' => 'tournament.results',
+        'uses' => 'ResultsController@index'
+    ]);
+
+    Route::get('/category/{category}', [
+        'as' => 'tournament.results.category',
+        'uses' => 'ResultsController@category'
+    ]);
+});
