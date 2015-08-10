@@ -14,7 +14,7 @@
                                 <?php $position = 1; ?>
                                 @foreach($lstCompetitorLeft as $competitor)
                                     <li>
-                                        <div class="btn btn-block btn-lg btn-primary">
+                                        <div class="btn btn-block btn-lg btn-success">
                                             ({{ $position++ }}°) Participante
                                             #{{ str_pad($competitor->number, 2, "0", STR_PAD_LEFT) }}
                                         </div>
