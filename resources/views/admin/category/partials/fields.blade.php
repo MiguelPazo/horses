@@ -5,7 +5,8 @@
 </div>
 <div class="form-group">
     {!! Form::label('type', 'Selección:') !!}
-    {!! Form::select('type', ['1' => 'Sí', '0' => 'No'], null ,['class' =>'form-control']) !!}
+    {!! Form::select('type', ['1' => 'Sí', '0' => 'No'], (isset($oCategory)) ? (($oCategory->type ==
+    \Horses\Constants\ConstDb::TYPE_CATEGORY_SELECTION)? '1': '0') : null ,['class' =>'form-control']) !!}
 </div>
 <div class="form-group">
     {!! Form::label('count_competitors', 'Cantidad de Competidores:') !!}

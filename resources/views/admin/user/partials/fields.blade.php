@@ -18,6 +18,6 @@
 </div>
 <div class="form-group">
     {!! Form::label('profile', 'Perfil:') !!}
-    {!! Form::select('profile', ['admin' => 'Administrador', 'operator' => 'Operador', 'jury' => 'Jurado'], null
-    ,['class' =>'form-control']) !!}
+    {!! Form::select('profile', ['admin' => 'Administrador', 'operator' => 'Operador', 'jury' => 'Jurado'],
+    (isset($oUser)) ? $oUser->profile : null,['class' =>'form-control']) !!}
 </div>
