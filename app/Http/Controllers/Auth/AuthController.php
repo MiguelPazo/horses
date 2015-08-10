@@ -93,7 +93,7 @@ class AuthController extends Controller
                                 $oCategoryJury = CategoryUser::jury($oUser->id)->category($oCategory->id)->first();
 
                                 if ($oCategoryJury) {
-                                    switch ($oCategoryJury->actual_stage) {
+                                    switch ($oCategory->actual_stage) {
                                         case null:
                                             $response['message'] = 'Aún no se ha tomado asistencia, espere un momento por favor.';
                                             break;

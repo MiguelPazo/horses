@@ -302,19 +302,23 @@ class TournamentController extends Controller
         foreach ($lstCatJury as $catJury) {
             switch ($stage) {
                 case ConstDb::STAGE_SELECTION:
-                    if ($catJury->actual_stage != ConstDb::STAGE_ASSISTANCE) {
+                    if ($catJury->actual_stage != null &&
+                        $catJury->actual_stage != ConstDb::STAGE_ASSISTANCE
+                    ) {
                         $lstIds[] = $catJury->user_id;
                     }
                     break;
                 case ConstDb::STAGE_CLASSIFY_1:
-                    if ($catJury->actual_stage != ConstDb::STAGE_ASSISTANCE &&
+                    if ($catJury->actual_stage != null &&
+                        $catJury->actual_stage != ConstDb::STAGE_ASSISTANCE &&
                         $catJury->actual_stage != ConstDb::STAGE_SELECTION
                     ) {
                         $lstIds[] = $catJury->user_id;
                     }
                     break;
                 case ConstDb::STAGE_CLASSIFY_2:
-                    if ($catJury->actual_stage != ConstDb::STAGE_ASSISTANCE &&
+                    if ($catJury->actual_stage != null &&
+                        $catJury->actual_stage != ConstDb::STAGE_ASSISTANCE &&
                         $catJury->actual_stage != ConstDb::STAGE_SELECTION &&
                         $catJury->actual_stage != ConstDb::STAGE_CLASSIFY_1
                     ) {
@@ -325,6 +329,8 @@ class TournamentController extends Controller
 
         }
 
+//        var_dump(count($lstIds));
+//        dd($countJury);
         if (count($lstIds) == $countJury) {
             $oCategory->actual_stage = $stage;
             $oCategory->save();

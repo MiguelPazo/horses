@@ -11,6 +11,10 @@ $(document).ready(function () {
                 findDiriment = true;
             }
         });
+
+        $('.comp_list').find('li').each(function (i, e) {
+            $(e).find('.jury_diriment').remove();
+        });
     };
 
     var prepareForm = function () {

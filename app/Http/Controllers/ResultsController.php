@@ -44,7 +44,7 @@ class ResultsController extends Controller
                         ->with('lstCompetitorLeft', $lstCompetitorLeft)
                         ->with('lstCompetitorRight', $lstCompetitorRight);
                 } else {
-                    
+
                 }
             } else {
 
