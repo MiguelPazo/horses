@@ -57,11 +57,11 @@ class TournamentController extends Controller
             foreach ($lstStageJury as $stageJury) {
                 if ($idTemp == $stageJury->competitor_id) {
                     $count++;
-                } else {
-                    if ($count >= ConstApp::MIN_VOTE_COMPETITION) {
-                        $idsComp[] = $idTemp;
-                        $count = 1;
-                    }
+                }
+
+                if ($count >= ConstApp::MIN_VOTE_COMPETITION) {
+                    $idsComp[] = $idTemp;
+                    $count = 0;
                 }
 
                 $idTemp = $stageJury->competitor_id;
@@ -335,7 +335,7 @@ class TournamentController extends Controller
             $oCategory->actual_stage = $stage;
             $oCategory->save();
 
-            $stageStatus->lstStageJury = Stage::juryIn($lstIds)->stage($stage)->orderBy('user_id')->get();
+            $stageStatus->lstStageJury = Stage::juryIn($lstIds)->stage($stage)->orderBy('competitor_id')->get();
         } else {
             $stageStatus->valid = false;
             $stageStatus->message = 'Todos los jueces aún no terminan la etapa anterior, espere un momento por favor.';
