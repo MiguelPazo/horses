@@ -17,27 +17,40 @@ class ResultsController extends Controller
     public function index()
     {
         $oTournament = Tournament::status(ConstDb::STATUS_ACTIVE)->first();
-        $oCategory = Category::tournament($oTournament->id)->status(ConstDb::STATUS_FINAL)->first();
-        $lstCompetitor = Competitor::category($oCategory->id)->orderBy('position')->get();
-        $lstCompetitorLeft = new Collection();
-        $lstCompetitorRight = new Collection();
-        $count = 1;
 
-        foreach ($lstCompetitor as $key => $competitor) {
-            if ($competitor->position != null) {
-                if ($count <= ConstApp::MAX_WINNERS) {
-                    $lstCompetitorLeft->add($competitor);
-                    $count++;
+        if ($oTournament) {
+            $oCategory = Category::tournament($oTournament->id)->status(ConstDb::STATUS_FINAL)->first();
+            if ($oCategory) {
+                $lstCompetitor = Competitor::category($oCategory->id)->orderBy('position')->get();
+                if ($lstCompetitor) {
+                    $lstCompetitorLeft = new Collection();
+                    $lstCompetitorRight = new Collection();
+                    $count = 1;
+
+                    foreach ($lstCompetitor as $key => $competitor) {
+                        if ($competitor->position != null) {
+                            if ($count <= ConstApp::MAX_WINNERS) {
+                                $lstCompetitorLeft->add($competitor);
+                                $count++;
+                            } else {
+                                $lstCompetitorRight->add($competitor);
+                            }
+                        }
+                    }
+
+                    return view('tournament.result')
+                        ->with('oTournament', $oTournament)
+                        ->with('oCategory', $oCategory)
+                        ->with('lstCompetitorLeft', $lstCompetitorLeft)
+                        ->with('lstCompetitorRight', $lstCompetitorRight);
                 } else {
-                    $lstCompetitorRight->add($competitor);
+                    
                 }
-            }
-        }
+            } else {
 
-        return view('tournament.result')
-            ->with('oTournament', $oTournament)
-            ->with('oCategory', $oCategory)
-            ->with('lstCompetitorLeft', $lstCompetitorLeft)
-            ->with('lstCompetitorRight', $lstCompetitorRight);
+            }
+        } else {
+
+        }
     }
 }

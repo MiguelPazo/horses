@@ -12,6 +12,7 @@ namespace Horses\Http\Controllers;
 use Horses\Category;
 use Horses\CategoryUser;
 use Horses\Constants\ConstDb;
+use Horses\Tournament;
 use Horses\User;
 use Horses\Stage;
 
@@ -19,26 +20,24 @@ class ResetController extends Controller
 {
     public function puestaCero()
     {
-        $this->unlockUsers();
+        $lstTournament = Tournament::all();
+        $lstUser = User::all();
 
-        $lstCategory = CategoryUser::all();
-
-        foreach ($lstCategory as $index => $categoryJury) {
-            $categoryJury->delete();
+        foreach ($lstTournament as $key => $tournament) {
+            $tournament->delete();
         }
 
-        $lstStage = Stage::all();
-
-        foreach ($lstStage as $index => $stage) {
-            $stage->delete();
+        foreach ($lstUser as $key => $user) {
+            $user->delete();
         }
 
-        $lstCategory = Category::all();
-
-        foreach ($lstCategory as $index => $category) {
-            $category->etapa_actual = '';
-            $category->save();
-        }
+        User::create([
+            'names' => 'Miguel',
+            'lastname' => 'Pazo Sánchez',
+            'user' => 'mpazo',
+            'profile' => ConstDb::PROFILE_ADMIN,
+            'password' => '123'
+        ]);
 
         echo 'Puesta cero completa!';
     }
