@@ -17,7 +17,6 @@ $(document).ready(function () {
 
         $('.comp_classify').find('li').each(function (i, e) {
             $(e).find('.comp_position').remove();
-            console.log(position);
             $(e).find('div').prepend('<span class="comp_position">' + position + '</span>');
             position++;
         });

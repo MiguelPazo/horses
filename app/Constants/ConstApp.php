@@ -14,4 +14,5 @@ class ConstApp
     const MIN_COUNT_JURY = 3;
     const MIN_VOTE_COMPETITION = 2;
     const MAX_WINNERS = 6;
+    const MAX_HONORABLE = 6;
 }

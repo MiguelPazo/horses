@@ -88,9 +88,12 @@ class TournamentController extends Controller
                 if ($position <= ConstApp::MAX_WINNERS) {
                     $lstCompetitor->add($competitor);
                 } else {
-                    //menciones honrosas
-                    $competitor->position = $position;
-                    $competitor->save();
+                    $count = $position - ConstApp::MAX_WINNERS;
+
+                    if ($count <= ConstApp::MAX_HONORABLE) {
+                        $competitor->position = $position;
+                        $competitor->save();
+                    }
                 }
 
                 $position++;
