@@ -7,8 +7,19 @@
     font-weight: bold;
 }
 
-.title a {
+.btn_exit {
     float: right;
+    margin-top: 15px;
+    margin-left: 15px;
+}
+
+.jury_diriment {
+    background: #000 none repeat scroll 0 0;
+    border-radius: 15px;
+    font-weight: bold;
+    left: 30px;
+    position: absolute;
+    width: 106px;
 }
 
 .row_sorteable {
@@ -23,6 +34,7 @@
 }
 
 .row_sorteable li {
+    margin-top: 0px;
     margin-bottom: 10px;
 }
 

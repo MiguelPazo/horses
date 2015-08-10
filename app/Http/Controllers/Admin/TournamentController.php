@@ -27,6 +27,14 @@ class TournamentController extends Controller
         return redirect()->route('admin.tournament.index');
     }
 
+    public function disable($id)
+    {
+        $oTournament = Tournament::findorFail($id);
+        $oTournament->status = ConstDb::STATUS_INACTIVE;
+        $oTournament->save();
+        return redirect()->route('admin.tournament.index');
+    }
+
     public function index()
     {
         $lstTournaments = Tournament::statusDif(ConstDb::STATUS_DELETED)->get();

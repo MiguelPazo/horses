@@ -10,7 +10,7 @@ namespace Horses\Http\Controllers;
 
 
 use Horses\Category;
-use Horses\CategoryJury;
+use Horses\CategoryUser;
 use Horses\Constants\ConstDb;
 use Horses\User;
 use Horses\Stage;
@@ -21,7 +21,7 @@ class ResetController extends Controller
     {
         $this->unlockUsers();
 
-        $lstCategory = CategoryJury::all();
+        $lstCategory = CategoryUser::all();
 
         foreach ($lstCategory as $index => $categoryJury) {
             $categoryJury->delete();

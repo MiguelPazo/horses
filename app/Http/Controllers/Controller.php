@@ -17,7 +17,13 @@ abstract class Controller extends BaseController
             'date_begin' => 'Fecha de Inicio',
             'date_end' => 'Fecha de Cierre',
             'type' => 'Selección',
-            'count_competitors' => 'Cantidad de Competidores'
+            'count_competitors' => 'Cantidad de Competidores',
+            'names' => 'Nombres',
+            'lastname' => 'Apellidos',
+            'user' => 'Usuario',
+            'password' => 'Contraseña',
+            'profile' => 'Perfil',
+
         ];
 
         $messages = [

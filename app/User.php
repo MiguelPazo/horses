@@ -16,4 +16,14 @@ class User extends Model implements AuthenticatableContract
     {
         return $query->where('user', $user);
     }
+
+    public function scopeProfile($query, $profile)
+    {
+        return $query->where('profile', $profile);
+    }
+
+    public function scopeUsers($query, $ids)
+    {
+        return $query->whereIn('id', $ids);
+    }
 }

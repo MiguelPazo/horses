@@ -1,7 +1,7 @@
 <?php namespace Horses\Http\Controllers\Auth;
 
 use Horses\Category;
-use Horses\CategoryJury;
+use Horses\CategoryUser;
 use Horses\Constants\ConstDb;
 use Horses\User;
 use Horses\Tournament;
@@ -54,7 +54,7 @@ class AuthController extends Controller
             if ($oUser->password == $pass) {
                 if ($oUser->login != ConstDb::USER_CONECTED) {
 
-                    if ($oUser->type == ConstDb::USER_TYPE_OPERATOR || $oUser->type == ConstDb::USER_TYPE_JURY) {
+                    if ($oUser->profile == ConstDb::PROFILE_OPERATOR || $oUser->profile == ConstDb::PROFILE_JURY) {
                         $oUser->login = ConstDb::USER_CONECTED;
                         $oUser->save();
 
@@ -64,14 +64,14 @@ class AuthController extends Controller
                         $response['success'] = true;
                     }
 
-                    switch ($oUser->type) {
-                        case ConstDb::USER_TYPE_OPERATOR:
+                    switch ($oUser->profile) {
+                        case ConstDb::PROFILE_OPERATOR:
 
 //                            $request->session()->put('category', $oCategory);
 //                            $request->session()->put('dirimente', $jDirimente);
-                            $response['url'] = route('admin.tournament.index');
+                            $response['url'] = route('admin.dashboard');
                             break;
-                        case ConstDb::USER_TYPE_JURY:
+                        case ConstDb::PROFILE_JURY:
 //                            $response['url'] = $this->redirectPath();
                             $response['url'] = route('tournament.selection');
                             break;
@@ -108,7 +108,7 @@ class AuthController extends Controller
     public function getLogout()
     {
         $oUser = User::find($this->auth->user()->id);
-        $oUser->estado = ConstDb::USER_ACTIVE;
+        $oUser->login = ConstDb::USER_DISCONNECTED;
         $oUser->save();
 
         $this->auth->logout();

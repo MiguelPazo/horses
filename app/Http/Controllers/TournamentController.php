@@ -1,7 +1,7 @@
 <?php namespace Horses\Http\Controllers;
 
 use Horses\Category;
-use Horses\CategoryJury;
+use Horses\CategoryUser;
 use Horses\Competitor;
 use Horses\Constants\ConstApp;
 use Horses\Constants\ConstDb;
@@ -187,8 +187,8 @@ class TournamentController extends Controller
 
     public function filterCompetitorsWithJury($oCategory, $stageStatus)
     {
-        $oDirimente = CategoryJury::where('categoria_id', '=', $oCategory->id)
-            ->where('dirimente', '=', ConstDb::JURY_TYPE_DIRIMENTE)
+        $oDirimente = CategoryUser::where('categoria_id', '=', $oCategory->id)
+            ->where('dirimente', '=', ConstDb::JURY_DIRIMENT)
             ->first();
 
         $lstStageJury = $stageStatus->lstStageJury;
@@ -347,7 +347,7 @@ class TournamentController extends Controller
         $stageStatus->message = '';
         $stageStatus->lstStageJury = null;
 
-        $lstCatJury = CategoryJury::where('categoria_id', '=', $idCategory)->get();
+        $lstCatJury = CategoryUser::where('categoria_id', '=', $idCategory)->get();
         $countJury = $lstCatJury->count();
         $lstIds = [];
 

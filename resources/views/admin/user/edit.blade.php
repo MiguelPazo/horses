@@ -2,7 +2,7 @@
 
 @section('content')
     <h3 class="text-center text-primary">
-        Nuevo Torneo
+        Editar Usuario
     </h3>
 
     <div class="panel-body">
@@ -16,10 +16,10 @@
             </div>
         @endif
 
-        {!! Form::open(['route' => 'admin.tournament.store']) !!}
-        @include('admin.tournament.partials.fields')
+        {!! Form::open(['route' => ['admin.user.update', $oUser->id], 'method' => 'PUT']) !!}
+        @include('admin.user.partials.fields')
         {!! Form::submit('Guardar', ['class' => 'btn btn-default']) !!}
-        <a href="{{ route('admin.tournament.index') }}"
+        <a href="{{ route('admin.user.index') }}"
            class="btn btn-danger">Cancelar</a>
 
         {!! Form::close() !!}

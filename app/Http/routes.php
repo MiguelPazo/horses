@@ -31,6 +31,10 @@ Route::group([
         'as' => 'admin.tournament.enable',
         'uses' => 'TournamentController@enable'
     ]);
+    Route::get('/tournament/disable/{tournament}', [
+        'as' => 'admin.tournament.disable',
+        'uses' => 'TournamentController@disable'
+    ]);
 
     Route::get('/tournament/{tournament}/categories', [
         'as' => 'admin.tournament.category',
@@ -38,6 +42,12 @@ Route::group([
     ]);
 
     Route::controller('/category', 'CategoryController');
+
+    Route::resource('/user', 'UserController');
+    Route::get('/user/unlock/{user}', [
+        'as' => 'admin.user.unlock',
+        'uses' => 'UserController@unlock'
+    ]);
 });
 
 Route::group([

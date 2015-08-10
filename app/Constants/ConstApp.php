@@ -8,6 +8,7 @@ class ConstApp
     const STAGE_CLASSIFY_2 = 'SEGUNDA CLASIFICACIÓN';
     const STAGE_RESULTS = 'RESULTADOS FINALES';
     const PREFIX_COMPETITOR = 'comp_';
+    const PREFIX_JURY = 'jury_';
     const PROCESS_SAVE = '1';
     const PROCESS_END = '2';
     const MIN_COUNT_JURY = 3;

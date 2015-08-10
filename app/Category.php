@@ -12,4 +12,9 @@ class Category extends Model
         return $query->where('tournament_id', $tournament);
     }
 
+    public function scopeStatus($query, $status)
+    {
+        return $query->where('status', $status);
+    }
+
 }

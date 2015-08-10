@@ -22,7 +22,21 @@
 <body>
 
 <div class="container-fluid">
-    @yield('content')
+    <div class="row">
+        <div class="col-md-12">
+            @if(Auth::check())
+                <a href="{{ url('/auth/logout') }}" type="button" class="btn btn-danger btn_exit">
+                    <span class="glyphicon glyphicon-off" aria-hidden="true"></span> Salir
+                </a>
+                <a href="{{ route('admin.dashboard') }}" role="button" class="btn btn-default btn_exit">
+                    <span class="glyphicon glyphicon-home"></span>
+                </a>
+            @endif
+
+            @yield('content')
+
+        </div>
+    </div>
 </div>
 
 </body>

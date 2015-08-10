@@ -2,8 +2,9 @@
 
 class ConstDb
 {
-    const USER_TYPE_OPERATOR = 'operator';
-    const USER_TYPE_JURY = 'jury';
+    const PROFILE_ADMIN = 'admin';
+    const PROFILE_OPERATOR = 'operator';
+    const PROFILE_JURY = 'jury';
     const USER_DISCONNECTED = 0;
     const USER_CONECTED = 1;
 
@@ -21,6 +22,7 @@ class ConstDb
     const STAGE_FINAL = 'final';
     const STAGE_STATUS_SAVE = 0;
     const STAGE_STATUS_CLOSE = 1;
-    const JURY_TYPE_NORMAL = 0;
-    const JURY_TYPE_DIRIMENTE = 1;
+
+    const JURY_NORMAL = 0;
+    const JURY_DIRIMENT = 1;
 }
