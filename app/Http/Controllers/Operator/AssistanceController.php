@@ -1,5 +1,7 @@
 <?php namespace Horses\Http\Controllers\Operator;
 
+use Horses\Category;
+use Horses\CategoryUser;
 use Horses\Competitor;
 use Horses\Constants\ConstApp;
 use Horses\Constants\ConstDb;
@@ -42,6 +44,8 @@ class AssistanceController extends Controller
 
         $oCategory->actual_stage = ConstDb::STAGE_ASSISTANCE;
         $oCategory->save();
+
+        CategoryUser::category($oCategory->id)->update(['actual_stage' => ConstDb::STAGE_ASSISTANCE]);
 
         return redirect()->to('/auth/logout');
     }

@@ -19,6 +19,7 @@
                     <th>Selección</th>
                     <th>Etapa Actual</th>
                     <th>Cantidad de Competidores</th>
+                    <th>Activa</th>
                     <th>Opciones</th>
                 </tr>
                 </thead>
@@ -33,18 +34,21 @@
                         <td>{{ $category->actual_stage }}</td>
                         <td>{{ $category->count_competitors }}</td>
                         <td>
-                            @if($category->status == \Horses\Constants\ConstDb::STATUS_ACTIVE)
-                                <a href="{{ url('/admin/category/disable', $category->id ) }}" role="button"
-                                   class="btn btn-success">
-                                    <span class="glyphicon glyphicon-star"></span>
-                                </a>
-                            @else
-                                <a href="{{ url('/admin/category/enable', $category->id ) }}" role="button" class="btn">
-                                    <span class="glyphicon glyphicon-star"></span>
-                                </a>
+                            @if($category->status != \Horses\Constants\ConstDb::STATUS_FINAL)
+                                @if($category->status == \Horses\Constants\ConstDb::STATUS_ACTIVE)
+                                    <a href="{{ url('/admin/category/disable', $category->id ) }}" role="button"
+                                       class="btn btn-success">
+                                        <span class="glyphicon glyphicon-star"></span>
+                                    </a>
+                                @else
+                                    <a href="{{ url('/admin/category/enable', $category->id ) }}" role="button"
+                                       class="btn">
+                                        <span class="glyphicon glyphicon-star"></span>
+                                    </a>
+                                @endif
                             @endif
-
-
+                        </td>
+                        <td>
                             <a href="{{ url('/admin/category/edit', $category->id ) }}"
                                role="button" class="btn">
                                 <span class="glyphicon glyphicon-pencil"></span>
