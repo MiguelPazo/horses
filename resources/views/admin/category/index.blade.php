@@ -26,7 +26,7 @@
                 <?php $count = 1; ?>
                 @foreach( $lstCategory as  $category)
                     <tr class="{{ ($category->status == \Horses\Constants\ConstDb::STATUS_ACTIVE)? 'info' : '' }}
-                            {{ ($category->status == \Horses\Constants\ConstDb::STAGE_FINAL)? 'active' : '' }}">
+                            {{ ($category->status == \Horses\Constants\ConstDb::STATUS_FINAL)? 'active' : '' }}">
                         <th scope="row">{{ $count }}</th>
                         <td>{{ $category->description }}</td>
                         <td>{{ ($category->type == \Horses\Constants\ConstDb::TYPE_CATEGORY_SELECTION)? 'Sí': 'No' }}</td>
