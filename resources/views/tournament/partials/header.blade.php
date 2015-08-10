@@ -1,4 +1,16 @@
+<h3 class="text-center text-primary">
+    {{ Session::get('oTournament')->description }}
+</h3>
+
 <div class="title">
-    <span> Bienvenido: {{ Auth::user()->nombres }} {{ Session::get('dirimente') ? '(Juez Dirimente)':''  }}</span>
-    <a href="{{ url('auth/logout') }}" role="button" class="btn btn-danger">SALIR</a>
+    <span> Bienvenido: {{ Auth::user()->lastname .  ', ' . Auth::user()->names }} {{ Session::get('diriment') ? '(Juez Dirimente)':''  }}</span>
 </div>
+
+<p><b>Categoria: </b> {{ Session::get('oCategory')->description }}</p>
+
+<p><b>Etapa: </b> {{ $stage }}</p>
+
+@if($valid)
+    <a id="modal" href="#modal-container" role="button" class="btn btn-danger"
+       data-toggle="modal">CERRAR ETAPA</a>
+@endif

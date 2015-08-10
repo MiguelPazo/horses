@@ -16,9 +16,8 @@
             </div>
         @endif
 
-        {!! Form::open(['url' => ['/admin/category/update', $oCategory->id], 'method' =>
-        'PUT', 'id' => 'formCategory']) !!}
-        {!! Form::submit('Guardar', ['class' => 'btn btn-default']) !!}
+        {!! Form::open(['url' => ['/admin/category/update', $oCategory->id], 'method' =>'PUT', 'id' => 'form']) !!}
+        {!! Form::submit('Guardar', ['class' => 'btn btn-success']) !!}
         <a href="{{ route('admin.tournament.category', $oCategory->tournament_id) }}"
            class="btn btn-danger">Cancelar</a>
 

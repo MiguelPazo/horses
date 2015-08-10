@@ -1,24 +1,29 @@
 $(document).ready(function () {
     var prepareForm = function () {
-        var position = 0;
+        var position = 1;
 
         $('.comp_classify').find('li').each(function (i, e) {
             $(e).find('input').val(position);
             position++;
         });
+
+        $('.comp_list').find('li').each(function (i, e) {
+            $(e).find('input').val(0);
+        });
     };
 
-    var fixPositions = function(){
+    var fixPositions = function () {
         var position = 0;
-
-        $('.comp_list').find('.comp_position').each(function (i, e) {
-            $(e).remove();
-        });
 
         $('.comp_classify').find('li').each(function (i, e) {
             $(e).find('.comp_position').remove();
-            $(e).find('div').prepend('<span class="comp_position">' + position + '</span>')
+            console.log(position);
+            $(e).find('div').prepend('<span class="comp_position">' + position + '</span>');
             position++;
+        });
+
+        $('.comp_list').find('.comp_position').each(function (i, e) {
+            $(e).remove();
         });
     };
 
@@ -34,9 +39,7 @@ $(document).ready(function () {
         } else {
             prevDiv.removeClass('btn-success');
         }
-
-        fixPositions();
-    }). on('sortout', function(e, ui){
+    }).on('sortout', function (e, ui) {
         fixPositions();
     });
 

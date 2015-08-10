@@ -15,7 +15,23 @@ Route::get('/unlock', [
 ]);
 
 Route::group([
-    'middleware' => ['auth'],
+    'middleware' => 'auth',
+    'prefix' => 'oper',
+    'namespace' => 'Operator'
+], function () {
+    Route::get('/', [
+        'as' => 'operator.assistance',
+        'uses' => 'AssistanceController@index'
+    ]);
+
+    Route::post('/save', [
+        'as' => 'operator.assistance.save',
+        'uses' => 'AssistanceController@save'
+    ]);
+});
+
+Route::group([
+    'middleware' => 'auth',
     'prefix' => '/admin',
     'namespace' => 'Admin'
 ], function () {
@@ -66,10 +82,6 @@ Route::group([
         'as' => 'tournament.classify_2',
         'uses' => 'TournamentController@classifySecond'
     ]);
-    Route::get('/result', [
-        'as' => 'tournament.result',
-        'uses' => 'TournamentController@result'
-    ]);
 
     Route::get('/save_selection', [
         'as' => 'tournament.save.selection',
@@ -84,3 +96,8 @@ Route::group([
         'uses' => 'TournamentController@saveClassify2'
     ]);
 });
+
+Route::get('/result', [
+    'as' => 'tournament.result',
+    'uses' => 'ResultsController@index'
+]);

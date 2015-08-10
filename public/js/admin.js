@@ -48,7 +48,7 @@ $(document).ready(function () {
         fixDiriment();
     });
 
-    $('#formCategory').submit(function (e) {
+    $('#form').submit(function (e) {
         prepareForm();
     });
 });
