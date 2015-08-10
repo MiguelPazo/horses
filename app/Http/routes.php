@@ -97,7 +97,7 @@ Route::group([
     ]);
 });
 
-Route::get('/result', [
-    'as' => 'tournament.result',
+Route::get('/results', [
+    'as' => 'tournament.results',
     'uses' => 'ResultsController@index'
 ]);
