@@ -15,7 +15,6 @@
                     <th>Torneo</th>
                     <th>Fecha de Inicio</th>
                     <th>Fecha de Cierre</th>
-                    <th>Cantidad de categorias</th>
                     <th>Opciones</th>
                 </tr>
                 </thead>
@@ -27,7 +26,6 @@
                         <td>{{ $tournament->description }}</td>
                         <td>{{ $tournament->date_begin }}</td>
                         <td>{{ $tournament->date_end }}</td>
-                        <td>5</td>
                         <td>
                             @if( $tournament->status == \Horses\Constants\ConstDb::STATUS_ACTIVE )
                                 <a href="{{ route('admin.tournament.disable', $tournament->id) }}" role="button"

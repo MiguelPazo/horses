@@ -33,4 +33,8 @@ class Stage extends Model
         return $query->whereIn('user_id', $lstIdJury);
     }
 
+    public function scopeCategory($query, $idCategory)
+    {
+        return $query->where('category_id', $idCategory);
+    }
 }
