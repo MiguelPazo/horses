@@ -25,7 +25,7 @@ class ResultsController extends Controller
         $oTournament = Tournament::status(ConstDb::STATUS_ACTIVE)->first();
 
         if ($oTournament) {
-            $lstCategory = Category::tournament($oTournament->id)->status(ConstDb::STATUS_FINAL)->get();
+            $lstCategory = Category::tournament($oTournament->id)->finals()->get();
 
             return view('results.index')
                 ->with('oTournament', $oTournament)
@@ -39,9 +39,10 @@ class ResultsController extends Controller
     {
         $oCategory = Category::findorFail($id);
         $oTournament = Tournament::find($oCategory->tournament_id);
-        $lstCategory = Category::tournament($oTournament->id)->status(ConstDb::STATUS_FINAL)->get();
+        $lstCategory = Category::tournament($oTournament->id)->finals()->get();
 
         $lstCompetitor = Competitor::category($oCategory->id)->orderBy('position')->get();
+
         if ($lstCompetitor) {
             $lstCompetitorLeft = new Collection();
             $lstCompetitorRight = new Collection();
@@ -49,9 +50,13 @@ class ResultsController extends Controller
 
             foreach ($lstCompetitor as $key => $competitor) {
                 if ($competitor->position != null) {
-                    if ($count <= ConstApp::MAX_WINNERS) {
-                        $lstCompetitorLeft->add($competitor);
-                        $count++;
+                    if ($oCategory->status == ConstDb::STATUS_FINAL) {
+                        if ($count <= ConstApp::MAX_WINNERS) {
+                            $lstCompetitorLeft->add($competitor);
+                            $count++;
+                        } else {
+                            $lstCompetitorRight->add($competitor);
+                        }
                     } else {
                         $lstCompetitorRight->add($competitor);
                     }

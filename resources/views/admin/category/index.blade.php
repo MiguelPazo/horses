@@ -64,10 +64,6 @@
                 @endforeach
                 </tbody>
             </table>
-            <a href="{{ route('admin.tournament.index') }}" role="button" class="btn btn-default">
-                <span class="glyphicon glyphicon-menu-left"></span>
-            </a>
-            <a href="{{ url('/admin/category/create', $oTournament->id) }}" class="btn btn-primary">Nuevo</a>
         </div>
     </div>
 @endsection

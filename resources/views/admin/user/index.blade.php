@@ -57,7 +57,6 @@
                 @endforeach
                 </tbody>
             </table>
-            <a href="{{ route('admin.user.create') }}" class="btn btn-primary">Nuevo</a>
         </div>
     </div>
 @endsection

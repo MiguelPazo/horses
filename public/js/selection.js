@@ -1,4 +1,5 @@
 $(document).ready(function () {
+    var totalSelected = 0;
 
     var prepareForm = function () {
         $('#pane_stage .btn_competitor').each(function (i, e) {
@@ -9,23 +10,25 @@ $(document).ready(function () {
     };
 
     $('#pane_stage .btn_competitor').click(function () {
-        var count = 0;
-
-        $('#pane_stage .btn_competitor').each(function (i, e) {
-            if ($(e).hasClass('btn-success')) {
-                count++;
-            }
-        });
+//        $('#pane_stage .btn_competitor').each(function (i, e) {
+//            if ($(e).hasClass('btn-success')) {
+//                count++;
+//            }
+//        });
 
         if ($(this).hasClass('btn-success')) {
+            totalSelected--;
             $(this).removeClass('btn-success');
         } else {
-            if (count < 12) {
+            if (totalSelected < 12) {
+                totalSelected++;
                 $(this).addClass('btn-success');
             } else {
                 alert('Usted ya ha seleccionado a 12 participantes!');
             }
         }
+
+        $('#count_sel').html(totalSelected);
     });
 
     $('#btn_end').click(function () {

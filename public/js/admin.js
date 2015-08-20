@@ -31,7 +31,8 @@ $(document).ready(function () {
     };
 
     $(".datepicker").datepicker({
-        'dateFormat': 'dd-mm-yy'
+        'dateFormat': 'dd-mm-yy',
+        showButtonPanel: true
     });
 
     $(".ul_comp_list").sortable({

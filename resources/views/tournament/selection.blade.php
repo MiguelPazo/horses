@@ -1,7 +1,7 @@
 @extends('layout')
 
 @section('content')
-    @include('tournament.partials.header')
+    @include('tournament._partials.header')
 
     <div class="panel-body">
         {!! Form::open(array('url' => route('tournament.save.selection'), 'id'=>'form_pane', 'method' => 'GET'))!!}
@@ -18,9 +18,13 @@
 
         <input id="process" type="hidden" name="process" value="1"/>
         {!! Form::close() !!}
+
+        <div class="count_selected" id="count_sel">
+            0
+        </div>
     </div>
 
-    @include('tournament.partials.popup')
+    @include('tournament._partials.popup')
 
     <script src="{{ asset('/js/selection.js') }}"></script>
 @endsection

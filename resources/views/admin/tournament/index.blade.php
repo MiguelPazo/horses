@@ -59,7 +59,6 @@
                 @endforeach
                 </tbody>
             </table>
-            <a href="{{ route('admin.tournament.create') }}" class="btn btn-primary">Nuevo</a>
         </div>
     </div>
 @endsection

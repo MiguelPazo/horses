@@ -1,46 +1,69 @@
 @extends('layout')
 
 @section('content')
-    @include('results.partials.header')
+    @include('results._partials.header')
     <div class="col-md-10">
         <div class="col-md-12">
             <div class="tab-pane" id="pane_stage">
-                <div class="row row_sorteable">
-                    <div class="col-md-6">
-                        <h3> Ganadores </h3>
+                <div>
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li role="presentation" class="active">
+                            <a href="#winers" aria-controls="home" role="tab" data-toggle="tab">Ganadores</a>
+                        </li>
+                        <li role="presentation">
+                            <a href="#honorables" aria-controls="profile" role="tab" data-toggle="tab">Premios
+                                Honrosos</a>
+                        </li>
+                    </ul>
 
-                        <div class="comp_list">
-                            <ul class="ul_comp_list">
+                    <div class="tab-content">
+                        <div role="tabpanel" class="tab-pane fade in active" id="winers">
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th>Puesto</th>
+                                    <th>Número de Participante</th>
+                                    <th>Puntaje</th>
+                                </tr>
+                                </thead>
+                                <tbody>
                                 <?php $position = 1; ?>
                                 @foreach($lstCompetitorLeft as $competitor)
-                                    <li>
-                                        <div class="btn btn-block btn-lg btn-success">
-                                            ({{ $position++ }}°) Participante
-                                            #{{ str_pad($competitor->number, 2, "0", STR_PAD_LEFT) }}
-                                        </div>
-                                    </li>
-
+                                    <tr>
+                                        <th scope="row">{{ $position }}</th>
+                                        <td>{{ str_pad($competitor->number, 2, "0", STR_PAD_LEFT) }}</td>
+                                        <td>{{ $competitor->points }}</td>
+                                    </tr>
+                                    <?php $position++; ?>
                                 @endforeach
-                            </ul>
+                                </tbody>
+                            </table>
                         </div>
 
-                    </div>
-                    <div class="col-md-6">
-                        <h3> Premio Honroso </h3>
-
-                        <div class="comp_list">
-                            <ul class="ul_comp_list">
+                        <div role="tabpanel" class="tab-pane fade" id="honorables">
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th>Puesto</th>
+                                    <th>Número de Participante</th>
+                                    <th>Puntaje</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <?php $position = 7; ?>
                                 @foreach($lstCompetitorRight as $competitor)
-                                    <li>
-                                        <div class="btn btn-block btn-lg btn-primary">
-                                            ({{ $position++ }}°) Participante
-                                            #{{ str_pad($competitor->number, 2, "0", STR_PAD_LEFT) }}
-                                        </div>
-                                    </li>
+                                    <tr>
+                                        <th scope="row">{{ $position }}</th>
+                                        <td>{{ str_pad($competitor->number, 2, "0", STR_PAD_LEFT) }}</td>
+                                        <td>{{ $competitor->points }}</td>
+                                    </tr>
+                                    <?php $position++; ?>
                                 @endforeach
-                            </ul>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>

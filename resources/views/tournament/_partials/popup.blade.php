@@ -9,7 +9,7 @@
                 <h4 class="modal-title" id="myModalLabel"> Advertencia </h4>
             </div>
             <div class="modal-body"> Al cerrar la etapa no podrá volver a modificar los
-                resultados, ¿esta usted seguro?
+                resultados, ¿Esta usted seguro?
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">

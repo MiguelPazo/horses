@@ -1,7 +1,7 @@
 @extends('layout')
 
 @section('content')
-    @include('tournament.partials.header')
+    @include('tournament._partials.header')
     <div class="panel-body">
 
         {!! Form::open(array('url' => $post, 'id'=>'form_pane', 'method' => 'GET')) !!}
@@ -11,7 +11,8 @@
             @if($valid)
                 <div class="row row_sorteable">
                     <div class="col-md-6">
-                        <h3> Clasifique a los Participantes </h3>
+                        <h3> Clasifique a los Participantes (<span id="count_fclassify" class="count_class">0</span>)
+                        </h3>
 
                         <div class="comp_list">
                             <ul class="ul_comp_list">
@@ -30,11 +31,10 @@
 
                     </div>
                     <div class="col-md-6">
-                        <h3> Participantes Clasificados </h3>
+                        <h3> Participantes Clasificados (<span id="count_classify" class="count_class">0</span>)</h3>
 
                         <div class="comp_classify">
                             <ul class="ul_comp_list">
-                                <li></li>
                             </ul>
                         </div>
                     </div>
@@ -48,7 +48,7 @@
         </div>
     </div>
 
-    @include('tournament.partials.popup')
+    @include('tournament._partials.popup')
 
     <script src="{{ asset('/js/classify.js') }}"></script>
 @endsection

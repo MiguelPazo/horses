@@ -23,7 +23,7 @@
            class="btn btn-danger">Cancelar</a>
 
         <p></p>
-        @include('admin.tournament.partials.fields')
+        @include('admin.tournament._partials.fields')
         {!! Form::close() !!}
     </div>
     <script src="{{ asset('/js/admin.js') }}"></script>

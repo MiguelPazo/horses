@@ -68,14 +68,46 @@ class TournamentController extends Controller
             ->with('valid', $stageStatus->valid)
             ->with('message', $stageStatus->message)
             ->with('lstCompetitor', $lstCompetitor);
-
     }
-
 
     public function classifySecond()
     {
         $oCategory = $this->request->session()->get('oCategory');
         $lstCompetitor = new Collection();
+        $stageStatus = $this->verifyStageClosed($oCategory, ConstDb::STAGE_CLASSIFY_1);
+
+        if ($stageStatus->valid) {
+            $lstCompetitor = Competitor::category($oCategory->id)->position(0)->orderBy('points')->get();
+        }
+
+        return view('tournament.classify')
+            ->with('post', route('tournament.save.classify_2'))
+            ->with('stage', ConstApp::STAGE_CLASSIFY_2)
+            ->with('valid', $stageStatus->valid)
+            ->with('message', $stageStatus->message)
+            ->with('lstCompetitor', $lstCompetitor);
+    }
+
+    public function saveClassify2(Guard $guard)
+    {
+        $url = url('/auth/logout');
+        $response = $this->save($guard, $this->request, $url, ConstDb::STAGE_CLASSIFY_2);
+        $oCategory = $this->request->session()->get('oCategory');
+        $stageStatus = $this->verifyStageClosed($oCategory, ConstDb::STAGE_CLASSIFY_2);
+
+        if ($stageStatus->valid) {
+            $this->calculateFinal($oCategory->id, $stageStatus);
+        }
+
+        return response()->json($response);
+    }
+
+    public function saveClassify1(Guard $guard)
+    {
+        $url = route('tournament.classify_2');
+        $response = $this->save($guard, $this->request, $url, ConstDb::STAGE_CLASSIFY_1);
+
+        $oCategory = $this->request->session()->get('oCategory');
         $stageStatus = $this->verifyStageClosed($oCategory, ConstDb::STAGE_CLASSIFY_1);
 
         if ($stageStatus->valid) {
@@ -86,31 +118,74 @@ class TournamentController extends Controller
 
             foreach ($lstCompetitorFinal as $key => $competitor) {
                 if ($position <= ConstApp::MAX_WINNERS) {
-                    $lstCompetitor->add($competitor);
+                    $competitor->position = 0;
+                    $competitor->save();
                 } else {
                     $count = $position - ConstApp::MAX_WINNERS;
 
                     if ($count <= ConstApp::MAX_HONORABLE) {
                         $competitor->position = $position;
                         $competitor->save();
+                    } else {
+                        break;
                     }
                 }
 
                 $position++;
             }
-
-            $lstCompetitor->sortBy(function ($item) {
-                return $item->number;
-            });
         }
 
+        return response()->json($response);
+    }
 
-        return view('tournament.classify')
-            ->with('post', route('tournament.save.classify_2'))
-            ->with('stage', ConstApp::STAGE_CLASSIFY_2)
-            ->with('valid', $stageStatus->valid)
-            ->with('message', $stageStatus->message)
-            ->with('lstCompetitor', $lstCompetitor);
+    public function saveSelection(Guard $guard)
+    {
+        $url = route('tournament.classify_1');
+        $response = $this->save($guard, $this->request, $url, ConstDb::STAGE_SELECTION);
+
+        return response()->json($response);
+    }
+
+    public function save($guard, $request, $url, $stage)
+    {
+        $response = [
+            'success' => true,
+            'message' => '',
+            'url' => $url
+        ];
+
+        $params = $request->all();
+        $process = $request->get('process');
+        $oCategory = $request->session()->get('oCategory');
+        $closeProcess = ($process == ConstApp::PROCESS_END) ? true : false;
+
+        Stage::jury($guard->getUser()->id)->stage($stage)->status(ConstDb::STATUS_ACTIVE)->delete();
+
+        foreach ($params as $index => $value) {
+            $id = str_replace(ConstApp::PREFIX_COMPETITOR, '', $index);
+
+            if ($value != '0') {
+                if (is_numeric($id)) {
+                    Stage::create([
+                        'competitor_id' => $id,
+                        'user_id' => $guard->getUser()->id,
+                        'position' => $value,
+                        'stage' => $stage,
+                        'category_id' => $oCategory->id
+                    ]);
+                }
+            }
+        }
+
+        if ($closeProcess) {
+            $oCatUser = CategoryUser::jury($guard->getUser()->id)->category($oCategory->id)->first();
+            $oCatUser->actual_stage = $stage;
+            $oCatUser->save();
+        } else {
+            $response['url'] = '';
+        }
+
+        return $response;
     }
 
     public function filterCompetitorsWithJury($oCategory, $stageStatus)
@@ -128,6 +203,7 @@ class TournamentController extends Controller
 
             return $acumm;
         });
+
 
         //competitors order by position
         $lstCompPoints->sortBy(function ($item) {
@@ -169,13 +245,16 @@ class TournamentController extends Controller
         });
 
         //get competitor list from group
-        $lstCompFinal = new Collection();
         $allIds = [];
+        $idwPoints = [];
 
         foreach ($lstCompOrder as $i => $compOrder) {
             foreach ($compOrder as $y => $competitor) {
-                $lstCompFinal->add($competitor);
                 $allIds[] = $competitor->competitor_id;
+                $idwPoints[] = [
+                    'id' => $competitor->competitor_id,
+                    'points' => $competitor->position,
+                ];
             }
         }
 
@@ -184,89 +263,20 @@ class TournamentController extends Controller
         //ranking competitor final
         $lstCompetitorFinal = new Collection();
 
-        foreach ($allIds as $competitor) {
-            $competitor = $lstCompetitorTemp->filter(function ($item) use ($competitor) {
-                return $item->id == $competitor;
+        foreach ($idwPoints as $key => $value) {
+            $idComp = $value['id'];
+
+            $competitor = $lstCompetitorTemp->filter(function ($item) use ($idComp) {
+                return $item->id == $idComp;
             })->first();
+
+            $competitor->points = $value['points'];
+            $competitor->save();
 
             $lstCompetitorFinal->add($competitor);
         }
 
         return $lstCompetitorFinal;
-    }
-
-
-    public function saveClassify2(Guard $guard)
-    {
-        $url = url('/auth/logout');
-        $response = $this->save($guard, $this->request, $url, ConstDb::STAGE_CLASSIFY_2);
-        $oCategory = $this->request->session()->get('oCategory');
-        $stageStatus = $this->verifyStageClosed($oCategory, ConstDb::STAGE_CLASSIFY_2);
-
-        if ($stageStatus->valid) {
-            $this->calculateFinal($oCategory->id, $stageStatus);
-        }
-
-        return response()->json($response);
-    }
-
-    public function saveClassify1(Guard $guard)
-    {
-        $url = route('tournament.classify_2');
-        $response = $this->save($guard, $this->request, $url, ConstDb::STAGE_CLASSIFY_1);
-
-        return response()->json($response);
-    }
-
-    public function saveSelection(Guard $guard)
-    {
-        $url = route('tournament.classify_1');
-        $response = $this->save($guard, $this->request, $url, ConstDb::STAGE_SELECTION);
-
-        return response()->json($response);
-    }
-
-    public function save($guard, $request, $url, $stage)
-    {
-        $response = [
-            'success' => true,
-            'message' => '',
-            'url' => $url
-        ];
-
-        $params = $request->all();
-        $process = $request->get('process');
-        $oCategory = $request->session()->get('oCategory');
-        $closeProcess = ($process == ConstApp::PROCESS_END) ? true : false;
-
-        Stage::jury($guard->getUser()->id)->stage($stage)->status(ConstDb::STATUS_ACTIVE)->delete();
-
-        foreach ($params as $index => $value) {
-            $id = str_replace(ConstApp::PREFIX_COMPETITOR, '', $index);
-
-            if ($value != '0') {
-                if (is_numeric($id)) {
-                    Stage::create([
-                        'competitor_id' => $id,
-                        'user_id' => $guard->getUser()->id,
-                        'position' => $value,
-                        'stage' => $stage,
-                        'category_id' => $oCategory->id
-//                        'cerrado' => ($closeProcess) ? ConstDb::STAGE_STATUS_CLOSE : ConstDb::STAGE_STATUS_SAVE
-                    ]);
-                }
-            }
-        }
-
-        if ($closeProcess) {
-            $oCatUser = CategoryUser::jury($guard->getUser()->id)->category($oCategory->id)->first();
-            $oCatUser->actual_stage = $stage;
-            $oCatUser->save();
-        } else {
-            $response['url'] = '';
-        }
-
-        return $response;
     }
 
     public function calculateFinal($id, $stageStatus)

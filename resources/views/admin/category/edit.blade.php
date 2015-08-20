@@ -22,7 +22,7 @@
            class="btn btn-danger">Cancelar</a>
 
         <p></p>
-        @include('admin.category.partials.fields')
+        @include('admin.category._partials.fields')
         {!! Form::close() !!}
     </div>
 

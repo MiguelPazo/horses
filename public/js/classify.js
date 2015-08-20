@@ -14,16 +14,23 @@ $(document).ready(function () {
 
     var fixPositions = function () {
         var position = 0;
+        var countFClassify = 0;
+        var countClassify = 0;
 
         $('.comp_classify').find('li').each(function (i, e) {
             $(e).find('.comp_position').remove();
             $(e).find('div').prepend('<span class="comp_position">' + position + '</span>');
             position++;
+            countClassify++;
         });
 
-        $('.comp_list').find('.comp_position').each(function (i, e) {
-            $(e).remove();
+        $('.comp_list').find('li').each(function (i, e) {
+            $(e).find('.comp_position').remove();
+            countFClassify++;
         });
+
+        $('#count_fclassify').text(countFClassify);
+        $('#count_classify').text(countClassify);
     };
 
     $(".ul_comp_list").sortable({
@@ -66,4 +73,6 @@ $(document).ready(function () {
             }
         });
     });
+
+    fixPositions();
 });

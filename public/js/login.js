@@ -20,11 +20,13 @@ $(document).ready(function () {
                 if (response.success) {
                     location.href = response.url;
                 } else {
-                    alert(response.message)
+                    $('#modal_message').html(response.message);
+                    $('#modal-container').modal( 'show' );
                 }
             });
         } else {
-            alert('Debe llenar todos los campos.')
+            $('#modal_message').html('Debe llenar todos los campos.');
+            $('#modal-container').modal( 'show' );
         }
     });
 });

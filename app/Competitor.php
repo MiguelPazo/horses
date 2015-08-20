@@ -12,6 +12,11 @@ class Competitor extends Model
         return $query->where('category_id', $id);
     }
 
+    public function scopePosition($query, $position)
+    {
+        return $query->where('position', $position);
+    }
+
     public function scopeIdIn($query, $ids)
     {
         return $query->whereIn('id', $ids);

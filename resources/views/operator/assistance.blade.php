@@ -32,6 +32,10 @@
            data-toggle="modal">Confirmar</a>
 
         {!! Form::close() !!}
+
+        <div class="count_selected" id="count_sel">
+            0
+        </div>
     </div>
 
     <div class="modal fade" id="modal-container" role="dialog"

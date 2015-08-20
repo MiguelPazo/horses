@@ -8,14 +8,28 @@
 }
 
 .btn_exit {
-    float: right;
-    margin-top: 15px;
     margin-left: 15px;
+    margin-top: 15px;
+    position: absolute;
+    right: 15px;
+}
+
+.btn_home {
+    right: 106px;
+}
+
+.btn_refresh {
+    right: 153px;
+}
+
+.btn {
+    text-transform: uppercase;
 }
 
 .jury_diriment {
     background: #000 none repeat scroll 0 0;
     border-radius: 15px;
+    font-size: 15px;
     font-weight: bold;
     left: 30px;
     position: absolute;
@@ -52,7 +66,35 @@
 .comp_position {
     background: #000 none repeat scroll 0 0;
     border-radius: 15px;
-    float: left;
     font-weight: bold;
+    left: 26px;
+    position: absolute;
     width: 30px;
+}
+
+.btn_dashboard {
+    display: block;
+    margin-bottom: 20px;
+    margin-left: auto;
+    margin-right: auto;
+    text-transform: uppercase;
+    width: 200px;
+}
+
+.count_selected {
+    background-color: #000;
+    border-radius: 35px;
+    bottom: 10px;
+    color: #fff;
+    font-size: 20px;
+    font-weight: bold;
+    padding: 20px 0;
+    position: fixed;
+    right: 10px;
+    text-align: center;
+    width: 70px;
+}
+
+.count_class {
+    font-weight: bold;
 }

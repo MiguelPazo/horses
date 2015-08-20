@@ -23,7 +23,7 @@
            class="btn btn-danger">Cancelar</a>
 
         <p></p>
-        @include('admin.user.partials.fields')
+        @include('admin.user._partials.fields')
         {!! Form::close() !!}
     </div>
     <script src="{{ asset('/js/admin.js') }}"></script>
