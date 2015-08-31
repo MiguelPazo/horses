@@ -1,4 +1,4 @@
-<?php namespace Horses\Http\Controllers\Operator;
+<?php namespace Horses\Http\Controllers\Commissar;
 
 use Horses\Category;
 use Horses\CategoryUser;
@@ -22,8 +22,11 @@ class AssistanceController extends Controller
     public function index()
     {
         $oCategory = $this->request->session()->get('oCategory');
+        $totalComp = $oCategory->num_begin + $oCategory->count_competitors;
 
-        return view('operator.assistance')->with('oCategory', $oCategory);
+        return view('operator.assistance')
+            ->with('rpad', strlen($totalComp))
+            ->with('oCategory', $oCategory);
     }
 
     public function save()
@@ -43,6 +46,7 @@ class AssistanceController extends Controller
         }
 
         $oCategory->actual_stage = ConstDb::STAGE_ASSISTANCE;
+        $oCategory->status = ConstDb::STATUS_IN_PROGRESS;
         $oCategory->save();
 
         CategoryUser::category($oCategory->id)->update(['actual_stage' => ConstDb::STAGE_ASSISTANCE]);

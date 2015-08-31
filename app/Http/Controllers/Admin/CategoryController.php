@@ -18,37 +18,65 @@ class CategoryController extends Controller
     private $rules = [
         'description' => 'required|max:200',
         'type' => 'required',
-        'count_competitors' => 'required'
+        'count_competitors' => 'required',
+        'num_begin' => 'required'
     ];
 
     public function getDisable($id)
     {
         $oCategory = Category::findorFail($id);
-        $oCategory->status = ConstDb::STATUS_INACTIVE;
-        $oCategory->save();
+        $error = 0;
 
-        return redirect()->route('admin.tournament.category', $oCategory->tournament_id);
+        if ($oCategory->status != ConstDb::STATUS_IN_PROGRESS) {
+            $oCategory->status = ConstDb::STATUS_INACTIVE;
+            $oCategory->save();
+        } else {
+            $error = 2;
+        }
+
+
+        return redirect()->route('admin.tournament.category', [$oCategory->tournament_id, $error]);
     }
 
     public function getEnable($id)
     {
         $oCategory = Category::findorFail($id);
+        $error = 0;
 
-        Category::status(ConstDb::STATUS_ACTIVE)->tournament($oCategory->tournament_id)->update(['status' => ConstDb::STATUS_INACTIVE]);
+        $catInProgress = Category::status(ConstDb::STATUS_IN_PROGRESS)->count();
 
-        $oCategory->status = ConstDb::STATUS_ACTIVE;
-        $oCategory->save();
+        if ($catInProgress == 0) {
+            Category::status(ConstDb::STATUS_ACTIVE)->tournament($oCategory->tournament_id)->update(['status' => ConstDb::STATUS_INACTIVE]);
+            Tournament::status(ConstDb::STATUS_ACTIVE)->update(['status' => ConstDb::STATUS_INACTIVE]);
+            Tournament::find($oCategory->tournament_id)->update(['status' => ConstDb::STATUS_ACTIVE]);
 
-        return redirect()->route('admin.tournament.category', $oCategory->tournament_id);
+            $oCategory->status = ConstDb::STATUS_ACTIVE;
+            $oCategory->save();
+        } else {
+            $error = 1;
+        }
+
+        return redirect()->route('admin.tournament.category', [$oCategory->tournament_id, $error]);
     }
 
-    public function getIndex($id)
+    public function getIndex($id, $error = null)
     {
         if (isset($id)) {
             $oTournament = Tournament::findorFail($id);
             $lstCategory = Category::tournament($oTournament->id)->get();
+            $errorMessage = null;
+
+            switch ($error) {
+                case 1:
+                    $errorMessage = "Existe otra categoría en proceso, espere a que termine. Sólo puede estar activa una categoría a la ves.";
+                    break;
+                case 2:
+                    $errorMessage = "No puede desactivar una categoría en proceso de evaluación!";
+                    break;
+            }
 
             return view('admin.category.index')
+                ->with('errorMessage', $errorMessage)
                 ->with('lstCategory', $lstCategory)
                 ->with('oTournament', $oTournament);
         }
@@ -78,6 +106,7 @@ class CategoryController extends Controller
             $oCategory->description = $request->get('description');
             $oCategory->type = ($request->get('type') == 0) ? ConstDb::TYPE_CATEGORY_WSELECTION : ConstDb::TYPE_CATEGORY_SELECTION;
             $oCategory->count_competitors = $request->get('count_competitors');
+            $oCategory->num_begin = $request->get('num_begin');
             $oCategory->tournament_id = $oTournament->id;
             $oCategory->save();
 
@@ -118,6 +147,7 @@ class CategoryController extends Controller
             $oCategory->description = $request->get('description');
             $oCategory->type = ($request->get('type') == 0) ? ConstDb::TYPE_CATEGORY_WSELECTION : ConstDb::TYPE_CATEGORY_SELECTION;
             $oCategory->count_competitors = $request->get('count_competitors');
+            $oCategory->num_begin = $request->get('num_begin');
             $oCategory->save();
 
             return redirect()->route('admin.tournament.category', $oCategory->tournament_id);

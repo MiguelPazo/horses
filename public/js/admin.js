@@ -38,7 +38,7 @@ $(document).ready(function () {
     $(".ul_comp_list").sortable({
         connectWith: '.ul_comp_list',
         placeholder: 'placeholder'
-    }).on('sortreceive', function (e, ui) {
+    }).on('sortstop', function (e, ui) {
         var element = ui.item;
         var prevDiv = element.find('div');
 
@@ -48,8 +48,6 @@ $(document).ready(function () {
             prevDiv.removeClass('btn-success');
         }
 
-        fixDiriment();
-    }).on('sortout', function (e, ui) {
         fixDiriment();
     });
 

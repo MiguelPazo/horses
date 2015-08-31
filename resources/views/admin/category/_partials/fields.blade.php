@@ -13,6 +13,11 @@
     {!! Form::text('count_competitors', (isset($oCategory)) ? $oCategory->count_competitors : null, ['class'
     =>'form-control']) !!}
 </div>
+<div class="form-group">
+    {!! Form::label('num_begin', 'Número del Primer Competidor:') !!}
+    {!! Form::text('num_begin', (isset($oCategory)) ? $oCategory->num_begin : 1, ['class'
+    =>'form-control']) !!}
+</div>
 
 <div class="row row_sorteable">
     <div class="col-md-6">

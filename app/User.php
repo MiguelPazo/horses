@@ -26,4 +26,9 @@ class User extends Model implements AuthenticatableContract
     {
         return $query->whereIn('id', $ids);
     }
+
+    public function stages()
+    {
+        return $this->hasMany('Horses\Stage');
+    }
 }

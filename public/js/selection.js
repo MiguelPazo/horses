@@ -10,12 +10,6 @@ $(document).ready(function () {
     };
 
     $('#pane_stage .btn_competitor').click(function () {
-//        $('#pane_stage .btn_competitor').each(function (i, e) {
-//            if ($(e).hasClass('btn-success')) {
-//                count++;
-//            }
-//        });
-
         if ($(this).hasClass('btn-success')) {
             totalSelected--;
             $(this).removeClass('btn-success');
@@ -24,7 +18,8 @@ $(document).ready(function () {
                 totalSelected++;
                 $(this).addClass('btn-success');
             } else {
-                alert('Usted ya ha seleccionado a 12 participantes!');
+                $('#modal_message').html('Usted ya ha seleccionado a 12 concursantes!');
+                $('#modal_max_select').modal('show');
             }
         }
 
@@ -54,5 +49,9 @@ $(document).ready(function () {
                 alert(response.message);
             }
         });
+    });
+
+    $('#close_stage').click(function () {
+        $('#modal-container').modal('show');
     });
 });

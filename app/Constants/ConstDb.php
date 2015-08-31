@@ -3,7 +3,7 @@
 class ConstDb
 {
     const PROFILE_ADMIN = 'admin';
-    const PROFILE_OPERATOR = 'operator';
+    const PROFILE_COMMISSAR = 'commissar';
     const PROFILE_JURY = 'jury';
     const USER_DISCONNECTED = 0;
     const USER_CONECTED = 1;
@@ -11,6 +11,7 @@ class ConstDb
     const STATUS_DELETED = 'deleted';
     const STATUS_INACTIVE = 'inactive';
     const STATUS_ACTIVE = 'active';
+    const STATUS_IN_PROGRESS = 'in_progress';
     const STATUS_FINAL = 'final';
 
     const TYPE_CATEGORY_SELECTION = 'selection';

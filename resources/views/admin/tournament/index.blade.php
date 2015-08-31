@@ -2,8 +2,17 @@
 
 @section('content')
     <h3 class="text-center text-primary">
-        Listado de Torneos
+        Listado de Concursos
     </h3>
+
+    @if($errorMessage != null)
+        <div class="alert alert-warning alert-dismissible fade in" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+                        aria-hidden="true">×</span>
+            </button>
+            <strong>Error!</strong> {{ $errorMessage }}
+        </div>
+    @endif
 
     <div class="panel-body">
         <div class="table-responsive">
@@ -12,7 +21,7 @@
                 <thead>
                 <tr>
                     <th>#</th>
-                    <th>Torneo</th>
+                    <th>Concurso</th>
                     <th>Fecha de Inicio</th>
                     <th>Fecha de Cierre</th>
                     <th>Opciones</th>

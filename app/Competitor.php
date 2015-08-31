@@ -22,4 +22,14 @@ class Competitor extends Model
         return $query->whereIn('id', $ids);
     }
 
+    public function scopeClassified($query)
+    {
+        return $query->where('position', '<>', '');
+    }
+
+    public function stages()
+    {
+        return $this->hasMany('Horses\Stage');
+    }
+
 }

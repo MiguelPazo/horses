@@ -5,65 +5,76 @@
     <div class="col-md-10">
         <div class="col-md-12">
             <div class="tab-pane" id="pane_stage">
-                <div>
-                    <ul class="nav nav-tabs" role="tablist">
-                        <li role="presentation" class="active">
-                            <a href="#winers" aria-controls="home" role="tab" data-toggle="tab">Ganadores</a>
-                        </li>
-                        <li role="presentation">
-                            <a href="#honorables" aria-controls="profile" role="tab" data-toggle="tab">Premios
-                                Honrosos</a>
-                        </li>
-                    </ul>
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th rowspan="2">Puesto</th>
+                            <th rowspan="2">Número de Participante</th>
+                            <th colspan="{{ $lstJury->count() + 1 }}" class="center">Primera Clasificación</th>
+                            <th colspan="{{ $lstJury->count() + 1 }}" class="center">Segunda Clasificación</th>
+                        </tr>
+                        <tr>
+                            @foreach($lstJury as $jury)
+                                <th class="center {{ ($jury->id == $dirimentId)? 'active':'' }}">{{ $jury->names .' '. substr($jury->lastname,0,1) . '.' }}</th>
+                            @endforeach
+                            <th class="center success">Total</th>
 
-                    <div class="tab-content">
-                        <div role="tabpanel" class="tab-pane fade in active" id="winers">
-                            <table class="table">
-                                <thead>
-                                <tr>
-                                    <th>Puesto</th>
-                                    <th>Número de Participante</th>
-                                    <th>Puntaje</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <?php $position = 1; ?>
-                                @foreach($lstCompetitorLeft as $competitor)
-                                    <tr>
-                                        <th scope="row">{{ $position }}</th>
-                                        <td>{{ str_pad($competitor->number, 2, "0", STR_PAD_LEFT) }}</td>
-                                        <td>{{ $competitor->points }}</td>
-                                    </tr>
-                                    <?php $position++; ?>
+                            @foreach($lstJury as $jury)
+                                <th class="center {{ ($jury->id == $dirimentId)? 'active':'' }}">{{ $jury->names .' '. substr($jury->lastname,0,1) . '.' }}</th>
+                            @endforeach
+                            <th class="center success">Total</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <?php $position = 1; ?>
+                        @foreach($lstCompetitorWinners as $competitor)
+                            <tr>
+                                <th scope="row">{{ $position }}</th>
+                                <td>{{ str_pad($competitor->number, $lenCompNum, "0", STR_PAD_LEFT) }}</td>
+
+                                <?php $acum = 0 ?>
+                                @foreach($competitor->stages as $stage)
+                                    @if($stage->stage == \Horses\Constants\ConstDb::STAGE_CLASSIFY_1)
+                                        <td class="center {{ ($stage->jury->id == $dirimentId) ? 'active':'' }}">{{ $stage->position }}</td>
+                                        <?php $acum += $stage->position ?>
+                                    @endif
                                 @endforeach
-                                </tbody>
-                            </table>
-                        </div>
+                                <td class="center success">{{ $acum }}</td>
 
-                        <div role="tabpanel" class="tab-pane fade" id="honorables">
-                            <table class="table">
-                                <thead>
-                                <tr>
-                                    <th>Puesto</th>
-                                    <th>Número de Participante</th>
-                                    <th>Puntaje</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <?php $position = 7; ?>
-                                @foreach($lstCompetitorRight as $competitor)
-                                    <tr>
-                                        <th scope="row">{{ $position }}</th>
-                                        <td>{{ str_pad($competitor->number, 2, "0", STR_PAD_LEFT) }}</td>
-                                        <td>{{ $competitor->points }}</td>
-                                    </tr>
-                                    <?php $position++; ?>
+                                @if($showSecond)
+                                    <?php $acum = 0 ?>
+                                    @foreach($competitor->stages as $stage)
+                                        @if($stage->stage == \Horses\Constants\ConstDb::STAGE_CLASSIFY_2)
+                                            <td class="center {{ ($stage->jury->id == $dirimentId) ? 'active':'' }}">{{ $stage->position }}</td>
+                                            <?php $acum += $stage->position ?>
+                                        @endif
+                                    @endforeach
+                                    <td class="center success">{{ $acum }}</td>
+                                @endif
+                            </tr>
+                            <?php $position++; ?>
+                        @endforeach
+
+                        <?php $position = 1; ?>
+                        @foreach($lstCompetitorHonorable as $competitor)
+                            <tr>
+                                <th scope="row">MH{{ $position }}</th>
+                                <td>{{ str_pad($competitor->number, $lenCompNum, "0", STR_PAD_LEFT) }}</td>
+
+                                <?php $acum = 0 ?>
+                                @foreach($competitor->stages as $stage)
+                                    @if($stage->stage == \Horses\Constants\ConstDb::STAGE_CLASSIFY_1)
+                                        <td class="center {{ ($stage->jury->id == $dirimentId) ? 'active':'' }}">{{ $stage->position }}</td>
+                                        <?php $acum += $stage->position ?>
+                                    @endif
                                 @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
+                                <td class="center success">{{ $acum }}</td>
+                            </tr>
+                            <?php $position++; ?>
+                        @endforeach
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>

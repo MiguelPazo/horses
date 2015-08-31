@@ -2,7 +2,7 @@
 
 @section('content')
     <h3 class="text-center text-primary">
-        Nuevo Torneo
+        Nuevo Concurso
     </h3>
 
     <div class="panel-body">

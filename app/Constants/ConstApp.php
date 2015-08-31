@@ -3,10 +3,11 @@
 class ConstApp
 {
 
-    const STAGE_SELECCTION = 'SELECCIÓN';
-    const STAGE_CLASSIFY_1 = 'PRIMERA CLASIFICACIÓN';
-    const STAGE_CLASSIFY_2 = 'SEGUNDA CLASIFICACIÓN';
-    const STAGE_RESULTS = 'RESULTADOS FINALES';
+    const STAGE_ASSISTANCE = 'Asistencia';
+    const STAGE_SELECCTION = 'Selección';
+    const STAGE_CLASSIFY_1 = 'Primera Clasificación';
+    const STAGE_CLASSIFY_2 = 'Segunda Clasificación';
+    const STAGE_RESULTS = 'Finalizada';
     const PREFIX_COMPETITOR = 'comp_';
     const PREFIX_JURY = 'jury_';
     const PROCESS_SAVE = '1';

@@ -17,6 +17,11 @@ class Tournament extends Model
         return $query->where('status', '<>', $status);
     }
 
+    public function category()
+    {
+        return $this->hasMany('Horses\Category');
+    }
+
     public function setDateBeginAttribute($value)
     {
         $dateBegin = date('Y-m-d', strtotime($value));

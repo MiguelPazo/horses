@@ -1,5 +1,5 @@
 <div class="form-group">
-    {!! Form::label('description', 'Torneo:') !!}
+    {!! Form::label('description', 'Concurso:') !!}
     {!! Form::text('description', (isset($oTournament)) ? $oTournament->description : null, ['class' =>
     'form-control', 'maxlenght' => 200]) !!}
 </div>

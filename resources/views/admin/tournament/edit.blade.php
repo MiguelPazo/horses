@@ -2,7 +2,7 @@
 
 @section('content')
     <h3 class="text-center text-primary">
-        Editar Torneo
+        Editar Concurso
     </h3>
 
     <div class="panel-body">

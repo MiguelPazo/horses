@@ -24,6 +24,7 @@ class UserController extends Controller
         $oUser = User::findorFail($id);
         $oUser->login = ConstDb::USER_DISCONNECTED;
         $oUser->save();
+
         return redirect()->route('admin.user.index');
     }
 

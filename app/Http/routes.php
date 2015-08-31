@@ -17,7 +17,7 @@ Route::get('/unlock', [
 Route::group([
     'middleware' => 'auth',
     'prefix' => 'oper',
-    'namespace' => 'Operator'
+    'namespace' => 'Commissar'
 ], function () {
     Route::get('/', [
         'as' => 'operator.assistance',
@@ -43,6 +43,11 @@ Route::group([
     ]);
 
     Route::resource('/tournament', 'TournamentController');
+
+    Route::get('/tournaments/{error?}', [
+        'as' => 'admin.tournament.index',
+        'uses' => 'TournamentController@index'
+    ]);
     Route::get('/tournament/enable/{tournament}', [
         'as' => 'admin.tournament.enable',
         'uses' => 'TournamentController@enable'
@@ -52,7 +57,7 @@ Route::group([
         'uses' => 'TournamentController@disable'
     ]);
 
-    Route::get('/tournament/{tournament}/categories', [
+    Route::get('/tournament/{tournament}/categories/{error?}', [
         'as' => 'admin.tournament.category',
         'uses' => 'CategoryController@getIndex'
     ]);

@@ -23,6 +23,7 @@ abstract class Controller extends BaseController
             'user' => 'Usuario',
             'password' => 'Contraseña',
             'profile' => 'Perfil',
+            'num_begin' => 'Número del Primer Competidor'
 
         ];
 

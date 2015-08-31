@@ -57,11 +57,10 @@ class AuthController extends Controller
 
                     switch ($oUser->profile) {
                         case ConstDb::PROFILE_ADMIN:
-
                             $response['url'] = route('admin.dashboard');
                             break;
 
-                        case ConstDb::PROFILE_OPERATOR:
+                        case ConstDb::PROFILE_COMMISSAR:
                             $process = false;
                             $categoryActive = $this->isCategoryActive();
                             $oCategory = $categoryActive['category'];
@@ -132,8 +131,10 @@ class AuthController extends Controller
                     }
 
                     if ($process) {
-                        $oUser->login = ConstDb::USER_CONECTED;
-                        $oUser->save();
+                        if ($oUser->profile != ConstDb::PROFILE_ADMIN) {
+                            $oUser->login = ConstDb::USER_CONECTED;
+                            $oUser->save();
+                        }
 
                         $authUser = new GenericUser($oUser->toArray());
                         $this->auth->login($authUser);
@@ -161,7 +162,7 @@ class AuthController extends Controller
         $oTournament = Tournament::status(ConstDb::STATUS_ACTIVE)->first();
 
         if ($oTournament) {
-            $oCategory = Category::tournament($oTournament->id)->status(ConstDb::STATUS_ACTIVE)->first();
+            $oCategory = Category::tournament($oTournament->id)->statusIn([ConstDb::STATUS_ACTIVE, ConstDb::STATUS_IN_PROGRESS])->first();
 
             if ($oCategory) {
                 $category['category'] = $oCategory;
@@ -170,7 +171,7 @@ class AuthController extends Controller
                 $category['message'] = 'Aún no se ha activado ninguna categoría, espere un momento por favor.';
             }
         } else {
-            $category['message'] = 'Aún no se ha activado ningún torneo, espere un momento por favor.';
+            $category['message'] = 'Aún no se ha activado ningún concurso, espere un momento por favor.';
         }
 
         return $category;
@@ -194,8 +195,11 @@ class AuthController extends Controller
     public function getLogout()
     {
         $oUser = User::find($this->auth->user()->id);
-        $oUser->login = ConstDb::USER_DISCONNECTED;
-        $oUser->save();
+
+        if ($oUser->profile != ConstDb::PROFILE_ADMIN) {
+            $oUser->login = ConstDb::USER_DISCONNECTED;
+            $oUser->save();
+        }
 
         $this->auth->logout();
 

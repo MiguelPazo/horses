@@ -23,7 +23,7 @@ class Stage extends Model
         return $query->where('competitor_id', $idCompetitor);
     }
 
-    public function scopeJury($query, $idJury)
+    public function scopeJuryId($query, $idJury)
     {
         return $query->where('user_id', $idJury);
     }
@@ -36,5 +36,15 @@ class Stage extends Model
     public function scopeCategory($query, $idCategory)
     {
         return $query->where('category_id', $idCategory);
+    }
+
+    public function competitors()
+    {
+        return $this->belongsTo('Horses\Competitor', 'competitor_id');
+    }
+
+    public function jury()
+    {
+        return $this->belongsTo('Horses\User', 'user_id');
     }
 }

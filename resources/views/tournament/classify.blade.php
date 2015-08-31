@@ -20,7 +20,7 @@
                                     <li>
                                         <div class="btn btn-block btn-lg btn-primary">
                                             Participante
-                                            #{{ str_pad($competitor->number, 2, "0", STR_PAD_LEFT) }}
+                                            #{{ str_pad($competitor->number, $lenCompNum, "0", STR_PAD_LEFT) }}
                                             <input type="hidden" name="comp_{{ $competitor->id }}"
                                                    value="0"/>
                                         </div>

@@ -11,6 +11,6 @@
 <p><b>Etapa: </b> {{ $stage }}</p>
 
 @if($valid)
-    <a id="modal" href="#modal-container" role="button" class="btn btn-danger"
+    <a id="close_stage" role="button" class="btn btn-danger"
        data-toggle="modal">CERRAR ETAPA</a>
 @endif

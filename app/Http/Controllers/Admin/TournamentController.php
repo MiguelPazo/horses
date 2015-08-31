@@ -1,5 +1,6 @@
 <?php namespace Horses\Http\Controllers\Admin;
 
+use Horses\Category;
 use Horses\Constants\ConstDb;
 use Horses\Http\Requests;
 use Horses\Http\Controllers\Controller;
@@ -18,28 +19,56 @@ class TournamentController extends Controller
 
     public function enable($id)
     {
-        Tournament::status(ConstDb::STATUS_ACTIVE)->update(['status' => ConstDb::STATUS_INACTIVE]);
+        $catInProgress = Category::status(ConstDb::STATUS_IN_PROGRESS)->count();
+        $error = 0;
 
-        $oTournament = Tournament::findorFail($id);
-        $oTournament->status = ConstDb::STATUS_ACTIVE;
-        $oTournament->save();
+        if ($catInProgress == 0) {
+            Tournament::status(ConstDb::STATUS_ACTIVE)->update(['status' => ConstDb::STATUS_INACTIVE]);
 
-        return redirect()->route('admin.tournament.index');
+            $oTournament = Tournament::findorFail($id);
+            $oTournament->status = ConstDb::STATUS_ACTIVE;
+            $oTournament->save();
+        } else {
+            $error = 1;
+        }
+
+        return redirect()->route('admin.tournament.index', $error);
     }
 
     public function disable($id)
     {
-        $oTournament = Tournament::findorFail($id);
-        $oTournament->status = ConstDb::STATUS_INACTIVE;
-        $oTournament->save();
-        return redirect()->route('admin.tournament.index');
+        $oTournament = Tournament::with('category')->findorFail($id);
+        $catInProgress = Category::tournament($oTournament->id)->status(ConstDb::STATUS_IN_PROGRESS)->count();
+        $error = 0;
+
+        if ($catInProgress == 0) {
+            $oTournament->status = ConstDb::STATUS_INACTIVE;
+            $oTournament->save();
+        } else {
+            $error = 2;
+        }
+
+        return redirect()->route('admin.tournament.index', $error);
     }
 
-    public function index()
+    public function index($error = null)
     {
         $lstTournaments = Tournament::statusDif(ConstDb::STATUS_DELETED)->get();
+        $errorMessage = null;
+
+        $errorMessage = null;
+
+        switch ($error) {
+            case 1:
+                $errorMessage = "Existe otro concurso con una categoria en proceso, espere a que termine. Sólo puede estar activo un concurso con una categoría a la ves.";
+                break;
+            case 2:
+                $errorMessage = "No puede desactivar una concurso con una categoría en proceso de evaluación!";
+                break;
+        }
 
         return view('admin.tournament.index')
+            ->with('errorMessage', $errorMessage)
             ->with('lstTournaments', $lstTournaments);
     }
 

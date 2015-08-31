@@ -6,14 +6,10 @@ $(document).ready(function () {
             $(e).find('input').val(position);
             position++;
         });
-
-        $('.comp_list').find('li').each(function (i, e) {
-            $(e).find('input').val(0);
-        });
     };
 
     var fixPositions = function () {
-        var position = 0;
+        var position = 1;
         var countFClassify = 0;
         var countClassify = 0;
 
@@ -36,7 +32,7 @@ $(document).ready(function () {
     $(".ul_comp_list").sortable({
         connectWith: '.ul_comp_list',
         placeholder: 'placeholder'
-    }).on('sortreceive', function (e, ui) {
+    }).on('sortstop', function (e, ui) {
         var element = ui.item;
         var prevDiv = element.find('div');
 
@@ -45,9 +41,10 @@ $(document).ready(function () {
         } else {
             prevDiv.removeClass('btn-success');
         }
-    }).on('sortout', function (e, ui) {
+
         fixPositions();
     });
+
 
     $('#btn_end').click(function () {
         prepareForm();
@@ -72,6 +69,18 @@ $(document).ready(function () {
                 alert(response.message);
             }
         });
+    });
+
+    $('#close_stage').click(function () {
+        var countUnclassify = $('.comp_list').find('li').length;
+
+        if (countUnclassify == 0) {
+            $('#modal-container').modal('show');
+        } else {
+            $('#modal_message').html('Debe clasificar a todos los concursantes!');
+            $('#modal_max_select').modal('show');
+        }
+
     });
 
     fixPositions();
