@@ -10,7 +10,7 @@
                         <table class="table table-striped">
                             <thead>
                             <tr>
-                                <th>Competidores Seleccionados</th>
+                                <th>Competidores Seleccionados ({{ $lstCompetitorWinners->count() }})</th>
                             </tr>
                             </thead>
                             <tbody>
