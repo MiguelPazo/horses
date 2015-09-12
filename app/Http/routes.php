@@ -9,15 +9,11 @@ Route::get('/puesta_cero', [
     'uses' => 'ResetController@puestaCero'
 ]);
 
-Route::get('/unlock', [
-    'as' => 'unlock',
-    'uses' => 'ResetController@unlock'
-]);
-
 Route::group([
-    'middleware' => 'auth',
+    'middleware' => ['auth','role'],
     'prefix' => 'oper',
-    'namespace' => 'Commissar'
+    'namespace' => 'Commissar',
+    'roles' => 'commissar'
 ], function () {
     Route::get('/', [
         'as' => 'operator.assistance',
@@ -31,9 +27,10 @@ Route::group([
 });
 
 Route::group([
-    'middleware' => 'auth',
+    'middleware' => ['auth', 'role'],
     'prefix' => '/admin',
-    'namespace' => 'Admin'
+    'namespace' => 'Admin',
+    'roles' => 'admin'
 ], function () {
     Route::get('/', [
         'as' => 'admin.dashboard',
@@ -69,11 +66,16 @@ Route::group([
         'as' => 'admin.user.unlock',
         'uses' => 'UserController@unlock'
     ]);
+    Route::get('/user/destroy/{user}', [
+        'as' => 'admin.user.destroy',
+        'uses' => 'UserController@destroy'
+    ]);
 });
 
 Route::group([
-    'middleware' => ['auth', 'stage'],
-    'prefix' => '/tournament'
+    'middleware' => ['auth', 'role'],
+    'prefix' => '/tournament',
+    'roles' => 'jury'
 ], function () {
     Route::get('/selection', [
         'as' => 'tournament.selection',

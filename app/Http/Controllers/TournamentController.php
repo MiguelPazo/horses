@@ -50,22 +50,7 @@ class TournamentController extends Controller
         $stageStatus = $this->verifyStageClosed($this->category, ConstDb::STAGE_SELECTION);
 
         if ($stageStatus->valid) {
-            $lstStageJury = $stageStatus->lstStageJury;
-
-            $lstStageJury->sortBy(function ($item) {
-                return $item->competitor_id;
-            });
-
-            $idsComp = [];
-            $lstCompPoints = $lstStageJury->groupBy('competitor_id');
-
-            foreach ($lstCompPoints as $key => $value) {
-                if (count($value) >= ConstApp::MIN_VOTE_COMPETITION) {
-                    $idsComp[] = $key;
-                }
-            }
-
-            $lstCompetitor = Competitor::idIn($idsComp)->orderBy('number')->get();
+            $lstCompetitor = Competitor::category($this->category->id)->selected()->orderBy('number')->get();
         }
 
         return view('tournament.classify')
@@ -137,6 +122,27 @@ class TournamentController extends Controller
         $url = route('tournament.classify_1');
         $response = $this->save($guard, $this->request, $url, ConstDb::STAGE_SELECTION);
 
+        $stageStatus = $this->verifyStageClosed($this->category, ConstDb::STAGE_SELECTION);
+
+        if ($stageStatus->valid) {
+            $lstStageJury = $stageStatus->lstStageJury;
+
+            $lstStageJury->sortBy(function ($item) {
+                return $item->competitor_id;
+            });
+
+            $idsComp = [];
+            $lstCompPoints = $lstStageJury->groupBy('competitor_id');
+
+            foreach ($lstCompPoints as $key => $value) {
+                if (count($value) >= ConstApp::MIN_VOTE_COMPETITION) {
+                    $idsComp[] = $key;
+                }
+            }
+
+            Competitor::idIn($idsComp)->update(['position' => 0]);
+        }
+
         return response()->json($response);
     }
 
@@ -183,22 +189,25 @@ class TournamentController extends Controller
 
     public function filterCompetitorsWithJury($oCategory, $stageStatus)
     {
-        $oCatJury = CategoryUser::category($oCategory->id)->diriment(ConstDb::JURY_DIRIMENT)->first();
+        $juryDiriment = CategoryUser::category($oCategory->id)->diriment(ConstDb::JURY_DIRIMENT)->first();
         $lstStageJury = $stageStatus->lstStageJury;
         $lstCompPoints = new Collection();
 
         //group competitors by position
-        $lstStageJuryGroup = $lstStageJury->groupBy('competitor_id');
+        $lstStageJuryGroup = $stageStatus->lstStageJury->groupBy('competitor_id');
 
         foreach ($lstStageJuryGroup as $key => $group) {
-            $stageJuryTemp = null;
+            $stageJuryTemp = new \stdClass();
+            $sjValueTemp = null;
             $sum = 0;
 
             foreach ($group as $sjKey => $sjValue) {
-                $stageJuryTemp = $sjValue;
+                $sjValueTemp = $sjValue;
                 $sum += $sjValue->position;
             }
 
+            $stageJuryTemp->user_id = $sjValueTemp->user_id;
+            $stageJuryTemp->competitor_id = $sjValueTemp->competitor_id;
             $stageJuryTemp->position = $sum;
 
             $lstCompPoints->add($stageJuryTemp);
@@ -210,15 +219,15 @@ class TournamentController extends Controller
             return $item->position;
         });
 
-        $lstCompOrder = $lstCompPoints->groupBy('position')->map(function ($group) use ($lstStageJury, $oCatJury) {
+        $lstCompOrder = $lstCompPoints->groupBy('position')->map(function ($group) use ($lstStageJury, $juryDiriment) {
             $count = count($group);
 
             if ($count > 1) {
                 $groupOrder = [];
 
                 foreach ($group as $key => $value) {
-                    $stageJury = $lstStageJury->filter(function ($item) use ($value, $oCatJury) {
-                        if ($item->user_id == $oCatJury->user_id && $item->competitor_id == $value->competitor_id) {
+                    $stageJury = $lstStageJury->filter(function ($item) use ($value, $juryDiriment) {
+                        if ($item->user_id == $juryDiriment->user_id && $item->competitor_id == $value->competitor_id) {
                             return $item;
                         }
                     })->first();

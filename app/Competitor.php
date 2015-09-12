@@ -24,7 +24,12 @@ class Competitor extends Model
 
     public function scopeClassified($query)
     {
-        return $query->where('position', '<>', '');
+        return $query->where('position', '<>', '')->where('position', '<>', 0);
+    }
+
+    public function scopeSelected($query)
+    {
+        return $query->where('position', '0');
     }
 
     public function stages()

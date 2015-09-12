@@ -10,6 +10,7 @@ use Illuminate\Auth\GenericUser;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Contracts\Auth\Registrar;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
@@ -48,10 +49,10 @@ class AuthController extends Controller
 
         $user = $request->get('user');
         $pass = $request->get('password');
-        $oUser = User::user($user)->first();
+        $oUser = User::user($user)->status(ConstDb::STATUS_ACTIVE)->first();
 
         if ($oUser) {
-            if ($oUser->password == $pass) {
+            if (Hash::check($pass, $oUser->password)) {
                 if ($oUser->login != ConstDb::USER_CONECTED) {
                     $process = true;
 

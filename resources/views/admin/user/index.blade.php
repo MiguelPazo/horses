@@ -59,10 +59,10 @@
                                 </a>
                             @endif
 
-                            {{--<a href="{{ route('admin.user.destroy', $user->id) }}" role="button"--}}
-                            {{--class="btn" data-method="delete">--}}
-                            {{--<span class=" glyphicon glyphicon-trash"></span>--}}
-                            {{--</a>--}}
+                            <a href="{{ route('admin.user.destroy', $user->id) }}" role="button"
+                               class="btn" data-method="delete">
+                                <span class=" glyphicon glyphicon-trash"></span>
+                            </a>
                         </td>
                     </tr>
                     <?php $count++; ?>

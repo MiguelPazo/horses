@@ -23,9 +23,18 @@ class Category extends Model
         return $query->whereIn('status', $lstStatus);
     }
 
-    public function scopeFinals($query)
+    public function scopeShowable($query, $type)
     {
-        return $query->where('status', ConstDb::STATUS_FINAL)->orWhere('actual_stage', ConstDb::STAGE_CLASSIFY_1);
+        $query->where('actual_stage', ConstDb::STAGE_CLASSIFY_1)
+            ->orWhere('status', ConstDb::STATUS_FINAL);
+
+        if ($type == ConstDb::TYPE_CATEGORY_SELECTION) {
+            $query->orWhere('actual_stage', ConstDb::STAGE_SELECTION);
+        }
+
+        $query->where('type', $type);
+
+        return $query;
     }
 
     public function juries()

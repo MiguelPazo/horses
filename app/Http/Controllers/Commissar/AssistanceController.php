@@ -37,19 +37,33 @@ class AssistanceController extends Controller
             if (strpos($key, ConstApp::PREFIX_COMPETITOR) !== false) {
                 $id = str_replace(ConstApp::PREFIX_COMPETITOR, '', $key);
                 if ($value != '0' && is_numeric($value)) {
-                    $competitor = Competitor::create([
-                        'number' => $id,
-                        'category_id' => $oCategory->id
-                    ]);
+
+                    if ($oCategory->type == ConstDb::TYPE_CATEGORY_WSELECTION) {
+                        $competitor = Competitor::create([
+                            'number' => $id,
+                            'category_id' => $oCategory->id,
+                            'position' => 0
+                        ]);
+                    } else {
+                        $competitor = Competitor::create([
+                            'number' => $id,
+                            'category_id' => $oCategory->id
+                        ]);
+                    }
                 }
             }
         }
 
-        $oCategory->actual_stage = ConstDb::STAGE_ASSISTANCE;
+        if ($oCategory->type == ConstDb::TYPE_CATEGORY_WSELECTION) {
+            $oCategory->actual_stage = ConstDb::STAGE_SELECTION;
+            CategoryUser::category($oCategory->id)->update(['actual_stage' => ConstDb::STAGE_SELECTION]);
+        } else {
+            $oCategory->actual_stage = ConstDb::STAGE_ASSISTANCE;
+            CategoryUser::category($oCategory->id)->update(['actual_stage' => ConstDb::STAGE_ASSISTANCE]);
+        }
+
         $oCategory->status = ConstDb::STATUS_IN_PROGRESS;
         $oCategory->save();
-
-        CategoryUser::category($oCategory->id)->update(['actual_stage' => ConstDb::STAGE_ASSISTANCE]);
 
         return redirect()->to('/auth/logout');
     }

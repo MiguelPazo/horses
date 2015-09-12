@@ -6,6 +6,7 @@ use Horses\Http\Controllers\Controller;
 
 use Horses\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -30,7 +31,7 @@ class UserController extends Controller
 
     public function index()
     {
-        $lstUser = User::all();
+        $lstUser = User::status(ConstDb::STATUS_ACTIVE)->get();
 
         return view('admin.user.index')->with('lstUser', $lstUser);
     }
@@ -45,10 +46,15 @@ class UserController extends Controller
         $validator = $this->validateForms($request->all(), $this->rules);
 
         if ($validator === true) {
-            $oUserS = User::user($request->get('user'))->first();
+            $oUserS = User::user($request->get('user'))->status(ConstDb::STATUS_ACTIVE)->first();
 
             if ($oUserS == null) {
-                $oUser = new User($request->all());
+                $oUser = new User();
+                $oUser->names = $request->get('names');
+                $oUser->lastname = $request->get('lastname');
+                $oUser->user = $request->get('user');
+                $oUser->password = Hash::make($request->get('password'));
+                $oUser->profile = $request->get('profile');
                 $oUser->save();
 
                 return redirect()->route('admin.user.index');
@@ -108,7 +114,12 @@ class UserController extends Controller
 
     public function destroy($id)
     {
-        //
+        $oUser = User::findOrFail($id);
+
+        $oUser->status = ConstDb::STATUS_INACTIVE;
+        $oUser->save();
+
+        return redirect()->route('admin.user.index');
     }
 
 }

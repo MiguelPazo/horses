@@ -169,7 +169,7 @@ class CategoryController extends Controller
         $listJury = [];
 
         $lstCategoryUser = CategoryUser::category($idCategory)->orderBy('dirimente', 'DESC')->get();
-        $lstJury = User::profile(ConstDb::PROFILE_JURY)->get();
+        $lstJury = User::profile(ConstDb::PROFILE_JURY)->status(ConstDb::STATUS_ACTIVE)->get();
         $lstJuryCategory = new Collection();
 
         foreach ($lstCategoryUser as $key => $catUser) {

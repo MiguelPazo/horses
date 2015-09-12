@@ -27,13 +27,12 @@ class ResultsController extends Controller
         $oTournament = Tournament::status(ConstDb::STATUS_ACTIVE)->first();
 
         if ($oTournament) {
-            $lstCategory = Category::tournament($oTournament->id)->finals()->orderBy('description')->get();
+            $lstCategory = $this->getCategories($oTournament->id);
+
 
             return view('results.index')
                 ->with('oTournament', $oTournament)
                 ->with('lstCategory', $lstCategory);
-        } else {
-
         }
     }
 
@@ -43,52 +42,77 @@ class ResultsController extends Controller
             $query->orderBy('id');
         }])->findorFail($id);
 
-        $showSecond = ($oCategory->actual_stage == ConstDb::STAGE_CLASSIFY_2) ? true : false;
-        $juryDiriment = CategoryUser::category($oCategory->id)->diriment(ConstDb::JURY_DIRIMENT)->first();
+        if ($oCategory->actual_stage == ConstDb::STAGE_SELECTION
+            || $oCategory->actual_stage == ConstDb::STAGE_CLASSIFY_1
+            || $oCategory->status == ConstDb::STATUS_FINAL
+        ) {
+            $oTournament = Tournament::find($oCategory->tournament_id);
+            $lstCategory = $this->getCategories($oTournament->id);
+            $lenCompNum = strlen(Competitor::category($oCategory->id)->max('number'));
+            $selection = false;
+            $showSecond = false;
+            $juryDiriment = null;
+            $lstCompetitorWinners = null;
+            $lstCompetitorHonorable = null;
 
-        $oTournament = Tournament::find($oCategory->tournament_id);
-        $lstCategory = Category::tournament($oTournament->id)->finals()->orderBy('description')->get();
+            if ($oCategory->actual_stage == ConstDb::STAGE_SELECTION) {
+                $selection = true;
+                $lstCompetitorWinners = Competitor::category($oCategory->id)->selected()->orderBy('number')->get();
+            } else {
+                $showSecond = ($oCategory->actual_stage == ConstDb::STAGE_CLASSIFY_2) ? true : false;
+                $juryDiriment = CategoryUser::category($oCategory->id)->diriment(ConstDb::JURY_DIRIMENT)->first();
+                $lstCompetitor = Competitor::category($oCategory->id)->classified()->with('stages.jury')->orderBy('position')->get();
+                $count = $lstCompetitor->count();
 
-        $lstCompetitor = Competitor::category($oCategory->id)->classified()->with('stages.jury')->orderBy('position')->get();
-        $lenCompNum = strlen(Competitor::category($oCategory->id)->max('number'));
-
-        if ($lstCompetitor) {
-            $count = $lstCompetitor->count();
-
-            for ($i = 0; $i < $count; $i++) {
-                $lstCompetitor->get($i)->stages->sortBy(function ($item) {
-                    return $item->jury->id;
-                });
-            }
-
-            $lstCompetitorWinners = new Collection();
-            $lstCompetitorHonorable = new Collection();
-            $count = 1;
-
-            foreach ($lstCompetitor as $key => $competitor) {
-                if ($count <= ConstApp::MAX_WINNERS) {
-                    $lstCompetitorWinners->add($competitor);
-
-                } else if (($count - ConstApp::MAX_WINNERS) <= ConstApp::MAX_HONORABLE) {
-                    $lstCompetitorHonorable->add($competitor);
+                for ($i = 0; $i < $count; $i++) {
+                    $lstCompetitor->get($i)->stages->sortBy(function ($item) {
+                        return $item->jury->id;
+                    });
                 }
 
-                $count++;
+                $lstCompetitorWinners = new Collection();
+                $lstCompetitorHonorable = new Collection();
+                $count = 1;
+
+                foreach ($lstCompetitor as $key => $competitor) {
+                    if ($count <= ConstApp::MAX_WINNERS) {
+                        $lstCompetitorWinners->add($competitor);
+
+                    } else if (($count - ConstApp::MAX_WINNERS) <= ConstApp::MAX_HONORABLE) {
+                        $lstCompetitorHonorable->add($competitor);
+                    }
+
+                    $count++;
+                }
             }
 
+
             return view('results.category')
-                ->with('lenCompNum', $lenCompNum)
-                ->with('showSecond', $showSecond)
-                ->with('lstJury', $oCategory->juries)
-                ->with('dirimentId', $juryDiriment->user_id)
-                ->with('active', $oCategory->id)
+                ->with('selection', $selection)
+                ->with('oCategory', $oCategory)
                 ->with('lstCategory', $lstCategory)
                 ->with('oTournament', $oTournament)
-                ->with('oCategory', $oCategory)
+                ->with('lenCompNum', $lenCompNum)
+                ->with('showSecond', $showSecond)
+                ->with('juryDiriment', $juryDiriment)
                 ->with('lstCompetitorWinners', $lstCompetitorWinners)
                 ->with('lstCompetitorHonorable', $lstCompetitorHonorable);
         } else {
-
+            return redirect()->route('tournament.results');
         }
+    }
+
+    public function getCategories($idTournament)
+    {
+        $lstCategory = Category::tournament($idTournament)->showable(ConstDb::TYPE_CATEGORY_SELECTION)->get();
+        $lstCategoryWSelect = Category::tournament($idTournament)->showable(ConstDb::TYPE_CATEGORY_WSELECTION)->get();
+
+        $lstCategory->merge($lstCategoryWSelect);
+
+        $lstCategory->sortBy(function ($item) {
+            return $item->description;
+        });
+
+        return $lstCategory;
     }
 }

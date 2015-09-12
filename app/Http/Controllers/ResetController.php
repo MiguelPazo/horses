@@ -11,10 +11,12 @@ namespace Horses\Http\Controllers;
 
 use Horses\Category;
 use Horses\CategoryUser;
+use Horses\Constants\ConstApp;
 use Horses\Constants\ConstDb;
 use Horses\Tournament;
 use Horses\User;
 use Horses\Stage;
+use Illuminate\Support\Facades\Hash;
 
 class ResetController extends Controller
 {
@@ -34,9 +36,9 @@ class ResetController extends Controller
         User::create([
             'names' => 'Miguel',
             'lastname' => 'Pazo Sánchez',
-            'user' => 'mpazo',
+            'user' => 'admin',
             'profile' => ConstDb::PROFILE_ADMIN,
-            'password' => '123'
+            'password' => Hash::make(ConstApp::PASS_DEFAULT)
         ]);
 
         echo 'Puesta cero completa!';

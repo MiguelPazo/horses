@@ -27,8 +27,28 @@ class User extends Model implements AuthenticatableContract
         return $query->whereIn('id', $ids);
     }
 
+    public function scopeStatus($query, $status)
+    {
+        return $query->where('status', $status);
+    }
+
     public function stages()
     {
         return $this->hasMany('Horses\Stage');
+    }
+
+    public function checkRol($rol)
+    {
+        if (is_array($rol)) {
+            if (in_array($this->profile, $rol)) {
+                return true;
+            }
+        } else {
+            if ($this->profile == $rol) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
