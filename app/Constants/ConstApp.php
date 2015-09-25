@@ -17,4 +17,5 @@ class ConstApp
     const MAX_WINNERS = 6;
     const MAX_HONORABLE = 6;
     const PASS_DEFAULT = '123';
+    const MIN_JURY_MATCH = 2;
 }

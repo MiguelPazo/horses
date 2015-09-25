@@ -102,16 +102,14 @@ class TournamentController extends Controller
 
         if ($stageStatus->valid) {
             $lstCompetitorFinal = $this->filterCompetitorsWithJury($this->category, $stageStatus);
-
-            //Filter six first and update others
-            $position = 1;
-
-            foreach ($lstCompetitorFinal as $key => $competitor) {
-                $competitor->position = $position;
-                $competitor->save();
-
-                $position++;
-            }
+//            $position = 1;
+//
+//            foreach ($lstCompetitorFinal as $key => $competitor) {
+//                $competitor->position = $position;
+//                $competitor->save();
+//
+//                $position++;
+//            }
         }
 
         return response()->json($response);
@@ -194,7 +192,7 @@ class TournamentController extends Controller
         $lstCompPoints = new Collection();
 
         //group competitors by position
-        $lstStageJuryGroup = $stageStatus->lstStageJury->groupBy('competitor_id');
+        $lstStageJuryGroup = $lstStageJury->groupBy('competitor_id');
 
         foreach ($lstStageJuryGroup as $key => $group) {
             $stageJuryTemp = new \stdClass();
@@ -238,7 +236,6 @@ class TournamentController extends Controller
                     ];
                 }
 
-
                 //sort group by orden of jury diriment
                 sort($groupOrder);
                 $newGroup = [];
@@ -255,34 +252,41 @@ class TournamentController extends Controller
 
         //get competitor list from group
         $allIds = [];
-        $idwPoints = [];
+        $idsPoints = [];
 
         foreach ($lstCompOrder as $i => $compOrder) {
             foreach ($compOrder as $y => $competitor) {
                 $allIds[] = $competitor->competitor_id;
-                $idwPoints[] = [
+                $idsPoints[] = [
                     'id' => $competitor->competitor_id,
                     'points' => $competitor->position,
                 ];
             }
         }
 
+        //new rule
+        $idsPoints = $this->applyNewRule($lstStageJuryGroup, $idsPoints);
+        //end new rule
+
         $lstCompetitorTemp = Competitor::idIn($allIds)->get();
 
         //ranking competitor final
         $lstCompetitorFinal = new Collection();
+        $position = 1;
 
-        foreach ($idwPoints as $key => $value) {
+        foreach ($idsPoints as $key => $value) {
             $idComp = $value['id'];
 
             $competitor = $lstCompetitorTemp->filter(function ($item) use ($idComp) {
                 return $item->id == $idComp;
             })->first();
 
+            $competitor->position = $position;
             $competitor->points = $value['points'];
             $competitor->save();
 
             $lstCompetitorFinal->add($competitor);
+            $position++;
         }
 
         return $lstCompetitorFinal;
@@ -294,13 +298,13 @@ class TournamentController extends Controller
 
         if ($oCategory->status == ConstDb::STATUS_IN_PROGRESS) {
             $lstCompetitorFilter = $this->filterCompetitorsWithJury($oCategory, $stageStatus);
-            $position = 1;
-
-            foreach ($lstCompetitorFilter as $index => $competitorFinal) {
-                $competitorFinal->position = $position;
-                $competitorFinal->save();
-                $position++;
-            }
+//            $position = 1;
+//
+//            foreach ($lstCompetitorFilter as $index => $competitorFinal) {
+//                $competitorFinal->position = $position;
+//                $competitorFinal->save();
+//                $position++;
+//            }
 
             $oCategory->status = ConstDb::STATUS_FINAL;
             $oCategory->save();
@@ -354,12 +358,102 @@ class TournamentController extends Controller
             $oCategory->actual_stage = $stage;
             $oCategory->save();
 
-            $stageStatus->lstStageJury = Stage::juryIn($lstIds)->stage($stage)->status(ConstDb::STATUS_ACTIVE)->orderBy('competitor_id')->get();
+            $stageStatus->lstStageJury = Stage::juryIn($lstIds)->stage($stage)->status(ConstDb::STATUS_ACTIVE)
+                ->category($oCategory->id)->orderBy('competitor_id')->get();
         } else {
             $stageStatus->valid = false;
             $stageStatus->message = 'Todos los jueces aún no terminan la etapa anterior, espere un momento por favor.';
         }
 
         return $stageStatus;
+    }
+
+    public function applyNewRule($lstStageJuryGroup, $idsPoints)
+    {
+        foreach ($lstStageJuryGroup as $key => $group) {
+            foreach ($group as $sjKey => $sjValue) {
+                $position = $sjValue->position;
+                $count = 0;
+
+                foreach ($group as $ssjKey => $ssjValue) {
+                    if ($position == $ssjValue->position) {
+                        $count++;
+                    }
+
+                    if ($count >= ConstApp::MIN_JURY_MATCH) {
+                        break;
+                    }
+                }
+
+                //Change order
+                if ($count >= ConstApp::MIN_JURY_MATCH) {
+                    //unset
+                    $tempBackup = array();
+
+                    for ($i = 0; $i < count($idsPoints); $i++) {
+                        if ($idsPoints[$i]['id'] == $sjValue->competitor_id) {
+                            $tempBackup[] = [
+                                'id' => $idsPoints[$i]['id'],
+                                'points' => $idsPoints[$i]['points']
+                            ];
+
+                            unset($idsPoints[$i]);
+                            break;
+                        }
+                    }
+
+                    $idsPoints = array_values($idsPoints);
+
+                    //cut main array
+                    $prevPoints = array_slice($idsPoints, 0, $position - 1);
+                    $postPoints = array_slice($idsPoints, $position - 1);
+
+                    $prevPoints[] = [
+                        'id' => $tempBackup[0]['id'],
+                        'points' => $tempBackup[0]['points'],
+                        'reLocate' => true
+                    ];
+
+                    //redorder postarray
+                    for ($i = 0; $i < count($postPoints); $i++) {
+                        if (!array_key_exists('reLocate', $postPoints[$i])) {
+                            $tempPost = [
+                                'id' => $postPoints[$i]['id'],
+                                'points' => $postPoints[$i]['points']
+                            ];
+
+                            $postFirst = array_slice($postPoints, 0, $i);
+                            $postSecond = array_slice($postPoints, $i + 1);
+                            $posCut = count($postSecond);
+
+                            for ($y = 0; $y < count($postSecond); $y++) {
+                                if (!array_key_exists('reLocate', $postSecond[$y])) {
+                                    $posCut = $y;
+                                    break;
+                                }
+                            }
+
+                            //relocate
+                            $postSecond_pref = array_slice($postSecond, 0, $posCut);
+                            $postSecond_suf = array_slice($postSecond, $posCut);
+
+                            $postSecond_pref[] = [
+                                'id' => $tempPost['id'],
+                                'points' => $tempPost['points']
+                            ];
+
+                            $postPoints = array_merge($postFirst, $postSecond_pref, $postSecond_suf);
+                            $postPoints = array_values($postPoints);
+                        }
+                    }
+
+                    $idsPoints = array_merge($prevPoints, $postPoints);
+                    $idsPoints = array_values($idsPoints);
+                    break;
+                }
+            }
+        }
+
+        return $idsPoints;
     }
 }
