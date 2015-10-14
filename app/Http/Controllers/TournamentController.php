@@ -18,6 +18,7 @@ class TournamentController extends Controller
 {
     private $request;
     private $category;
+    private $tournament;
     private $lenCompNum;
 
 
@@ -25,6 +26,7 @@ class TournamentController extends Controller
     {
         $this->request = $request;
         $this->category = $request->session()->get('oCategory');
+        $this->tournament = $request->session()->get('oTournament');
 
         $maxComp = Competitor::category($this->category->id)->max('number');
         $this->lenCompNum = strlen($maxComp);
@@ -101,15 +103,7 @@ class TournamentController extends Controller
         $stageStatus = $this->verifyStageClosed($this->category, ConstDb::STAGE_CLASSIFY_1);
 
         if ($stageStatus->valid) {
-            $lstCompetitorFinal = $this->filterCompetitorsWithJury($this->category, $stageStatus);
-//            $position = 1;
-//
-//            foreach ($lstCompetitorFinal as $key => $competitor) {
-//                $competitor->position = $position;
-//                $competitor->save();
-//
-//                $position++;
-//            }
+            $this->filterCompetitorsWithJury($this->category, $stageStatus);
         }
 
         return response()->json($response);
@@ -265,7 +259,9 @@ class TournamentController extends Controller
         }
 
         //new rule
-        $idsPoints = $this->applyNewRule($lstStageJuryGroup, $idsPoints);
+        if ($this->tournament->type == ConstDb::TYPE_TOURNAMENT_WJURY) {
+            $idsPoints = $this->applyNewRule($lstStageJuryGroup, $idsPoints);
+        }
         //end new rule
 
         $lstCompetitorTemp = Competitor::idIn($allIds)->get();
@@ -297,15 +293,7 @@ class TournamentController extends Controller
         $oCategory = Category::find($id);
 
         if ($oCategory->status == ConstDb::STATUS_IN_PROGRESS) {
-            $lstCompetitorFilter = $this->filterCompetitorsWithJury($oCategory, $stageStatus);
-//            $position = 1;
-//
-//            foreach ($lstCompetitorFilter as $index => $competitorFinal) {
-//                $competitorFinal->position = $position;
-//                $competitorFinal->save();
-//                $position++;
-//            }
-
+            $this->filterCompetitorsWithJury($oCategory, $stageStatus);
             $oCategory->status = ConstDb::STATUS_FINAL;
             $oCategory->save();
 

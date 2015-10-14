@@ -97,7 +97,7 @@ class UserController extends Controller
                 $oUser->names = $request->get('names');
                 $oUser->lastname = $request->get('lastname');
                 $oUser->user = $request->get('user');
-                $oUser->password = ($request->get('password') != null) ? $request->get('password') : $oUser->password;
+                $oUser->password = (trim($request->get('password')) != '') ? Hash::make($request->get('password')) : $oUser->password;
                 $oUser->profile = $request->get('profile');
 
                 $oUser->save();
