@@ -4,6 +4,13 @@
     'form-control', 'maxlenght' => 200]) !!}
 </div>
 <div class="form-group">
+    <div class="form-group">
+        {!! Form::label('type', '¿Con juez de turno?:') !!}
+        {!! Form::select('type', ['jury' => 'Sí', 'wjury' => 'No'], (isset($oTournament)) ? (($oTournament->type ==
+        \Horses\Constants\ConstDb::TYPE_TOURNAMENT_JURY)? 'jury': 'wjury') : null ,['class' =>'form-control']) !!}
+    </div>
+</div>
+<div class="form-group">
     {!! Form::label('date_begin', 'Fecha de Inicio:') !!}
     {!! Form::text('date_begin', (isset($oTournament)) ? $oTournament->date_begin : null, ['class' => 'datepicker
     form-control']) !!}

@@ -11,27 +11,29 @@ namespace Horses\Http\Controllers;
 
 use Horses\Category;
 use Horses\CategoryUser;
+use Horses\Competitor;
 use Horses\Constants\ConstApp;
 use Horses\Constants\ConstDb;
 use Horses\Tournament;
 use Horses\User;
 use Horses\Stage;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class ResetController extends Controller
 {
     public function puestaCero()
     {
-        $lstTournament = Tournament::all();
-        $lstUser = User::all();
+        DB::statement("SET foreign_key_checks=0");
 
-        foreach ($lstTournament as $key => $tournament) {
-            $tournament->delete();
-        }
+        Stage::truncate();
+        CategoryUser::truncate();
+        User::truncate();
+        Competitor::truncate();
+        Category::truncate();
+        Tournament::truncate();
 
-        foreach ($lstUser as $key => $user) {
-            $user->delete();
-        }
+        DB::statement("SET foreign_key_checks=1");
 
         User::create([
             'names' => 'Miguel',
@@ -42,22 +44,5 @@ class ResetController extends Controller
         ]);
 
         echo 'Puesta cero completa!';
-    }
-
-    public function unlock()
-    {
-        $this->unlockUsers();
-
-        echo 'Usuarios desbloqueados';
-    }
-
-    public function unlockUsers()
-    {
-        $lstUser = User::all();
-
-        foreach ($lstUser as $index => $user) {
-            $user->login = ConstDb::USER_DISCONNECTED;
-            $user->save();
-        }
     }
 }

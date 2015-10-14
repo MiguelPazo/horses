@@ -17,6 +17,9 @@ class ConstDb
     const TYPE_CATEGORY_SELECTION = 'selection';
     const TYPE_CATEGORY_WSELECTION = 'wselection';
 
+    const TYPE_TOURNAMENT_JURY = 'jury';
+    const TYPE_TOURNAMENT_WJURY = 'wjury';
+
     const STAGE_ASSISTANCE = 'assistance';
     const STAGE_SELECTION = 'selection';
     const STAGE_CLASSIFY_1 = 'classify_1';

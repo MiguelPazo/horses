@@ -49,20 +49,22 @@
                             @endif
                         </td>
                         <td>
-                            <a href="{{ route('admin.user.edit', $user->id) }}" role="button" class="btn">
-                                <span class="glyphicon glyphicon-pencil"></span>
-                            </a>
+                            @if($user->profile != \Horses\Constants\ConstDb::PROFILE_ADMIN)
+                                <a href="{{ route('admin.user.edit', $user->id) }}" role="button" class="btn">
+                                    <span class="glyphicon glyphicon-pencil"></span>
+                                </a>
 
-                            @if ($user->login == \Horses\Constants\ConstDb::USER_CONECTED)
-                                <a href="{{ route('admin.user.unlock', $user->id) }}" role="button" class="btn">
-                                    <span class="glyphicon glyphicon-off"></span>
+                                @if ($user->login == \Horses\Constants\ConstDb::USER_CONECTED)
+                                    <a href="{{ route('admin.user.unlock', $user->id) }}" role="button" class="btn">
+                                        <span class="glyphicon glyphicon-off"></span>
+                                    </a>
+                                @endif
+
+                                <a href="{{ route('admin.user.destroy', $user->id) }}" role="button"
+                                   class="btn" data-method="delete">
+                                    <span class=" glyphicon glyphicon-trash"></span>
                                 </a>
                             @endif
-
-                            <a href="{{ route('admin.user.destroy', $user->id) }}" role="button"
-                               class="btn" data-method="delete">
-                                <span class=" glyphicon glyphicon-trash"></span>
-                            </a>
                         </td>
                     </tr>
                     <?php $count++; ?>
