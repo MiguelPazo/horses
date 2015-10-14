@@ -12,10 +12,6 @@ MySQL - 5.6.16 : Database - horses
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
-CREATE DATABASE /*!32312 IF NOT EXISTS*/`horses` /*!40100 DEFAULT CHARACTER SET utf8 */;
-
-USE `horses`;
-
 /*Table structure for table `categories` */
 
 DROP TABLE IF EXISTS `categories`;
@@ -32,11 +28,11 @@ CREATE TABLE `categories` (
   PRIMARY KEY (`id`),
   KEY `fk_categories_tournament1_idx` (`tournament_id`),
   CONSTRAINT `fk_categories_tournament1` FOREIGN KEY (`tournament_id`) REFERENCES `tournaments` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 /*Data for the table `categories` */
 
-insert  into `categories`(`id`,`description`,`type`,`status`,`actual_stage`,`num_begin`,`count_competitors`,`tournament_id`) values (8,'Categoria 1','selection','in_progress','classify_1',123,23,4),(9,'Categoria 2','selection','inactive',NULL,200,23,4),(10,'Categoria 3','selection','inactive',NULL,1,25,4);
+insert  into `categories`(`id`,`description`,`type`,`status`,`actual_stage`,`num_begin`,`count_competitors`,`tournament_id`) values (1,'categoria con jurado','wselection','final','classify_2',1,12,1),(2,'categoria sin jurado','wselection','final','classify_2',1,12,2);
 
 /*Table structure for table `category_users` */
 
@@ -53,11 +49,11 @@ CREATE TABLE `category_users` (
   KEY `fk_category_users_categories1_idx` (`category_id`),
   CONSTRAINT `fk_categoria_jurado_user1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
   CONSTRAINT `fk_category_users_categories1` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=61 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
 
 /*Data for the table `category_users` */
 
-insert  into `category_users`(`id`,`dirimente`,`actual_stage`,`user_id`,`category_id`) values (52,1,'classify_1',11,8),(53,0,'classify_1',12,8),(54,0,'classify_1',13,8),(55,0,NULL,11,9),(56,1,NULL,12,9),(57,0,NULL,13,9),(58,0,NULL,11,10),(59,0,NULL,12,10),(60,1,NULL,13,10);
+insert  into `category_users`(`id`,`dirimente`,`actual_stage`,`user_id`,`category_id`) values (4,1,'classify_2',3,2),(5,0,'classify_2',4,2),(6,0,'classify_2',5,2),(7,1,'classify_2',3,1),(8,0,'classify_2',4,1),(9,0,'classify_2',5,1);
 
 /*Table structure for table `competitors` */
 
@@ -72,11 +68,11 @@ CREATE TABLE `competitors` (
   PRIMARY KEY (`id`),
   KEY `fk_competitor_categories1_idx` (`category_id`),
   CONSTRAINT `fk_competitor_categories1` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=160 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8;
 
 /*Data for the table `competitors` */
 
-insert  into `competitors`(`id`,`number`,`position`,`points`,`category_id`) values (139,123,NULL,NULL,8),(140,124,5,14,8),(141,125,9,22,8),(142,126,13,39,8),(143,127,12,35,8),(144,128,11,33,8),(145,129,6,19,8),(146,130,10,27,8),(147,131,NULL,NULL,8),(148,132,NULL,NULL,8),(149,133,7,21,8),(150,134,8,21,8),(151,136,4,12,8),(152,137,NULL,NULL,8),(153,138,3,12,8),(154,139,1,9,8),(155,140,2,9,8),(156,141,NULL,NULL,8),(157,143,NULL,NULL,8),(158,144,NULL,NULL,8),(159,145,NULL,NULL,8);
+insert  into `competitors`(`id`,`number`,`position`,`points`,`category_id`) values (13,1,6,17,1),(14,2,1,3,1),(15,3,2,6,1),(16,4,11,29,1),(17,5,12,35,1),(18,6,9,24,1),(19,7,7,20,1),(20,8,10,29,1),(21,9,8,20,1),(22,10,4,11,1),(23,11,5,16,1),(24,12,3,10,1),(25,1,7,18,2),(26,2,2,5,2),(27,3,12,28,2),(28,4,6,11,2),(29,5,4,13,2),(30,6,11,28,2),(31,7,1,8,2),(32,8,10,22,2),(33,9,9,22,2),(34,10,8,22,2),(35,11,5,16,2),(36,12,3,10,2);
 
 /*Table structure for table `stages` */
 
@@ -93,13 +89,13 @@ CREATE TABLE `stages` (
   PRIMARY KEY (`id`),
   KEY `fk_etapa_user1_idx` (`user_id`),
   KEY `fk_etapa_competitor1_idx` (`competitor_id`),
-  CONSTRAINT `fk_etapa_user1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
-  CONSTRAINT `fk_etapa_competitor1` FOREIGN KEY (`competitor_id`) REFERENCES `competitors` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=1057 DEFAULT CHARSET=utf8;
+  CONSTRAINT `fk_etapa_competitor1` FOREIGN KEY (`competitor_id`) REFERENCES `competitors` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+  CONSTRAINT `fk_etapa_user1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=181 DEFAULT CHARSET=utf8;
 
 /*Data for the table `stages` */
 
-insert  into `stages`(`id`,`position`,`stage`,`status`,`category_id`,`user_id`,`competitor_id`) values (865,1,'selection','active',8,11,139),(866,1,'selection','active',8,11,140),(867,1,'selection','active',8,11,142),(868,1,'selection','active',8,11,143),(869,1,'selection','active',8,11,144),(870,1,'selection','active',8,11,145),(871,1,'selection','active',8,11,149),(872,1,'selection','active',8,11,150),(873,1,'selection','active',8,11,151),(874,1,'selection','active',8,11,153),(875,1,'selection','active',8,11,154),(876,1,'selection','active',8,11,155),(877,1,'selection','active',8,12,140),(878,1,'selection','active',8,12,141),(879,1,'selection','active',8,12,142),(880,1,'selection','active',8,12,143),(881,1,'selection','active',8,12,144),(882,1,'selection','active',8,12,145),(883,1,'selection','active',8,12,146),(884,1,'selection','active',8,12,149),(885,1,'selection','active',8,12,150),(886,1,'selection','active',8,12,151),(887,1,'selection','active',8,12,152),(888,1,'selection','active',8,12,153),(889,1,'selection','active',8,13,141),(890,1,'selection','active',8,13,142),(891,1,'selection','active',8,13,143),(892,1,'selection','active',8,13,144),(893,1,'selection','active',8,13,145),(894,1,'selection','active',8,13,146),(895,1,'selection','active',8,13,147),(896,1,'selection','active',8,13,153),(897,1,'selection','active',8,13,154),(898,1,'selection','active',8,13,155),(899,1,'selection','active',8,13,156),(900,1,'selection','active',8,13,157),(901,1,'classify_1','active',8,13,151),(902,2,'classify_1','active',8,13,155),(903,3,'classify_1','active',8,13,154),(904,4,'classify_1','active',8,13,153),(905,5,'classify_1','active',8,13,140),(906,6,'classify_1','active',8,13,149),(907,7,'classify_1','active',8,13,145),(908,8,'classify_1','active',8,13,150),(909,9,'classify_1','active',8,13,146),(910,10,'classify_1','active',8,13,141),(911,11,'classify_1','active',8,13,144),(912,12,'classify_1','active',8,13,143),(913,13,'classify_1','active',8,13,142),(914,1,'classify_1','active',8,12,141),(915,2,'classify_1','active',8,12,155),(916,3,'classify_1','active',8,12,154),(917,4,'classify_1','active',8,12,153),(918,5,'classify_1','active',8,12,151),(919,6,'classify_1','active',8,12,150),(920,7,'classify_1','active',8,12,149),(921,8,'classify_1','active',8,12,140),(922,9,'classify_1','active',8,12,146),(923,10,'classify_1','active',8,12,145),(924,11,'classify_1','active',8,12,143),(925,12,'classify_1','active',8,12,144),(926,13,'classify_1','active',8,12,142),(1044,1,'classify_1','active',8,11,140),(1045,2,'classify_1','active',8,11,145),(1046,3,'classify_1','active',8,11,154),(1047,4,'classify_1','active',8,11,153),(1048,5,'classify_1','active',8,11,155),(1049,6,'classify_1','active',8,11,151),(1050,7,'classify_1','active',8,11,150),(1051,8,'classify_1','active',8,11,149),(1052,9,'classify_1','active',8,11,146),(1053,10,'classify_1','active',8,11,144),(1054,11,'classify_1','active',8,11,141),(1055,12,'classify_1','active',8,11,143),(1056,13,'classify_1','active',8,11,142);
+insert  into `stages`(`id`,`position`,`stage`,`status`,`category_id`,`user_id`,`competitor_id`) values (73,1,'classify_1','final',1,3,13),(74,2,'classify_1','final',1,3,14),(75,3,'classify_1','final',1,3,15),(76,4,'classify_1','final',1,3,19),(77,5,'classify_1','final',1,3,21),(78,6,'classify_1','final',1,3,24),(79,7,'classify_1','final',1,3,23),(80,8,'classify_1','final',1,3,22),(81,9,'classify_1','final',1,3,18),(82,10,'classify_1','final',1,3,20),(83,11,'classify_1','final',1,3,16),(84,12,'classify_1','final',1,3,17),(85,1,'classify_1','final',1,4,13),(86,2,'classify_1','final',1,4,14),(87,3,'classify_1','final',1,4,15),(88,4,'classify_1','final',1,4,23),(89,5,'classify_1','final',1,4,22),(90,6,'classify_1','final',1,4,24),(91,7,'classify_1','final',1,4,21),(92,8,'classify_1','final',1,4,16),(93,9,'classify_1','final',1,4,19),(94,10,'classify_1','final',1,4,20),(95,11,'classify_1','final',1,4,17),(96,12,'classify_1','final',1,4,18),(97,1,'classify_1','final',1,5,15),(98,2,'classify_1','final',1,5,14),(99,3,'classify_1','final',1,5,18),(100,4,'classify_1','final',1,5,23),(101,5,'classify_1','final',1,5,22),(102,6,'classify_1','final',1,5,24),(103,7,'classify_1','final',1,5,19),(104,8,'classify_1','final',1,5,21),(105,9,'classify_1','final',1,5,20),(106,10,'classify_1','final',1,5,16),(107,11,'classify_1','final',1,5,13),(108,12,'classify_1','final',1,5,17),(109,1,'classify_2','final',1,5,14),(110,2,'classify_2','final',1,5,15),(111,3,'classify_2','final',1,5,24),(112,4,'classify_2','final',1,5,22),(113,5,'classify_2','final',1,5,13),(114,6,'classify_2','final',1,5,23),(115,1,'classify_2','final',1,4,14),(116,2,'classify_2','final',1,4,15),(117,3,'classify_2','final',1,4,24),(118,4,'classify_2','final',1,4,22),(119,5,'classify_2','final',1,4,23),(120,6,'classify_2','final',1,4,13),(121,1,'classify_2','final',1,3,14),(122,2,'classify_2','final',1,3,15),(123,3,'classify_2','final',1,3,22),(124,4,'classify_2','final',1,3,24),(125,5,'classify_2','final',1,3,23),(126,6,'classify_2','final',1,3,13),(127,1,'classify_1','final',2,3,31),(128,2,'classify_1','final',2,3,28),(129,3,'classify_1','final',2,3,35),(130,4,'classify_1','final',2,3,36),(131,5,'classify_1','final',2,3,30),(132,6,'classify_1','final',2,3,25),(133,7,'classify_1','final',2,3,33),(134,8,'classify_1','final',2,3,34),(135,9,'classify_1','final',2,3,32),(136,10,'classify_1','final',2,3,29),(137,11,'classify_1','final',2,3,27),(138,12,'classify_1','final',2,3,26),(139,1,'classify_1','final',2,4,31),(140,2,'classify_1','final',2,4,26),(141,3,'classify_1','final',2,4,28),(142,4,'classify_1','final',2,4,29),(143,5,'classify_1','final',2,4,36),(144,6,'classify_1','final',2,4,34),(145,7,'classify_1','final',2,4,35),(146,8,'classify_1','final',2,4,27),(147,9,'classify_1','final',2,4,33),(148,10,'classify_1','final',2,4,32),(149,11,'classify_1','final',2,4,25),(150,12,'classify_1','final',2,4,30),(151,1,'classify_1','final',2,5,25),(152,2,'classify_1','final',2,5,26),(153,3,'classify_1','final',2,5,32),(154,4,'classify_1','final',2,5,29),(155,5,'classify_1','final',2,5,35),(156,6,'classify_1','final',2,5,33),(157,7,'classify_1','final',2,5,36),(158,8,'classify_1','final',2,5,34),(159,9,'classify_1','final',2,5,27),(160,10,'classify_1','final',2,5,31),(161,11,'classify_1','final',2,5,30),(162,12,'classify_1','final',2,5,28),(163,1,'classify_2','final',2,5,31),(164,2,'classify_2','final',2,5,26),(165,3,'classify_2','final',2,5,36),(166,4,'classify_2','final',2,5,28),(167,5,'classify_2','final',2,5,29),(168,6,'classify_2','final',2,5,35),(169,1,'classify_2','final',2,4,31),(170,2,'classify_2','final',2,4,26),(171,3,'classify_2','final',2,4,29),(172,4,'classify_2','final',2,4,36),(173,5,'classify_2','final',2,4,28),(174,6,'classify_2','final',2,4,35),(175,1,'classify_2','final',2,3,26),(176,2,'classify_2','final',2,3,28),(177,3,'classify_2','final',2,3,36),(178,4,'classify_2','final',2,3,35),(179,5,'classify_2','final',2,3,29),(180,6,'classify_2','final',2,3,31);
 
 /*Table structure for table `tournaments` */
 
@@ -110,13 +106,14 @@ CREATE TABLE `tournaments` (
   `description` varchar(200) NOT NULL,
   `date_begin` date DEFAULT NULL,
   `date_end` date DEFAULT NULL,
+  `type` enum('jury','wjury') NOT NULL DEFAULT 'jury',
   `status` enum('inactive','active','deleted') NOT NULL DEFAULT 'inactive',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 /*Data for the table `tournaments` */
 
-insert  into `tournaments`(`id`,`description`,`date_begin`,`date_end`,`status`) values (4,'Concurso 1','2015-09-02','2015-08-06','active');
+insert  into `tournaments`(`id`,`description`,`date_begin`,`date_end`,`type`,`status`) values (1,'Concurso 1','2015-10-14','2015-10-16','jury','inactive'),(2,'Conruso 3','2015-10-13','2015-10-14','wjury','active');
 
 /*Table structure for table `users` */
 
@@ -131,13 +128,13 @@ CREATE TABLE `users` (
   `login` tinyint(1) NOT NULL DEFAULT '0',
   `remember_token` varchar(50) DEFAULT NULL,
   `profile` enum('admin','commissar','jury') NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `user_UNIQUE` (`user`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
+  `status` enum('active','inactive') NOT NULL DEFAULT 'active',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 
 /*Data for the table `users` */
 
-insert  into `users`(`id`,`names`,`lastname`,`user`,`password`,`login`,`remember_token`,`profile`) values (9,'Miguel','Pazo Sánchez','mpazo','123',0,'pCMf6xPYMaWdDDksQF35ZTaUqqAJeUGuWlyvVCmDBrWJnlGXAS','admin'),(10,'Comisario','Comisario','comisario','123',0,'7wUkmRyGW381FJKOVFYQlQ9A1NfnQbPLpCm9m8mRq8JBzGon6S','commissar'),(11,'Jurado 1','Jurado 1','jurado1','123',1,'ohOKJR75hBfYJp1Z1qYAbE4tpOgeRgKCQm7yOHuP4TAm8Lk8aL','jury'),(12,'Jurado 2','Jurado 2','jurado2','123',0,'NxVlCwlHvl6DnyZ29xwB1ymPbFWTGuQsi0GDilSJUEhKlDPClF','jury'),(13,'Jurado 3','Jurado 3','jurado3','123',0,'6FJwfqbMryrEccgeSSDMzXDvbEYwB5g1Z1wGkRYYlP6gwNvgXz','jury');
+insert  into `users`(`id`,`names`,`lastname`,`user`,`password`,`login`,`remember_token`,`profile`,`status`) values (1,'Miguel','Pazo Sánchez','admin','$2y$10$gg9dnnsP592CHr8SIvLMvOKxfWL4qYp65Q5AzZcrikCN6XINhBCbO',0,'0GAw60Kuz43twY3hlQiqxg3A3SxUPFNVvgzsG7ZdUg1RRAzF4K','admin','active'),(2,'comisario','comi','comisario','$2y$10$envZUJgWPO.jXz5ZuvIbbOYzISTWgLa7AamvpvfYoAKrdlhuzdwDO',0,'831rx6HCWzR5ut1ScM70Y1NQriHITC2Q0c1oMRii7AJIeuntlM','commissar','active'),(3,'jur','ado1','jurado1','$2y$10$ugcGstfrFUEdgOChlorIfOGAQiUK6hyolwi2rGZnixH5CdtTBXQcW',0,'bPMxSm9jLQEWa8dbkRxmPzA3kZcAZJ03o3IIotGVIbUspK6TTa','jury','active'),(4,'jurado','2','jurado2','$2y$10$QqUVreSqJXivG7WBkv0MkegiYI7mN8dmec18.yFlZ149ga0BLIgHK',0,'AO3ANbTzkTI4nL6KJJrwCloCIhV2Jm6myTiYOJXLrB9vyZioz0','jury','active'),(5,'jur','ado3','jurado3','$2y$10$NeoDTjL.mYFThdSngv408u8p9ECEOBbBSLHrrXtRvJ.FzNZFHLcnq',0,'J5nr0GzOgOztVONOOfsMJhq0mWUr0jWUXIL8cijQRrriwAiWbs','jury','active');
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
