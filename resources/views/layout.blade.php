@@ -19,6 +19,10 @@
     <script src="{{ asset('/js/libs/jquery-ui/ui/minified/i18n/datepicker-es.min.js') }}"></script>
     <script src="{{ asset('/js/libs/jquery-ui-touch-punch/jquery.ui.touch-punch.min.js') }}"></script>
     <script src="{{ asset('/js/libs/bootstrap/dist/js/bootstrap.min.js') }}"></script>
+
+    <script>
+        var BASE_URL = '{{ asset('/')}}';
+    </script>
 </head>
 <body>
 

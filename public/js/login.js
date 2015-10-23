@@ -16,12 +16,26 @@ $(document).ready(function () {
             var url = $(this).attr('action');
             var data = $(this).serialize();
 
-            $.post(url, data, function (response) {
-                if (response.success) {
-                    location.href = response.url;
-                } else {
-                    $('#modal_message').html(response.message);
+            $.ajax({
+                url: url,
+                method: 'POST',
+                dataType: 'json',
+                data: data,
+                success: function (response) {
+                    if (response.success) {
+                        location.href = response.url;
+                    } else {
+                        $('#modal_message').html(response.message);
+                        $('#modal-container').modal( 'show' );
+                    }
+                },
+                error: function (response){
+                    $('#modal_message').html('Ha ocurrido un error, se recargará la página');
                     $('#modal-container').modal( 'show' );
+
+                    setTimeout(function(){
+                        location.reload();
+                    },2000);
                 }
             });
         } else {

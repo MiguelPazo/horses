@@ -58,15 +58,29 @@ $(document).ready(function () {
         var url = $(this).attr('action');
         var data = $(this).serialize();
 
-        $.get(url, data, function (response) {
-            if (response.success) {
-                if (response.url != '') {
-                    location.href = response.url;
+        $.ajax({
+             url: url,
+             method: 'POST',
+             dataType: 'json',
+             data: data,
+             success: function (response) {
+                if (response.success) {
+                    if (response.url != '') {
+                        location.href = response.url;
+                    } else {
+                        alert('Información guardada satisfactoriamente');
+                    }
                 } else {
-                    alert('Información guardada satisfactoriamente');
+                    alert(response.message);
                 }
-            } else {
-                alert(response.message);
+            },
+            error: function (response){
+                $('#modal_error_message').html('Ha ocurrido un error, se recargará la página');
+                $('#modal_error').modal( 'show' );
+
+                setTimeout(function(){
+                    location.reload();
+                },2000);
             }
         });
     });
