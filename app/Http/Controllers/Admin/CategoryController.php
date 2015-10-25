@@ -24,24 +24,36 @@ class CategoryController extends Controller
 
     public function getDisable($id)
     {
+        $jResponse = [
+            'success' => false,
+            'message' => '',
+            'url' => ''
+        ];
+
         $oCategory = Category::findorFail($id);
-        $error = 0;
 
         if ($oCategory->status != ConstDb::STATUS_IN_PROGRESS) {
             $oCategory->status = ConstDb::STATUS_INACTIVE;
             $oCategory->save();
+
+            $jResponse['success'] = true;
+            $jResponse['url'] = route('admin.tournament.category', $oCategory->tournament_id);
         } else {
-            $error = 2;
+            $jResponse['message'] = 'No puede desactivar una categoría en proceso de evaluación!';
         }
 
-
-        return redirect()->route('admin.tournament.category', [$oCategory->tournament_id, $error]);
+        return response()->json($jResponse);
     }
 
     public function getEnable($id)
     {
+        $jResponse = [
+            'success' => false,
+            'message' => '',
+            'url' => ''
+        ];
+
         $oCategory = Category::findorFail($id);
-        $error = 0;
 
         $catInProgress = Category::status(ConstDb::STATUS_IN_PROGRESS)->count();
 
@@ -52,31 +64,23 @@ class CategoryController extends Controller
 
             $oCategory->status = ConstDb::STATUS_ACTIVE;
             $oCategory->save();
+
+            $jResponse['success'] = true;
+            $jResponse['url'] = route('admin.tournament.category', $oCategory->tournament_id);
         } else {
-            $error = 1;
+            $jResponse['message'] = 'Existe otra categoría en proceso, espere a que termine. Sólo puede estar activa una categoría a la ves.';
         }
 
-        return redirect()->route('admin.tournament.category', [$oCategory->tournament_id, $error]);
+        return response()->json($jResponse);
     }
 
-    public function getIndex($id, $error = null)
+    public function getIndex($id)
     {
         if (isset($id)) {
             $oTournament = Tournament::findorFail($id);
             $lstCategory = Category::tournament($oTournament->id)->get();
-            $errorMessage = null;
-
-            switch ($error) {
-                case 1:
-                    $errorMessage = "Existe otra categoría en proceso, espere a que termine. Sólo puede estar activa una categoría a la ves.";
-                    break;
-                case 2:
-                    $errorMessage = "No puede desactivar una categoría en proceso de evaluación!";
-                    break;
-            }
 
             return view('admin.category.index')
-                ->with('errorMessage', $errorMessage)
                 ->with('lstCategory', $lstCategory)
                 ->with('oTournament', $oTournament);
         }
@@ -97,6 +101,12 @@ class CategoryController extends Controller
 
     public function postStore($id, Request $request)
     {
+        $jResponse = [
+            'success' => false,
+            'message' => '',
+            'url' => ''
+        ];
+
         $validator = $this->validateForms($request->all(), $this->rules);
 
         if ($validator === true) {
@@ -112,10 +122,13 @@ class CategoryController extends Controller
 
             $this->registerJuries($request, $oCategory->id);
 
-            return redirect()->route('admin.tournament.category', $id);
+            $jResponse['success'] = true;
+            $jResponse['url'] = route('admin.tournament.category', $id);
         } else {
-            return redirect()->to('/admin/category/create/' . $id)->withErrors($validator)->withInput();
+            $jResponse['message'] = 'Debe llenar todos los campos.';
         }
+
+        return response()->json($jResponse);
     }
 
     public function getEdit($id)
@@ -137,6 +150,12 @@ class CategoryController extends Controller
 
     public function putUpdate($id, Request $request)
     {
+        $jResponse = [
+            'success' => false,
+            'message' => '',
+            'url' => ''
+        ];
+
         $validator = $this->validateForms($request->all(), $this->rules);
 
         if ($validator === true) {
@@ -150,10 +169,13 @@ class CategoryController extends Controller
             $oCategory->num_begin = $request->get('num_begin');
             $oCategory->save();
 
-            return redirect()->route('admin.tournament.category', $oCategory->tournament_id);
+            $jResponse['success'] = true;
+            $jResponse['url'] = route('admin.tournament.category', $oCategory->tournament_id);
         } else {
-            return redirect()->to('/admin/category/edit/' . $id)->withErrors($validator);
+            $jResponse['message'] = 'Debe llenar todos los campos.';
         }
+
+        return response()->json($jResponse);
     }
 
     public function getDestroy($id)

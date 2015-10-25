@@ -18,15 +18,22 @@
     <script src="{{ asset('/js/libs/jquery-ui/jquery-ui.min.js') }}"></script>
     <script src="{{ asset('/js/libs/jquery-ui/ui/minified/i18n/datepicker-es.min.js') }}"></script>
     <script src="{{ asset('/js/libs/jquery-ui-touch-punch/jquery.ui.touch-punch.min.js') }}"></script>
+    <script src="{{ asset('/js/libs/jquery-numeric/dist/jquery-numeric.js') }}"></script>
     <script src="{{ asset('/js/libs/bootstrap/dist/js/bootstrap.min.js') }}"></script>
+
+    <script src="{{ asset('/js/app/main.js') }}"></script>
 
     <script>
         var BASE_URL = '{{ asset('/')}}';
+
+
     </script>
 </head>
 <body>
 
 <div class="container-fluid">
+    @include('_partials.popup')
+
     <div class="row">
         <div class="col-md-12">
             @if(Auth::check())

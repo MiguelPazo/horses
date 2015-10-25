@@ -89,10 +89,10 @@ $(document).ready(function () {
         var countUnclassify = $('.comp_list').find('li').length;
 
         if (countUnclassify == 0) {
-            $('#modal-container').modal('show');
+            $('#modal_confirm').modal('show');
         } else {
             $('#modal_message').html('Debe clasificar a todos los concursantes!');
-            $('#modal_max_select').modal('show');
+            $('#modal_notice').modal('show');
         }
 
     });

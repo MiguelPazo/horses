@@ -6,17 +6,7 @@
     </h3>
 
     <div class="panel-body">
-        @if (count($errors) > 0)
-            <div class="alert alert-danger">
-                <ul>
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
-
-        {!! Form::open(['route' => 'admin.user.store']) !!}
+        {!! Form::open(['route' => 'admin.user.store', 'class' => 'formValid']) !!}
 
         {!! Form::submit('Guardar', ['class' => 'btn btn-success']) !!}
         <a href="{{ route('admin.user.index') }}"
@@ -26,5 +16,5 @@
         @include('admin.user._partials.fields')
         {!! Form::close() !!}
     </div>
-    <script src="{{ asset('/js/admin.js') }}"></script>
+    <script src="{{ asset('/js/app/admin/user.js') }}"></script>
 @endsection

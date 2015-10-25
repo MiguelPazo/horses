@@ -12,9 +12,9 @@
                 <thead>
                 <tr>
                     <th>#</th>
+                    <th>Usuario</th>
                     <th>Apellidos</th>
                     <th>Nombres</th>
-                    <th>Usuario</th>
                     <th>Conectado</th>
                     <th>Perfil</th>
                     <th>Opciones</th>
@@ -25,9 +25,9 @@
                 @foreach( $lstUser as  $user)
                     <tr>
                         <th scope="row">{{ $count }}</th>
+                        <td>{{ $user->user }}</td>
                         <td>{{ $user->lastname }}</td>
                         <td>{{ $user->names }}</td>
-                        <td>{{ $user->user }}</td>
                         <td>
                             @if($user->profile != \Horses\Constants\ConstDb::PROFILE_ADMIN)
                                 @if ($user->login == \Horses\Constants\ConstDb::USER_CONECTED)

@@ -41,7 +41,7 @@ Route::group([
 
     Route::resource('/tournament', 'TournamentController');
 
-    Route::get('/tournaments/{error?}', [
+    Route::get('/tournaments', [
         'as' => 'admin.tournament.index',
         'uses' => 'TournamentController@index'
     ]);
@@ -54,7 +54,7 @@ Route::group([
         'uses' => 'TournamentController@disable'
     ]);
 
-    Route::get('/tournament/{tournament}/categories/{error?}', [
+    Route::get('/tournament/{tournament}/categories/', [
         'as' => 'admin.tournament.category',
         'uses' => 'CategoryController@getIndex'
     ]);

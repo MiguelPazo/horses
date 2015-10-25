@@ -38,11 +38,18 @@ class UserController extends Controller
 
     public function create()
     {
-        return view('admin.user.create');
+        return view('admin.user.create')
+            ->with('passRequired', true);
     }
 
     public function store(Request $request)
     {
+        $jResponse = [
+            'success' => false,
+            'message' => '',
+            'url' => ''
+        ];
+
         $validator = $this->validateForms($request->all(), $this->rules);
 
         if ($validator === true) {
@@ -57,14 +64,17 @@ class UserController extends Controller
                 $oUser->profile = $request->get('profile');
                 $oUser->save();
 
-                return redirect()->route('admin.user.index');
+                $jResponse['success'] = true;
+                $jResponse['url'] = route('admin.user.index');
             } else {
-                return redirect()->route('admin.user.create')->with('error', 'El usuario ya existe, puebe uno diferente.')->withInput();
+                $jResponse['message'] = 'El usuario ya existe, pruebe uno diferente.';
             }
 
         } else {
-            return redirect()->route('admin.user.create')->withErrors($validator)->withInput();
+            $jResponse['message'] = 'Debe llenar todos los campos.';
         }
+
+        return response()->json($jResponse);
     }
 
     public function edit($id)
@@ -73,12 +83,19 @@ class UserController extends Controller
 
 
         return view('admin.user.edit')
+            ->with('passRequired', false)
             ->with('oUser', $oUser);
     }
 
     public function update($id, Request $request)
     {
         unset($this->rules['password']);
+
+        $jResponse = [
+            'success' => false,
+            'message' => '',
+            'url' => ''
+        ];
 
         $validator = $this->validateForms($request->all(), $this->rules);
 
@@ -102,13 +119,16 @@ class UserController extends Controller
 
                 $oUser->save();
 
-                return redirect()->route('admin.user.index');
+                $jResponse['success'] = true;
+                $jResponse['url'] = route('admin.user.index');
             } else {
-                return redirect()->route('admin.user.edit', $id)->with('error', 'El usuario ya existe, puebe uno diferente.')->withInput();
+                $jResponse['message'] = 'El usuario ya existe, puebe uno diferente.';
             }
         } else {
-            return redirect()->route('admin.user.edit', $id)->withErrors($validator);
+            $jResponse['message'] = 'Debe llenar todos los campos.';
         }
+
+        return response()->json($jResponse);
     }
 
 

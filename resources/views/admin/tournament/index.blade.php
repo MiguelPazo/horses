@@ -5,15 +5,6 @@
         Listado de Concursos
     </h3>
 
-    @if($errorMessage != null)
-        <div class="alert alert-warning alert-dismissible fade in" role="alert">
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
-                        aria-hidden="true">×</span>
-            </button>
-            <strong>Error!</strong> {{ $errorMessage }}
-        </div>
-    @endif
-
     <div class="panel-body">
         <div class="table-responsive">
             <a href="{{ route('admin.tournament.create') }}" class="btn btn-primary">Nuevo</a>
@@ -38,12 +29,12 @@
                         <td>
                             @if( $tournament->status == \Horses\Constants\ConstDb::STATUS_ACTIVE )
                                 <a href="{{ route('admin.tournament.disable', $tournament->id) }}" role="button"
-                                   class="btn btn-success">
+                                   class="btn btn-success btn_link_prevent">
                                     <span class="glyphicon glyphicon-star"></span>
                                 </a>
                             @else
                                 <a href="{{ route('admin.tournament.enable', $tournament->id) }}" role="button"
-                                   class="btn">
+                                   class="btn btn_link_prevent">
                                     <span class="glyphicon glyphicon-star"></span>
                                 </a>
                             @endif

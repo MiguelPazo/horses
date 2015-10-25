@@ -25,7 +25,5 @@
         </div>
     </div>
 
-    @include('tournament._partials.popup')
-
     <script src="{{ asset('/js/selection.js') }}"></script>
 @endsection

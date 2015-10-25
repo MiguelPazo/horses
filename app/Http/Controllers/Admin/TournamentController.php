@@ -19,8 +19,13 @@ class TournamentController extends Controller
 
     public function enable($id)
     {
+        $jResponse = [
+            'success' => false,
+            'message' => '',
+            'url' => ''
+        ];
+
         $catInProgress = Category::status(ConstDb::STATUS_IN_PROGRESS)->count();
-        $error = 0;
 
         if ($catInProgress == 0) {
             Tournament::status(ConstDb::STATUS_ACTIVE)->update(['status' => ConstDb::STATUS_INACTIVE]);
@@ -28,47 +33,45 @@ class TournamentController extends Controller
             $oTournament = Tournament::findorFail($id);
             $oTournament->status = ConstDb::STATUS_ACTIVE;
             $oTournament->save();
+
+            $jResponse['success'] = true;
+            $jResponse['url'] = route('admin.tournament.index');
         } else {
-            $error = 1;
+            $jResponse['message'] = 'Existe otro concurso con una categoria en proceso, espere a que termine. Sólo puede estar activo un concurso con una categoría a la ves.';
         }
 
-        return redirect()->route('admin.tournament.index', $error);
+        return response()->json($jResponse);
     }
 
     public function disable($id)
     {
+        $jResponse = [
+            'success' => false,
+            'message' => '',
+            'url' => ''
+        ];
+
         $oTournament = Tournament::with('category')->findorFail($id);
         $catInProgress = Category::tournament($oTournament->id)->status(ConstDb::STATUS_IN_PROGRESS)->count();
-        $error = 0;
 
         if ($catInProgress == 0) {
             $oTournament->status = ConstDb::STATUS_INACTIVE;
             $oTournament->save();
+
+            $jResponse['success'] = true;
+            $jResponse['url'] = route('admin.tournament.index');
         } else {
-            $error = 2;
+            $jResponse['message'] = 'No puede desactivar una concurso con una categoría en proceso de evaluación!';
         }
 
-        return redirect()->route('admin.tournament.index', $error);
+        return response()->json($jResponse);
     }
 
-    public function index($error = null)
+    public function index()
     {
         $lstTournaments = Tournament::statusDif(ConstDb::STATUS_DELETED)->get();
-        $errorMessage = null;
-
-        $errorMessage = null;
-
-        switch ($error) {
-            case 1:
-                $errorMessage = "Existe otro concurso con una categoria en proceso, espere a que termine. Sólo puede estar activo un concurso con una categoría a la ves.";
-                break;
-            case 2:
-                $errorMessage = "No puede desactivar una concurso con una categoría en proceso de evaluación!";
-                break;
-        }
 
         return view('admin.tournament.index')
-            ->with('errorMessage', $errorMessage)
             ->with('lstTournaments', $lstTournaments);
     }
 
@@ -79,17 +82,25 @@ class TournamentController extends Controller
 
     public function store(Request $request)
     {
+        $jResponse = [
+            'success' => false,
+            'message' => '',
+            'url' => ''
+        ];
+
         $validator = $this->validateForms($request->all(), $this->rules);
 
         if ($validator === true) {
             $oTournament = new Tournament($request->all());
             $oTournament->save();
 
-            return redirect()->route('admin.tournament.index');
+            $jResponse['success'] = true;
+            $jResponse['url'] = route('admin.tournament.index');
         } else {
-            return redirect()->route('admin.tournament.create')->withErrors($validator)->withInput();
+            $jResponse['message'] = 'Debe llenar todos los campos.';
         }
 
+        return response()->json($jResponse);
     }
 
     public function edit($id)
@@ -101,6 +112,12 @@ class TournamentController extends Controller
 
     public function update($id, Request $request)
     {
+        $jResponse = [
+            'success' => false,
+            'message' => '',
+            'url' => ''
+        ];
+
         $validator = $this->validateForms($request->all(), $this->rules);
 
         if ($validator === true) {
@@ -111,11 +128,13 @@ class TournamentController extends Controller
 
             $oTournament->save();
 
-            return redirect()->route('admin.tournament.index');
+            $jResponse['success'] = true;
+            $jResponse['url'] = route('admin.tournament.index');
         } else {
-            return redirect()->route('admin.tournament.show', $id)->withErrors($validator);
+            $jResponse['message'] = 'Debe llenar todos los campos.';
         }
 
+        return response()->json($jResponse);
     }
 
     public function destroy($id)

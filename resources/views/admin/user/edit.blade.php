@@ -6,17 +6,7 @@
     </h3>
 
     <div class="panel-body">
-        @if (count($errors) > 0)
-            <div class="alert alert-danger">
-                <ul>
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
-
-        {!! Form::open(['route' => ['admin.user.update', $oUser->id], 'method' => 'PUT']) !!}
+        {!! Form::open(['route' => ['admin.user.update', $oUser->id], 'method' => 'PUT', 'class' => 'formValid']) !!}
 
         {!! Form::submit('Guardar', ['class' => 'btn btn-success']) !!}
         <a href="{{ route('admin.user.index') }}"
@@ -27,5 +17,5 @@
 
         {!! Form::close() !!}
     </div>
-    <script src="{{ asset('/js/admin.js') }}"></script>
+    <script src="{{ asset('/js/admin/user.js') }}"></script>
 @endsection

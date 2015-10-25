@@ -48,7 +48,5 @@
         </div>
     </div>
 
-    @include('tournament._partials.popup')
-
     <script src="{{ asset('/js/classify.js') }}"></script>
 @endsection

@@ -5,15 +5,6 @@
         Listado de Categorias de {{ $oTournament->description }}
     </h3>
 
-    @if($errorMessage != null)
-        <div class="alert alert-warning alert-dismissible fade in" role="alert">
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
-                        aria-hidden="true">×</span>
-            </button>
-            <strong>Error!</strong> {{ $errorMessage }}
-        </div>
-    @endif
-
     <div class="panel-body">
         <div class="table-responsive">
             <a href="{{ route('admin.tournament.index') }}" role="button" class="btn btn-default">
@@ -61,12 +52,12 @@
                                 @if($category->status == \Horses\Constants\ConstDb::STATUS_ACTIVE ||
                                     $category->status == \Horses\Constants\ConstDb::STATUS_IN_PROGRESS)
                                     <a href="{{ url('/admin/category/disable', $category->id ) }}" role="button"
-                                       class="btn btn-success">
+                                       class="btn btn-success btn_link_prevent">
                                         <span class="glyphicon glyphicon-star"></span>
                                     </a>
                                 @else
                                     <a href="{{ url('/admin/category/enable', $category->id ) }}" role="button"
-                                       class="btn">
+                                       class="btn btn_link_prevent">
                                         <span class="glyphicon glyphicon-star"></span>
                                     </a>
                                 @endif

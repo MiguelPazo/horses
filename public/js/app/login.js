@@ -25,13 +25,11 @@ $(document).ready(function () {
                     if (response.success) {
                         location.href = response.url;
                     } else {
-                        $('#modal_message').html(response.message);
-                        $('#modal-container').modal( 'show' );
+                        openPopup('Error', response.message, 1);
                     }
                 },
                 error: function (response){
-                    $('#modal_message').html('Ha ocurrido un error, se recargará la página');
-                    $('#modal-container').modal( 'show' );
+                    openPopup('Error', 'Ha ocurrido un error, se recargará la página', 1);
 
                     setTimeout(function(){
                         location.reload();
@@ -39,8 +37,7 @@ $(document).ready(function () {
                 }
             });
         } else {
-            $('#modal_message').html('Debe llenar todos los campos.');
-            $('#modal-container').modal( 'show' );
+            openPopup('Error', 'Debe llenar todos los campos.', 1);
         }
     });
 });

@@ -19,7 +19,7 @@ $(document).ready(function () {
                 $(this).addClass('btn-success');
             } else {
                 $('#modal_message').html('Usted ya ha seleccionado a 12 concursantes!');
-                $('#modal_max_select').modal('show');
+                $('#modal_notice').modal('show');
             }
         }
 
@@ -66,6 +66,6 @@ $(document).ready(function () {
     });
 
     $('#close_stage').click(function () {
-        $('#modal-container').modal('show');
+        $('#modal_confirm').modal('show');
     });
 });
