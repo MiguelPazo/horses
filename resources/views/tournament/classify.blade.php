@@ -4,7 +4,7 @@
     @include('tournament._partials.header')
     <div class="panel-body">
 
-        {!! Form::open(array('url' => $post, 'id'=>'form_pane', 'method' => 'GET')) !!}
+        {!! Form::open(array('url' => $post, 'id'=>'form_pane', 'method' => 'POST')) !!}
         <div class="tab-pane" id="pane_stage">
             <p></p>
 
@@ -48,5 +48,5 @@
         </div>
     </div>
 
-    <script src="{{ asset('/js/classify.js') }}"></script>
+    <script src="{{ asset('/js/app/classify.js') }}"></script>
 @endsection

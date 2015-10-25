@@ -68,7 +68,7 @@ class CategoryController extends Controller
             $jResponse['success'] = true;
             $jResponse['url'] = route('admin.tournament.category', $oCategory->tournament_id);
         } else {
-            $jResponse['message'] = 'Existe otra categoría en proceso, espere a que termine. Sólo puede estar activa una categoría a la ves.';
+            $jResponse['message'] = 'Existe otra categoría en proceso, espere a que termine. Sólo puede estar activa una categoría a la vez.';
         }
 
         return response()->json($jResponse);

@@ -5,7 +5,8 @@
 
     <div class="panel-body">
         <h3>Concursantes de la Categoría: {{ $count }} </h3>
-        {!! Form::open(array('url' => route('tournament.save.selection'), 'id'=>'form_pane', 'method' => 'GET'))!!}
+
+        {!! Form::open(array('url' => route('tournament.save.selection'), 'id'=>'form_pane', 'method' => 'POST'))!!}
         <div class="tab-pane" id="pane_stage">
             <p></p>
             @foreach($lstCompetitor as $competitor)
@@ -25,5 +26,5 @@
         </div>
     </div>
 
-    <script src="{{ asset('/js/selection.js') }}"></script>
+    <script src="{{ asset('/js/app/selection.js') }}"></script>
 @endsection

@@ -45,22 +45,17 @@ $(document).ready(function () {
         fixPositions();
     });
 
-
-    $('#btn_end').click(function () {
-        prepareForm();
-        $('#process').val('2')
-        $('#form_pane').submit();
-    });
-
     $('#form_pane').submit(function (e) {
         e.preventDefault();
+        prepareForm();
+        $('#process').val('2');
 
         var url = $(this).attr('action');
         var data = $(this).serialize();
 
         $.ajax({
              url: url,
-             method: 'POST',
+             method: 'GET',
              dataType: 'json',
              data: data,
              success: function (response) {
@@ -68,33 +63,32 @@ $(document).ready(function () {
                     if (response.url != '') {
                         location.href = response.url;
                     } else {
-                        alert('Información guardada satisfactoriamente');
+                        openPopup('Información', 'Información guardada satisfactoriamente!', 1, null);
                     }
                 } else {
-                    alert(response.message);
+                    openPopup('Error', response.message, 1, null)
                 }
             },
             error: function (response){
-                $('#modal_error_message').html('Ha ocurrido un error, se recargará la página');
-                $('#modal_error').modal( 'show' );
+                openPopup('Error', 'Ha ocurrido un error, se recargará la página', 1, null);
 
-                setTimeout(function(){
-                    location.reload();
-                },2000);
+//                setTimeout(function(){
+//                    location.reload();
+//                },2000);
             }
         });
     });
 
-    $('#close_stage').click(function () {
+     $('#btn_confirm').click(function () {
         var countUnclassify = $('.comp_list').find('li').length;
 
         if (countUnclassify == 0) {
-            $('#modal_confirm').modal('show');
+            openPopup('Adventencia', 'Al cerrar la etapa no podrá volver a modificar los resultados, ¿Esta usted seguro?', 2, function(){
+                $('#form_pane').submit();
+            });
         } else {
-            $('#modal_message').html('Debe clasificar a todos los concursantes!');
-            $('#modal_notice').modal('show');
+            openPopup('Error', 'Debe clasificar a todos los concursantes!', 1, null);
         }
-
     });
 
     fixPositions();

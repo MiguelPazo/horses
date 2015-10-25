@@ -10,7 +10,7 @@
     <div class="panel-body">
         <h3>Concursantes de la Categoría: {{ $oCategory->count_competitors }} </h3>
 
-        {!! Form::open(array('url' => route('operator.assistance.save'), 'id'=>'form')) !!}
+        {!! Form::open(['url' => route('operator.assistance.save'), 'id' => 'form']) !!}
         <div class="tabbable">
             <div class="tab-pane" id="pane_stage">
                 <p></p>
@@ -30,8 +30,7 @@
             </div>
         </div>
 
-        <a id="modal" href="#modal-container" role="button" class="btn btn-danger"
-           data-toggle="modal">Confirmar</a>
+        <a id="btn_confirm" role="button" class="btn btn-danger">Confirmar</a>
 
         {!! Form::close() !!}
 
@@ -40,5 +39,5 @@
         </div>
     </div>
 
-    <script src="{{ asset('/js/assistance.js') }}"></script>
+    <script src="{{ asset('/js/app/assistance.js') }}"></script>
 @endsection

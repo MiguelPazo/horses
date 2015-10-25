@@ -1,4 +1,4 @@
-var openPopup = function(title, message, type){
+var openPopup = function(title, message, type, okFunction){
     $('.modal_title').html(title);
     $('.modal_message').html(message);
 
@@ -8,6 +8,7 @@ var openPopup = function(title, message, type){
         break;
         case 2:
             $('#modal_confirm').modal( 'show' );
+            $('#btn_ok').click(okFunction)
         break;
     };
 };
@@ -47,11 +48,11 @@ $(document).ready(function(){
                     if (response.success) {
                         location.href = response.url;
                     } else {
-                        openPopup('Error', response.message, 1);
+                        openPopup('Error', response.message, 1, null);
                     }
                 },
                 error: function (response){
-                    openPopup('Error', 'Ha ocurrido un error, se recargará la página', 1);
+                    openPopup('Error', 'Ha ocurrido un error, se recargará la página', 1, null);
 
                     setTimeout(function(){
                         location.reload();
@@ -59,7 +60,7 @@ $(document).ready(function(){
                 }
             });
         }else{
-            openPopup('Error', 'Debe llenar todos los campos', 1);
+            openPopup('Error', 'Debe llenar todos los campos', 1, null);
         }
     });
 
@@ -76,11 +77,11 @@ $(document).ready(function(){
                 if (response.success) {
                     location.href = response.url;
                 }else{
-                    openPopup('Error', response.message, 1);
+                    openPopup('Error', response.message, 1, null);
                 }
             },
             error: function (response){
-                openPopup('Error', 'Ha ocurrido un error, se recargará la página', 1);
+                openPopup('Error', 'Ha ocurrido un error, se recargará la página', 1, null);
 
                 setTimeout(function(){
                     location.reload();

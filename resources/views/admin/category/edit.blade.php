@@ -7,7 +7,7 @@
 
     <div class="panel-body">
 
-        {!! Form::open(['url' => ['/admin/category/update', $oCategory->id], 'method' =>'PUT', 'class' => 'formValid'])
+        {!! Form::open(['url' => ['/admin/category/update', $oCategory->id], 'method' =>'PUT', 'id' => 'formCategory'])
         !!}
         {!! Form::submit('Guardar', ['class' => 'btn btn-success']) !!}
         <a href="{{ route('admin.tournament.category', $oCategory->tournament_id) }}"
@@ -18,5 +18,5 @@
         {!! Form::close() !!}
     </div>
 
-    <script src="{{ asset('/js/admin/category.js') }}"></script>
+    <script src="{{ asset('/js/app/admin/category.js') }}"></script>
 @endsection

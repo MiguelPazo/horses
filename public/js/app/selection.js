@@ -18,29 +18,24 @@ $(document).ready(function () {
                 totalSelected++;
                 $(this).addClass('btn-success');
             } else {
-                $('#modal_message').html('Usted ya ha seleccionado a 12 concursantes!');
-                $('#modal_notice').modal('show');
+                openPopup('Error', 'Usted ya ha seleccionado a 12 concursantes!', 1, null);
             }
         }
 
         $('#count_sel').html(totalSelected);
     });
 
-    $('#btn_end').click(function () {
-        prepareForm();
-        $('#process').val('2')
-        $('#form_pane').submit();
-    });
-
     $('#form_pane').submit(function (e) {
         e.preventDefault();
+        prepareForm();
+        $('#process').val('2')
 
         var url = $(this).attr('action');
         var data = $(this).serialize();
 
         $.ajax({
             url: url,
-            method: 'POST',
+            method: 'GET',
             dataType: 'json',
             data: data,
             success: function (response) {
@@ -48,15 +43,14 @@ $(document).ready(function () {
                     if (response.url != '') {
                         location.href = response.url;
                     } else {
-                        alert('Información guardada satisfactoriamente');
+                        openPopup('Información', 'Información guardada satisfactoriamente!', 1, null);
                     }
                 } else {
-                    alert(response.message);
+                    openPopup('Error', response.message, 1, null);
                 }
             },
             error: function (response){
-                $('#modal_error_message').html('Ha ocurrido un error, se recargará la página');
-                $('#modal_error').modal( 'show' );
+                openPopup('Error', 'Ha ocurrido un error, se recargará la página', 1, null);
 
                 setTimeout(function(){
                     location.reload();
@@ -65,7 +59,9 @@ $(document).ready(function () {
         });
     });
 
-    $('#close_stage').click(function () {
-        $('#modal_confirm').modal('show');
+    $('#btn_confirm').click(function () {
+        openPopup('Adventencia', 'Al cerrar la etapa no podrá volver a modificar los resultados, ¿Esta usted seguro?', 2, function(){
+            $('#form_pane').submit();
+        });
     });
 });

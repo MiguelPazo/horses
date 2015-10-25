@@ -34,10 +34,12 @@ class TournamentController extends Controller
             $oTournament->status = ConstDb::STATUS_ACTIVE;
             $oTournament->save();
 
+            Category::status(ConstDb::STATUS_ACTIVE)->update(['status' => ConstDb::STATUS_INACTIVE]);
+
             $jResponse['success'] = true;
             $jResponse['url'] = route('admin.tournament.index');
         } else {
-            $jResponse['message'] = 'Existe otro concurso con una categoria en proceso, espere a que termine. Sólo puede estar activo un concurso con una categoría a la ves.';
+            $jResponse['message'] = 'Existe otro concurso con una categoria en proceso, espere a que termine. Sólo puede estar activo un concurso con una categoría a la vez.';
         }
 
         return response()->json($jResponse);
@@ -57,6 +59,8 @@ class TournamentController extends Controller
         if ($catInProgress == 0) {
             $oTournament->status = ConstDb::STATUS_INACTIVE;
             $oTournament->save();
+
+            Category::status(ConstDb::STATUS_ACTIVE)->update(['status' => ConstDb::STATUS_INACTIVE]);
 
             $jResponse['success'] = true;
             $jResponse['url'] = route('admin.tournament.index');

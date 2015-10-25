@@ -24,7 +24,9 @@ $(document).ready(function () {
     });
 
     $('#btn_confirm').click(function () {
-        $('#form').submit();
+        openPopup('Adventencia', 'Sólo se puede tomar asistencia una única ves, ¿esta seguro que desea confirmar?', 2, function(){
+            $('#form').submit();
+        });
     });
 
     $('#form').submit(function (e) {

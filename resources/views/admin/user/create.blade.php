@@ -16,5 +16,4 @@
         @include('admin.user._partials.fields')
         {!! Form::close() !!}
     </div>
-    <script src="{{ asset('/js/app/admin/user.js') }}"></script>
 @endsection

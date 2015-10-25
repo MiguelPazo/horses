@@ -17,5 +17,4 @@
 
         {!! Form::close() !!}
     </div>
-    <script src="{{ asset('/js/admin/tournament.js') }}"></script>
 @endsection
