@@ -143,11 +143,25 @@ class TournamentController extends Controller
 
     public function destroy($id)
     {
-        $oTournament = Tournament::findorFail($id);
-        $oTournament->status = ConstDb::STATUS_DELETED;
-        $oTournament->save();
+        $jResponse = [
+            'success' => false,
+            'message' => '',
+            'url' => ''
+        ];
 
-        return redirect()->route('admin.tournament.index');
+        $oTournament = Tournament::findorFail($id);
+
+        if ($oTournament->status != ConstDb::STATUS_ACTIVE) {
+            $oTournament->status = ConstDb::STATUS_DELETED;
+            $oTournament->save();
+
+            $jResponse['success'] = true;
+            $jResponse['url'] = route('admin.tournament.index');
+        } else {
+            $jResponse['message'] = 'No puede eliminar un concurso activo, primero debe desactivarlo!';
+        }
+
+        return response()->json($jResponse);
     }
 
 }

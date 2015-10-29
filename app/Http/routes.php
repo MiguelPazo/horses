@@ -10,7 +10,7 @@ Route::get('/puesta_cero', [
 ]);
 
 Route::group([
-    'middleware' => ['auth','role'],
+    'middleware' => ['auth', 'role'],
     'prefix' => 'oper',
     'namespace' => 'Commissar',
     'roles' => 'commissar'
@@ -41,6 +41,10 @@ Route::group([
 
     Route::resource('/tournament', 'TournamentController');
 
+    Route::get('/tournament/{tournament}', [
+        'as' => 'admin.tournament.destroy',
+        'uses' => 'TournamentController@destroy'
+    ]);
     Route::get('/tournaments', [
         'as' => 'admin.tournament.index',
         'uses' => 'TournamentController@index'
@@ -107,12 +111,12 @@ Route::group([
 Route::group([
     'prefix' => '/results'
 ], function () {
-    Route::get('/', [
+    Route::get('/tournament/{tournament}', [
         'as' => 'tournament.results',
         'uses' => 'ResultsController@index'
     ]);
 
-    Route::get('/category/{category}', [
+    Route::get('/tournament/{tournament}/category/{category}', [
         'as' => 'tournament.results.category',
         'uses' => 'ResultsController@category'
     ]);

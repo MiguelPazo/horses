@@ -25,16 +25,27 @@ class Category extends Model
 
     public function scopeShowable($query, $type)
     {
-        $query->where('actual_stage', ConstDb::STAGE_CLASSIFY_1)
-            ->orWhere('status', ConstDb::STATUS_FINAL);
-
         if ($type == ConstDb::TYPE_CATEGORY_SELECTION) {
-            $query->orWhere('actual_stage', ConstDb::STAGE_SELECTION);
+            return $query->where('type', ConstDb::TYPE_CATEGORY_SELECTION)
+                ->where('actual_stage', '<>', '')
+                ->where('actual_stage', '<>', ConstDb::STAGE_ASSISTANCE);
+        } else {
+            return $query->where('type', ConstDb::TYPE_CATEGORY_WSELECTION)
+                ->where('actual_stage', '<>', '')
+                ->where('actual_stage', '<>', ConstDb::STAGE_ASSISTANCE)
+                ->where('actual_stage', '<>', ConstDb::STAGE_SELECTION);
         }
 
-        $query->where('type', $type);
+//        $query->where('actual_stage', ConstDb::STAGE_CLASSIFY_1);
+//            ->orWhere('status', ConstDb::STATUS_FINAL);
+//
+//        if ($type == ConstDb::TYPE_CATEGORY_SELECTION) {
+//            $query->orWhere('actual_stage', ConstDb::STAGE_SELECTION);
+//        }
+//
+//        $query->where('type', $type);
 
-        return $query;
+//        return $query;
     }
 
     public function juries()

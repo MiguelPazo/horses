@@ -11,7 +11,7 @@
                 <span class="glyphicon glyphicon-menu-left"></span>
             </a>
             <a href="{{ url('/admin/category/create', $oTournament->id) }}" class="btn btn-primary">Nuevo</a>
-            <table class="table table-striped">
+            <table class="table table-striped table-hover">
                 <thead>
                 <tr>
                     <th>#</th>

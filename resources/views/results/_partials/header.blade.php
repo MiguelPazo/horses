@@ -6,7 +6,7 @@
     <ul class="nav nav-pills nav-stacked">
         @foreach($lstCategory as $category)
             <li class="{{ (isset($oCategory))? ($category->id == $oCategory->id) ? 'active':'' : '' }}">
-                <a href="{{ route('tournament.results.category', $category->id) }}">
+                <a href="{{ route('tournament.results.category', [$oTournament->id, $category->id]) }}">
                     {{ $category->description }}
                 </a>
             </li>

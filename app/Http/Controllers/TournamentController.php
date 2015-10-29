@@ -25,11 +25,13 @@ class TournamentController extends Controller
     public function __construct(Request $request)
     {
         $this->request = $request;
-        $this->category = $request->session()->get('oCategory');
-        $this->tournament = $request->session()->get('oTournament');
 
-        $maxComp = Competitor::category($this->category->id)->max('number');
-        $this->lenCompNum = strlen($maxComp);
+        if ($request->hasSession()) {
+            $this->category = $request->session()->get('oCategory');
+            $this->tournament = $request->session()->get('oTournament');
+            $maxComp = Competitor::category($this->category->id)->max('number');
+            $this->lenCompNum = strlen($maxComp);
+        }
     }
 
     public function selection()

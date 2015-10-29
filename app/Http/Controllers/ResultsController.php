@@ -22,11 +22,11 @@ class ResultsController extends Controller
         $this->request = $request;
     }
 
-    public function index()
+    public function index($tournament)
     {
-        $oTournament = Tournament::status(ConstDb::STATUS_ACTIVE)->first();
+        $oTournament = Tournament::findOrfail($tournament);
 
-        if ($oTournament) {
+        if ($oTournament && $oTournament->status != ConstDb::STATUS_DELETED) {
             $lstCategory = $this->getCategories($oTournament->id);
 
 
@@ -36,17 +36,17 @@ class ResultsController extends Controller
         }
     }
 
-    public function category($id)
+    public function category($tournament, $category)
     {
         $oCategory = Category::with(['juries' => function ($query) {
             $query->orderBy('id');
-        }])->findorFail($id);
+        }])->findorFail($category);
 
         if ($oCategory->actual_stage == ConstDb::STAGE_SELECTION
             || $oCategory->actual_stage == ConstDb::STAGE_CLASSIFY_1
             || $oCategory->status == ConstDb::STATUS_FINAL
         ) {
-            $oTournament = Tournament::find($oCategory->tournament_id);
+            $oTournament = Tournament::find($tournament);
             $lstCategory = $this->getCategories($oTournament->id);
             $lenCompNum = strlen(Competitor::category($oCategory->id)->max('number'));
             $selection = false;
@@ -86,7 +86,6 @@ class ResultsController extends Controller
                 }
             }
 
-
             return view('results.category')
                 ->with('selection', $selection)
                 ->with('oCategory', $oCategory)
@@ -107,12 +106,12 @@ class ResultsController extends Controller
         $lstCategory = Category::tournament($idTournament)->showable(ConstDb::TYPE_CATEGORY_SELECTION)->get();
         $lstCategoryWSelect = Category::tournament($idTournament)->showable(ConstDb::TYPE_CATEGORY_WSELECTION)->get();
 
-        $lstCategory->merge($lstCategoryWSelect);
+        $lstCombine = $lstCategory->merge($lstCategoryWSelect);
 
-        $lstCategory->sortBy(function ($item) {
+        $lstCombine->sortBy(function ($item) {
             return $item->description;
         });
 
-        return $lstCategory;
+        return $lstCombine;
     }
 }
