@@ -1,6 +1,17 @@
 <?php
 
-Route::get('/', 'Auth\AuthController@getLogin');
+Route::filter('nocache', function ($route, $request, $response) {
+    $response->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+        ->header('Pragma', 'no-cache')
+        ->header('Expires', '0');
+
+    return $response;
+});
+
+Route::get('/', [
+    'after' => 'nocache',
+    'uses' => 'Auth\AuthController@getLogin'
+]);
 
 Route::controller('/auth', 'Auth\AuthController');
 
@@ -77,9 +88,10 @@ Route::group([
 });
 
 Route::group([
-    'middleware' => ['auth', 'role'],
+    'middleware' => ['auth', 'role', 'stage'],
     'prefix' => '/tournament',
-    'roles' => 'jury'
+    'roles' => 'jury',
+    'after' => 'nocache'
 ], function () {
     Route::get('/selection', [
         'as' => 'tournament.selection',

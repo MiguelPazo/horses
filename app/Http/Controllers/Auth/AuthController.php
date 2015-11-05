@@ -70,7 +70,7 @@ class AuthController extends Controller
                             if ($oCategory) {
                                 if ($oCategory->actual_stage == null) {
                                     $process = true;
-                                    $request->session()->put('oCategory', $oCategory);
+                                    $request->session()->put('oCategory', $oCatephpgory);
                                     $request->session()->put('oTournament', $oTournament);
                                     $response['url'] = route('operator.assistance');
                                 } else {

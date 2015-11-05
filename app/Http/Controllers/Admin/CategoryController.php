@@ -78,7 +78,7 @@ class CategoryController extends Controller
     {
         if (isset($id)) {
             $oTournament = Tournament::findorFail($id);
-            $lstCategory = Category::tournament($oTournament->id)->get();
+            $lstCategory = Category::tournament($oTournament->id)->statusDiff(ConstDb::STATUS_DELETED)->get();
 
             return view('admin.category.index')
                 ->with('lstCategory', $lstCategory)

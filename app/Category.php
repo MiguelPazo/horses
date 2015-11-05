@@ -18,6 +18,11 @@ class Category extends Model
         return $query->where('status', $status);
     }
 
+    public function scopeStatusDiff($query, $status)
+    {
+        return $query->where('status', '<>', $status);
+    }
+
     public function scopeStatusIn($query, $lstStatus)
     {
         return $query->whereIn('status', $lstStatus);

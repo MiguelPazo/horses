@@ -14,3 +14,5 @@
     </ul>
 
 </div>
+
+<script src="{{ asset('/js/app/results.js') }}"></script>
