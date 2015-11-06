@@ -58,15 +58,24 @@ class CategoryController extends Controller
         $catInProgress = Category::status(ConstDb::STATUS_IN_PROGRESS)->count();
 
         if ($catInProgress == 0) {
-            Category::status(ConstDb::STATUS_ACTIVE)->tournament($oCategory->tournament_id)->update(['status' => ConstDb::STATUS_INACTIVE]);
-            Tournament::status(ConstDb::STATUS_ACTIVE)->update(['status' => ConstDb::STATUS_INACTIVE]);
-            Tournament::find($oCategory->tournament_id)->update(['status' => ConstDb::STATUS_ACTIVE]);
+            if ($oCategory->count_competitors > 0) {
+                if ($oCategory->juries->count() == 3) {
+                    Category::status(ConstDb::STATUS_ACTIVE)->tournament($oCategory->tournament_id)->update(['status' => ConstDb::STATUS_INACTIVE]);
+                    Tournament::status(ConstDb::STATUS_ACTIVE)->update(['status' => ConstDb::STATUS_INACTIVE]);
+                    Tournament::find($oCategory->tournament_id)->update(['status' => ConstDb::STATUS_ACTIVE]);
 
-            $oCategory->status = ConstDb::STATUS_ACTIVE;
-            $oCategory->save();
+                    $oCategory->status = ConstDb::STATUS_ACTIVE;
+                    $oCategory->save();
 
-            $jResponse['success'] = true;
-            $jResponse['url'] = route('admin.tournament.category', $oCategory->tournament_id);
+                    $jResponse['success'] = true;
+                    $jResponse['url'] = route('admin.tournament.category', $oCategory->tournament_id);
+                } else {
+                    $jResponse['message'] = 'Falta asignar jueces a la categoría.';
+                }
+            } else {
+                $jResponse['message'] = 'No puede activar una categoría con 0 competidores.';
+            }
+
         } else {
             $jResponse['message'] = 'Existe otra categoría en proceso, espere a que termine. Sólo puede estar activa una categoría a la vez.';
         }

@@ -50,7 +50,7 @@ $(document).ready(function () {
         prepareForm();
     });
 
-    $('#formCategory').submit(function(e){
+    $('#formCategory').submit(function (e) {
         e.preventDefault();
         prepareForm();
 
@@ -58,11 +58,11 @@ $(document).ready(function () {
         var method = form.attr('method');
         var methodElement = form.find("input[name='_method']");
 
-        if(methodElement.length != 0){
+        if (methodElement.length != 0) {
             method = methodElement.val();
         }
 
-        if(validateForm(form)){
+        if (validateForm(form)) {
             $.ajax({
                 url: form.attr('action'),
                 method: method,
@@ -75,15 +75,13 @@ $(document).ready(function () {
                         openPopup('Error', response.message, 1, null);
                     }
                 },
-                error: function (response){
+                error: function (response) {
                     openPopup('Error', 'Ha ocurrido un error, se recargará la página', 1, null);
 
-                    setTimeout(function(){
-                        location.reload();
-                    },2000);
+                    reloadPage();
                 }
             });
-        }else{
+        } else {
             openPopup('Error', 'Debe llenar todos los campos', 1, null);
         }
     });
