@@ -28,12 +28,12 @@ $(document).ready(function () {
                         openPopup('Error', response.message, 1, null);
                     }
                 },
-                error: function (response){
+                error: function (response) {
                     openPopup('Error', 'Ha ocurrido un error, se recargará la página', 1, null);
 
-                    //setTimeout(function(){
-                      //  location.reload();
-                    //},2000);
+                    setTimeout(function () {
+                        location.reload();
+                    }, 2000);
                 }
             });
         } else {
