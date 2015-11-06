@@ -70,7 +70,7 @@ class AuthController extends Controller
                             if ($oCategory) {
                                 if ($oCategory->actual_stage == null) {
                                     $process = true;
-                                    $request->session()->put('oCategory', $oCatephpgory);
+                                    $request->session()->put('oCategory', $oCategory);
                                     $request->session()->put('oTournament', $oTournament);
                                     $response['url'] = route('operator.assistance');
                                 } else {
@@ -195,12 +195,16 @@ class AuthController extends Controller
 
     public function getLogout()
     {
-        $oUser = User::find($this->auth->user()->id);
-
-        if ($oUser->profile != ConstDb::PROFILE_ADMIN) {
-            $oUser->login = ConstDb::USER_DISCONNECTED;
-            $oUser->save();
-        }
+		if($this->auth->user()){
+			$oUser = User::find($this->auth->user()->id);
+			
+			if($oUser){
+				if ($oUser->profile != ConstDb::PROFILE_ADMIN) {
+					$oUser->login = ConstDb::USER_DISCONNECTED;
+					$oUser->save();
+				}
+			}
+		}
 
         $this->auth->logout();
 
