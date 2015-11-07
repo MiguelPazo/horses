@@ -30,7 +30,8 @@
                             <thead>
                             <tr>
                                 <th rowspan="2">Puesto</th>
-                                <th rowspan="2">Número de Participante</th>
+                                <th rowspan="2">Número de Cancha</th>
+                                <th rowspan="2">Número de Catálogo</th>
                                 <th colspan="{{ $oCategory->juries->count() + 1 }}" class="center">Primera Clasificación
                                 </th>
                                 <th colspan="{{ $oCategory->juries->count() + 1 }}" class="center">Segunda Clasificación
@@ -52,9 +53,9 @@
                             <?php $position = 1; ?>
                             @foreach($lstCompetitorWinners as $competitor)
                                 <tr>
-                                    <th scope="row">{{ $position }}</th>
+                                    <td scope="row">{{ $position }}</td>
                                     <td>{{ str_pad($competitor->number, $lenCompNum, "0", STR_PAD_LEFT) }}</td>
-
+                                    <td scope="row">{{ $competitor->catalog }}</td>
                                     <?php $acum = 0 ?>
                                     @foreach($competitor->stages as $stage)
                                         @if($stage->stage == \Horses\Constants\ConstDb::STAGE_CLASSIFY_1)
@@ -81,8 +82,9 @@
                             <?php $position = 1; ?>
                             @foreach($lstCompetitorHonorable as $competitor)
                                 <tr>
-                                    <th scope="row">MH{{ $position }}</th>
+                                    <td scope="row">MH{{ $position }}</td>
                                     <td>{{ str_pad($competitor->number, $lenCompNum, "0", STR_PAD_LEFT) }}</td>
+                                    <td scope="row">{{ $competitor->catalog }}</td>
 
                                     <?php $acum = 0 ?>
                                     @foreach($competitor->stages as $stage)

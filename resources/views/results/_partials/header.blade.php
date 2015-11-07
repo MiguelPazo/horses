@@ -15,4 +15,6 @@
 
 </div>
 
-<script src="{{ asset('/js/app/results.js') }}"></script>
+@if(!Auth::check())
+    <script src="{{ asset('/js/app/results.js') }}"></script>
+@endif

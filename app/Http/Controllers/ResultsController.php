@@ -112,8 +112,8 @@ class ResultsController extends Controller
 
         $lstCombine = $lstCategory->merge($lstCategoryWSelect);
 
-        $lstCombine->sortBy(function ($item) {
-            return $item->description;
+        $lstCombine->sortByDesc(function ($item) {
+            return $item->order;
         });
 
         return $lstCombine;
