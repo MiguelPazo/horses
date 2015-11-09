@@ -1,1 +1,0 @@
-http://localhost/horses/public/tournament/save_classify_1?comp_140=1&comp_145=2&comp_154=3&comp_153=4&comp_155=5&comp_151=6&comp_150=7&comp_149=8&comp_146=9&comp_144=10&comp_141=11&comp_143=12&comp_142=13&process=2

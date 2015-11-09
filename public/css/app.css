@@ -107,3 +107,6 @@ table tr th {
 .count_class {
     font-weight: bold;
 }
+.label_category{
+	display: none;
+}

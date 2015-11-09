@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="{{ asset('/js/libs/bootstrap/dist/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ asset('/js/libs/jquery-ui/themes/base/jquery-ui.min.css') }}">
     <link rel="stylesheet" href="{{ asset('/css/app.css') }}">
+	<link rel="stylesheet" href="{{ asset('/css/print.css') }}" media="print">
 
     <script src="{{ asset('/js/libs/jquery/dist/jquery.min.js') }}"></script>
     <script src="{{ asset('/js/libs/jquery-ui/jquery-ui.min.js') }}"></script>

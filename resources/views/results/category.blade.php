@@ -3,6 +3,7 @@
 @section('content')
     @include('results._partials.header')
     <div class="col-md-10">
+		<h4 class="label_category">Categoría: {{ $oCategory->description}}</h4>
         <div class="col-md-12">
             @if($selection)
                 <div class="tab-pane">
@@ -100,6 +101,7 @@
                             </tbody>
                         </table>
                     </div>
+					<button class="btn btn-success btn_print">IMPRIMIR</button>
                 </div>
             @endif
         </div>

@@ -1,0 +1,7 @@
+a, button, .nav-pills{
+	display: none !important;
+}
+
+.label_category{
+	display: block;
+}

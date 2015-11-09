@@ -98,4 +98,8 @@ $(document).ready(function () {
         'dateFormat': 'dd-mm-yy',
         showButtonPanel: true
     });
+	
+	$('.btn_print').click(function(){
+		print();
+	});
 });
