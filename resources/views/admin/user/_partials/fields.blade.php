@@ -24,6 +24,6 @@
 </div>
 <div class="form-group">
     {!! Form::label('profile', 'Perfil:') !!}
-    {!! Form::select('profile', ['commissar' => 'Comisario', 'jury' => 'Jurado'],
+    {!! Form::select('profile', ['commissar' => 'Comisario', 'jury' => 'Jurado', 'operator' => 'Operador'],
     (isset($oUser)) ? $oUser->profile : null,['class' =>'form-control required']) !!}
 </div>

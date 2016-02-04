@@ -24,7 +24,7 @@ class AssistanceController extends Controller
         $oCategory = $this->request->session()->get('oCategory');
         $totalComp = $oCategory->num_begin + $oCategory->count_competitors;
 
-        return view('operator.assistance')
+        return view('commissar.assistance')
             ->with('rpad', strlen($totalComp))
             ->with('oCategory', $oCategory);
     }

@@ -72,7 +72,7 @@ class AuthController extends Controller
                                     $process = true;
                                     $request->session()->put('oCategory', $oCategory);
                                     $request->session()->put('oTournament', $oTournament);
-                                    $response['url'] = route('operator.assistance');
+                                    $response['url'] = route('commissar.assistance');
                                 } else {
                                     $response['message'] = 'No existen categorías pendientes para tomar asistencía.';
                                 }
@@ -128,6 +128,18 @@ class AuthController extends Controller
                             } else {
                                 $response['message'] = $categoryActive['message'];
                             }
+                            break;
+                        case ConstDb::PROFILE_OPERATOR:
+                            $oTournament = Tournament::status(ConstDb::STATUS_ACTIVE)->first();
+
+                            if ($oTournament) {
+                                $request->session()->put('oTournament', $oTournament);
+                                $response['url'] = route('oper.catalog.index');
+                            } else {
+                                $process = false;
+                                $response['message'] = 'Aún no se ha activado ningún torneo.';
+                            }
+
                             break;
                     }
 
@@ -195,16 +207,16 @@ class AuthController extends Controller
 
     public function getLogout()
     {
-		if($this->auth->user()){
-			$oUser = User::find($this->auth->user()->id);
-			
-			if($oUser){
-				if ($oUser->profile != ConstDb::PROFILE_ADMIN) {
-					$oUser->login = ConstDb::USER_DISCONNECTED;
-					$oUser->save();
-				}
-			}
-		}
+        if ($this->auth->user()) {
+            $oUser = User::find($this->auth->user()->id);
+
+            if ($oUser) {
+                if ($oUser->profile != ConstDb::PROFILE_ADMIN) {
+                    $oUser->login = ConstDb::USER_DISCONNECTED;
+                    $oUser->save();
+                }
+            }
+        }
 
         $this->auth->logout();
 

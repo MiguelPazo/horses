@@ -38,6 +38,9 @@ class Role
                 case ConstDb::PROFILE_COMMISSAR:
                     return redirect()->route('operator.assistance');
                     break;
+                case ConstDb::PROFILE_OPERATOR:
+                    return redirect()->route('oper.catalog.index');
+                    break;
             }
         }
     }

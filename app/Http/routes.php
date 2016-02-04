@@ -22,19 +22,28 @@ Route::get('/puesta_cero', [
 
 Route::group([
     'middleware' => ['auth', 'role'],
-    'prefix' => 'oper',
+    'prefix' => 'commisar',
     'namespace' => 'Commissar',
     'roles' => 'commissar'
 ], function () {
     Route::get('/', [
-        'as' => 'operator.assistance',
+        'as' => 'commissar.assistance',
         'uses' => 'AssistanceController@index'
     ]);
 
     Route::post('/save', [
-        'as' => 'operator.assistance.save',
+        'as' => 'commissar.assistance.save',
         'uses' => 'AssistanceController@save'
     ]);
+});
+
+Route::group([
+    'middleware' => ['auth', 'role'],
+    'prefix' => 'oper',
+    'namespace' => 'Operator',
+    'roles' => 'operator'
+], function () {
+    Route::resource('/catalog', 'CatalogController');
 });
 
 Route::group([
