@@ -190,7 +190,8 @@ class CategoryController extends Controller
     public function getDestroy($id)
     {
         $oCategory = Category::findorFail($id);
-        $oCategory->delete();
+        $oCategory->status = ConstDb::STATUS_DELETED;
+        $oCategory->save();
 
         return redirect()->route('admin.tournament.category', $oCategory->tournament_id);
     }

@@ -43,7 +43,7 @@ Route::group([
     'namespace' => 'Operator',
     'roles' => 'operator'
 ], function () {
-    Route::resource('/catalog', 'CatalogController');
+    Route::resource('/animal', 'AnimalController');
 });
 
 Route::group([

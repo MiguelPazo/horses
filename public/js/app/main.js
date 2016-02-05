@@ -27,10 +27,16 @@ var validateForm = function (form) {
 };
 
 var reloadPage = function () {
-    setTimeout(function () {
-        location.reload();
-    }, 2000);
+    //setTimeout(function () {
+    //    location.reload();
+    //}, 2000);
 };
+
+var generalError = function () {
+    openPopup('Error', 'Ha ocurrido un error, se recargará la página', 1, null);
+
+    reloadPage();
+}
 
 $(document).ready(function () {
     $('.integer').numeric();
@@ -59,13 +65,11 @@ $(document).ready(function () {
                     }
                 },
                 error: function (response) {
-                    openPopup('Error', 'Ha ocurrido un error, se recargará la página', 1, null);
-
-                    reloadPage();
+                    generalError();
                 }
             });
         } else {
-            openPopup('Error', 'Debe llenar todos los campos', 1, null);
+            openPopup('Error', 'Debe llenar todos los campos obligatorios.', 1, null);
         }
     });
 
@@ -86,9 +90,7 @@ $(document).ready(function () {
                 }
             },
             error: function (response) {
-                openPopup('Error', 'Ha ocurrido un error, se recargará la página', 1, null);
-
-                reloadPage();
+                generalError();
             }
         });
 
@@ -98,8 +100,8 @@ $(document).ready(function () {
         'dateFormat': 'dd-mm-yy',
         showButtonPanel: true
     });
-	
-	$('.btn_print').click(function(){
-		print();
-	});
+
+    $('.btn_print').click(function () {
+        print();
+    });
 });

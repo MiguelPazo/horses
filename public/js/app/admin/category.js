@@ -46,9 +46,9 @@ $(document).ready(function () {
         fixDiriment();
     });
 
-    $('#form').submit(function (e) {
-        prepareForm();
-    });
+    //$('#form').submit(function (e) {
+    //    prepareForm();
+    //});
 
     $('#formCategory').submit(function (e) {
         e.preventDefault();
@@ -76,9 +76,7 @@ $(document).ready(function () {
                     }
                 },
                 error: function (response) {
-                    openPopup('Error', 'Ha ocurrido un error, se recargará la página', 1, null);
-
-                    reloadPage();
+                    generalError();
                 }
             });
         } else {

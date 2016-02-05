@@ -53,7 +53,7 @@ class AuthController extends Controller
 
         if ($oUser) {
             if (Hash::check($pass, $oUser->password)) {
-                if ($oUser->login != ConstDb::USER_CONECTED) {
+                if ($oUser->login != ConstDb::USER_CONECTED || true) {
                     $process = true;
 
                     switch ($oUser->profile) {
@@ -134,7 +134,7 @@ class AuthController extends Controller
 
                             if ($oTournament) {
                                 $request->session()->put('oTournament', $oTournament);
-                                $response['url'] = route('oper.catalog.index');
+                                $response['url'] = route('oper.animal.index');
                             } else {
                                 $process = false;
                                 $response['message'] = 'Aún no se ha activado ningún torneo.';

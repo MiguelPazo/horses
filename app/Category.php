@@ -40,17 +40,6 @@ class Category extends Model
                 ->where('actual_stage', '<>', ConstDb::STAGE_ASSISTANCE)
                 ->where('actual_stage', '<>', ConstDb::STAGE_SELECTION);
         }
-
-//        $query->where('actual_stage', ConstDb::STAGE_CLASSIFY_1);
-//            ->orWhere('status', ConstDb::STATUS_FINAL);
-//
-//        if ($type == ConstDb::TYPE_CATEGORY_SELECTION) {
-//            $query->orWhere('actual_stage', ConstDb::STAGE_SELECTION);
-//        }
-//
-//        $query->where('type', $type);
-
-//        return $query;
     }
 
     public function juries()
