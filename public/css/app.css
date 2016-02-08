@@ -7,6 +7,10 @@ table tr th {
     vertical-align: middle !important;
 }
 
+form.formuppertext input {
+    text-transform: uppercase;
+}
+
 .title {
     margin: 15px 0;
 }
@@ -107,6 +111,28 @@ table tr th {
 .count_class {
     font-weight: bold;
 }
-.label_category{
-	display: none;
+
+.label_category {
+    display: none;
+}
+
+.block_label {
+    display: block;
+}
+
+.btn_categories {
+    text-align: left;
+}
+
+.btn_categories b {
+    float: right;
+    margin-top: -12px;
+}
+
+.btn_categories + ul {
+    width: 100%;
+}
+
+.btn_categories + ul input.multiselect-search {
+    text-transform: uppercase;
 }

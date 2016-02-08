@@ -28,6 +28,11 @@ class Category extends Model
         return $query->whereIn('status', $lstStatus);
     }
 
+    public function scopeIdsIn($query, $ids)
+    {
+        return $query->whereIn('id', $ids);
+    }
+
     public function scopeShowable($query, $type)
     {
         if ($type == ConstDb::TYPE_CATEGORY_SELECTION) {

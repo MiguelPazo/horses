@@ -2,6 +2,7 @@
 
 use Horses\Category;
 use Horses\Constants\ConstDb;
+use Horses\Constants\ConstMessages;
 use Horses\Http\Requests;
 use Horses\Http\Controllers\Controller;
 
@@ -81,7 +82,11 @@ class TournamentController extends Controller
 
     public function create()
     {
-        return view('admin.tournament.create');
+        $formHeader = ['route' => 'admin.tournament.store', 'class' => 'formValid formuppertext'];
+
+        return view('admin.tournament.maintenance')
+            ->with('title', 'Nuevo Concurso')
+            ->with('formHeader', $formHeader);
     }
 
     public function store(Request $request)
@@ -101,7 +106,7 @@ class TournamentController extends Controller
             $jResponse['success'] = true;
             $jResponse['url'] = route('admin.tournament.index');
         } else {
-            $jResponse['message'] = 'Debe llenar todos los campos.';
+            $jResponse['message'] = ConstMessages::FORM_INCORRECT;
         }
 
         return response()->json($jResponse);
@@ -110,8 +115,12 @@ class TournamentController extends Controller
     public function edit($id)
     {
         $oTournament = Tournament::findorFail($id);
-
-        return view('admin.tournament.edit')->with('oTournament', $oTournament);
+        $formHeader = ['route' => ['admin.tournament.update', $oTournament->id], 'method' => 'PUT', 'class' =>
+            'formValid formuppertext'];
+        return view('admin.tournament.maintenance')
+            ->with('oTournament', $oTournament)
+            ->with('title', 'Editar Concurso')
+            ->with('formHeader', $formHeader);
     }
 
     public function update($id, Request $request)
@@ -135,7 +144,7 @@ class TournamentController extends Controller
             $jResponse['success'] = true;
             $jResponse['url'] = route('admin.tournament.index');
         } else {
-            $jResponse['message'] = 'Debe llenar todos los campos.';
+            $jResponse['message'] = ConstMessages::FORM_INCORRECT;
         }
 
         return response()->json($jResponse);

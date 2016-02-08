@@ -43,7 +43,18 @@ Route::group([
     'namespace' => 'Operator',
     'roles' => 'operator'
 ], function () {
+    Route::get('/agent/list-all', [
+        'as' => 'oper.agent.listall',
+        'uses' => 'AgentController@listall'
+    ]);
+
+    Route::get('/animal/list-parents', [
+        'as' => 'oper.animal.listParents',
+        'uses' => 'AnimalController@listParents'
+    ]);
+
     Route::resource('/animal', 'AnimalController');
+    Route::resource('/agent', 'AgentController');
 });
 
 Route::group([

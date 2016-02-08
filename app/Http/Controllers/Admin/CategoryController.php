@@ -4,6 +4,7 @@ use Horses\Category;
 use Horses\CategoryUser;
 use Horses\Constants\ConstApp;
 use Horses\Constants\ConstDb;
+use Horses\Constants\ConstMessages;
 use Horses\Http\Requests;
 use Horses\Http\Controllers\Controller;
 
@@ -101,11 +102,14 @@ class CategoryController extends Controller
         $lstJuries = $this->listJuries();
         $lstJury = $lstJuries[0];
         $lstJuryCategory = $lstJuries[1];
+        $formHeader = ['url' => ['/admin/category/store', $oTournament->id], 'id' => 'formCategory', 'class' => 'formuppertext'];
 
-        return view('admin.category.create')
+        return view('admin . category . maintenance')
             ->with('lstJury', $lstJury)
             ->with('lstJuryCategory', $lstJuryCategory)
-            ->with('oTournament', $oTournament);
+            ->with('oTournament', $oTournament)
+            ->with('title', 'Nueva Categoría para ' . $oTournament->description)
+            ->with('formHeader', $formHeader);
     }
 
     public function postStore($id, Request $request)
@@ -132,9 +136,9 @@ class CategoryController extends Controller
             $this->registerJuries($request, $oCategory->id);
 
             $jResponse['success'] = true;
-            $jResponse['url'] = route('admin.tournament.category', $id);
+            $jResponse['url'] = route('admin . tournament . category', $id);
         } else {
-            $jResponse['message'] = 'Debe llenar todos los campos.';
+            $jResponse['message'] = ConstMessages::FORM_INCORRECT;
         }
 
         return response()->json($jResponse);
@@ -147,13 +151,15 @@ class CategoryController extends Controller
         $lstJuries = $this->listJuries($oCategory->id);
         $lstJury = $lstJuries[0];
         $lstJuryCategory = $lstJuries[1];
+        $formHeader = ['url' => ['/admin/category/update', $oCategory->id], 'method' => 'PUT', 'id' => 'formCategory', 'class' => 'formuppertext'];
 
-
-        return view('admin.category.edit')
+        return view('admin . category . maintenance')
             ->with('oCategory', $oCategory)
             ->with('lstJury', $lstJury)
             ->with('lstJuryCategory', $lstJuryCategory)
-            ->with('oTournament', $oTournament);
+            ->with('oTournament', $oTournament)
+            ->with('title', 'Editar Categoría de ' . $oTournament->description)
+            ->with('formHeader', $formHeader);
     }
 
 
@@ -179,9 +185,9 @@ class CategoryController extends Controller
             $oCategory->save();
 
             $jResponse['success'] = true;
-            $jResponse['url'] = route('admin.tournament.category', $oCategory->tournament_id);
+            $jResponse['url'] = route('admin . tournament . category', $oCategory->tournament_id);
         } else {
-            $jResponse['message'] = 'Debe llenar todos los campos.';
+            $jResponse['message'] = ConstMessages::FORM_INCORRECT;
         }
 
         return response()->json($jResponse);
@@ -193,7 +199,7 @@ class CategoryController extends Controller
         $oCategory->status = ConstDb::STATUS_DELETED;
         $oCategory->save();
 
-        return redirect()->route('admin.tournament.category', $oCategory->tournament_id);
+        return redirect()->route('admin . tournament . category', $oCategory->tournament_id);
     }
 
     public function listJuries($idCategory = null)

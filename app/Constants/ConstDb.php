@@ -6,8 +6,15 @@ class ConstDb
     const PROFILE_COMMISSAR = 'commissar';
     const PROFILE_JURY = 'jury';
     const PROFILE_OPERATOR = 'operator';
+
     const USER_DISCONNECTED = 0;
     const USER_CONECTED = 1;
+
+    const AGENT_OWNER = 'owner';
+    const AGENT_BREEDER = 'breeder';
+
+    const GEN_FEMALE = 'female';
+    const GEN_MALE = 'male';
 
     const STATUS_DELETED = 'deleted';
     const STATUS_INACTIVE = 'inactive';

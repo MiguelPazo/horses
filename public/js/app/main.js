@@ -77,10 +77,11 @@ $(document).ready(function () {
         e.preventDefault();
 
         var url = $(this).attr('href');
+        var method = ($(this).attr('data-method') == undefined) ? 'GET' : $(this).attr('data-method');
 
         $.ajax({
             url: url,
-            method: 'GET',
+            method: method,
             dataType: 'json',
             success: function (response) {
                 if (response.success) {
@@ -94,11 +95,6 @@ $(document).ready(function () {
             }
         });
 
-    });
-
-    $(".datepicker").datepicker({
-        'dateFormat': 'dd-mm-yy',
-        showButtonPanel: true
     });
 
     $('.btn_print').click(function () {

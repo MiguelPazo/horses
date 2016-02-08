@@ -11,23 +11,14 @@
     <meta name="author" content="LayoutIt!">
 
     <link rel="stylesheet" href="{{ asset('/js/libs/bootstrap/dist/css/bootstrap.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('/js/libs/jquery-ui/themes/base/jquery-ui.min.css') }}">
+
+    @yield('css')
+
     <link rel="stylesheet" href="{{ asset('/css/app.css') }}">
-	<link rel="stylesheet" href="{{ asset('/css/print.css') }}" media="print">
-
-    <script src="{{ asset('/js/libs/jquery/dist/jquery.min.js') }}"></script>
-    <script src="{{ asset('/js/libs/jquery-ui/jquery-ui.min.js') }}"></script>
-    <script src="{{ asset('/js/libs/jquery-ui/ui/minified/i18n/datepicker-es.min.js') }}"></script>
-    <script src="{{ asset('/js/libs/jquery-ui-touch-punch/jquery.ui.touch-punch.min.js') }}"></script>
-    <script src="{{ asset('/js/libs/jquery-numeric/dist/jquery-numeric.js') }}"></script>
-    <script src="{{ asset('/js/libs/bootstrap/dist/js/bootstrap.min.js') }}"></script>
-
-    <script src="{{ asset('/js/app/main.js') }}"></script>
+    <link rel="stylesheet" href="{{ asset('/css/print.css') }}" media="print">
 
     <script>
         var BASE_URL = '{{ asset('/')}}';
-
-
     </script>
 </head>
 <body>
@@ -54,5 +45,11 @@
         </div>
     </div>
 </div>
+<script src="{{ asset('/js/libs/jquery/dist/jquery.min.js') }}"></script>
+<script src="{{ asset('/js/libs/jquery-ui-touch-punch/jquery.ui.touch-punch.min.js') }}"></script>
+<script src="{{ asset('/js/libs/jquery-numeric/dist/jquery-numeric.js') }}"></script>
+<script src="{{ asset('/js/libs/bootstrap/dist/js/bootstrap.min.js') }}"></script>
+<script src="{{ asset('/js/app/main.js') }}"></script>
+@yield('scripts')
 </body>
 </html>

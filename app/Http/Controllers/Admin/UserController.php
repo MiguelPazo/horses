@@ -1,6 +1,7 @@
 <?php namespace Horses\Http\Controllers\Admin;
 
 use Horses\Constants\ConstDb;
+use Horses\Constants\ConstMessages;
 use Horses\Http\Requests;
 use Horses\Http\Controllers\Controller;
 
@@ -38,8 +39,12 @@ class UserController extends Controller
 
     public function create()
     {
-        return view('admin.user.create')
-            ->with('passRequired', true);
+        $formHeader = ['route' => 'admin.user.store', 'class' => 'formValid'];
+
+        return view('admin.user.maintenance')
+            ->with('passRequired', true)
+            ->with('title', 'Nuevo Usuario')
+            ->with('formHeader', $formHeader);
     }
 
     public function store(Request $request)
@@ -71,7 +76,7 @@ class UserController extends Controller
             }
 
         } else {
-            $jResponse['message'] = 'Debe llenar todos los campos.';
+            $jResponse['message'] = ConstMessages::FORM_INCORRECT;
         }
 
         return response()->json($jResponse);
@@ -80,11 +85,13 @@ class UserController extends Controller
     public function edit($id)
     {
         $oUser = User::findorFail($id);
+        $formHeader = ['route' => ['admin.user.update', $oUser->id], 'method' => 'PUT', 'class' => 'formValid'];
 
-
-        return view('admin.user.edit')
+        return view('admin.user.maintenance')
             ->with('passRequired', false)
-            ->with('oUser', $oUser);
+            ->with('oUser', $oUser)
+            ->with('title', 'Editar Usuario')
+            ->with('formHeader', $formHeader);
     }
 
     public function update($id, Request $request)
@@ -125,7 +132,7 @@ class UserController extends Controller
                 $jResponse['message'] = 'El usuario ya existe, puebe uno diferente.';
             }
         } else {
-            $jResponse['message'] = 'Debe llenar todos los campos.';
+            $jResponse['message'] = ConstMessages::FORM_INCORRECT;
         }
 
         return response()->json($jResponse);
