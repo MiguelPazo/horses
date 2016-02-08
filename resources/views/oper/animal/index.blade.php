@@ -25,11 +25,23 @@
                 @foreach($lstAnimals as $animal)
                     <tr>
                         <td>{{ $count }}</td>
-                        <td>prefix</td>
+                        <?php $prefix = false ?>
+                        @if($animal->agents->count() > 0)
+                            @foreach($animal->agents as $agent)
+                                @if($agent->pivot->type == \Horses\Constants\ConstDb::AGENT_BREEDER)
+                                    <?php $prefix = true ?>
+                                    <td>{{ $agent->prefix }}</td>
+                                @endif
+                            @endforeach
+                        @endif
+                        @if(!$prefix)
+                            <td></td>
+                        @endif
+
                         <td>{{ $animal->name }}</td>
                         <td>{{ $animal->code }}</td>
-                        <td>{{ ($animal->birthdate != '')? DateTime::createFromFormat('Y-m-d H:i:s', $animal->birthdate)->format('d-m-Y'): '' }}</td>
-                        <td>5</td>
+                        <td>{{ $animal->birthdate }}</td>
+                        <td>{{ $animal->catalogs->count() }}</td>
                         <td>
                             <a href="{{ route('oper.animal.edit', $animal->id) }}" role="button"
                                class="btn">

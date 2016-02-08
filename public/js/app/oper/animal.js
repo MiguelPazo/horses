@@ -4,8 +4,12 @@ $(document).ready(function () {
     var catSelected = [];
     var xhr;
 
-    if ($('#prefix').val() != undefined) {
+    if ($('#prefix').val() != '') {
         fillPrefix = false;
+    }
+
+    if ($('#categories').val() != '') {
+        catSelected = $('#categories').val().split(',');
     }
 
     $('#categories_name').multiselect({
@@ -66,32 +70,49 @@ $(document).ready(function () {
 
         if (validateForm(form)) {
             var withcomma = true;
+            var parents = true;
 
             form.find('.namewlast').each(function (i, item) {
-                var pos = $(item).val().indexOf(',');
+                var val = $.trim($(item).val());
 
-                if (pos === -1) {
-                    withcomma = false;
+                if (val != '') {
+                    var pos = val.indexOf(',');
+
+                    if (pos === -1) {
+                        withcomma = false;
+                    }
+                }
+            });
+
+            form.find('.parents').each(function (i, item) {
+                var val = $.trim($(item).val());
+
+                if (val == $.trim($('#name').val())) {
+                    parents = false;
                 }
             });
 
             if (withcomma) {
-                $.ajax({
-                    url: form.attr('action'),
-                    method: method,
-                    dataType: 'json',
-                    data: form.serialize(),
-                    success: function (response) {
-                        if (response.success) {
-                            location.href = response.url;
-                        } else {
-                            openPopup('Error', response.message, 1, null);
+                if (parents) {
+                    $.ajax({
+                        url: form.attr('action'),
+                        method: method,
+                        dataType: 'json',
+                        data: form.serialize(),
+                        success: function (response) {
+                            if (response.success) {
+                                location.href = response.url;
+                            } else {
+                                openPopup('Error', response.message, 1, null);
+                            }
+                        },
+                        error: function (response) {
+                            generalError();
                         }
-                    },
-                    error: function (response) {
-                        generalError();
-                    }
-                });
+                    });
+                } else {
+                    openPopup('Error', 'El nombre del animal no puede ser el mismo que el de los padres', 1, null);
+                }
             } else {
                 openPopup('Error', 'Separe los nombres y apellidos por ",". Ejemplo: Miguel Rodrigo, Pazo Sánchez', 1, null);
             }

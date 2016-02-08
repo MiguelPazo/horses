@@ -1,5 +1,6 @@
 <?php namespace Horses;
 
+use Horses\Constants\ConstDb;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -17,6 +18,11 @@ class Animal extends Model
     public function catalogs()
     {
         return $this->hasMany('Horses\Catalog');
+    }
+
+    public function breeder()
+    {
+        return $this->agents()->wherePivot('type', ConstDb::AGENT_BREEDER);
     }
 
     public function scopeIdsIn($query, $ids)
@@ -40,7 +46,6 @@ class Animal extends Model
         } else {
             return $query->where('gender', $gender);
         }
-
     }
 
     public function scopeCode($query, $code, $or = false)
@@ -50,5 +55,20 @@ class Animal extends Model
         } else {
             return $query->where('code', $code);
         }
+    }
+
+    public function setBirthdateAttribute($value)
+    {
+        $birthDate = ($value != null && $value != '') ? date('Y-m-d', strtotime($value)) : null;
+
+        $this->attributes['birthdate'] = $birthDate;
+    }
+
+    public function getBirthdateAttribute()
+    {
+        $attr = $this->attributes['birthdate'];
+        $birthDate = ($attr != '') ? date('d-m-Y', strtotime($this->attributes['birthdate'])) : null;
+
+        return $birthDate;
     }
 }
