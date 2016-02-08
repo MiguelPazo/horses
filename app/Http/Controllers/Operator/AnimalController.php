@@ -207,11 +207,17 @@ class AnimalController extends Controller
                     })->first();
 
                     if (!$oBreeder) {
-                        $oBreeder = Agent::create([
-                            'prefix' => strtoupper($data['prefix']),
-                            'names' => $breederNames,
-                            'lastnames' => $breederLastnames
-                        ]);
+                        if ($oOwner->names == $breederNames && $oOwner->lastnames == $breederLastnames) {
+                            $oOwner->prefix = strtoupper($data['prefix']);
+                            $oOwner->save();
+                            $oBreeder = $oOwner;
+                        } else {
+                            $oBreeder = Agent::create([
+                                'prefix' => strtoupper($data['prefix']),
+                                'names' => $breederNames,
+                                'lastnames' => $breederLastnames
+                            ]);
+                        }
                     } else if ($oBreeder->prefix != $prefix) {
                         $oBreeder->prefix = $prefix;
                         $oBreeder->save();
