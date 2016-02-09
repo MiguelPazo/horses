@@ -22,7 +22,7 @@ class AuthController extends Controller
      */
     protected $auth;
 
-    public function __construct(Guard $auth, Registrar $registrar)
+    public function __construct(Guard $auth)
     {
         $this->auth = $auth;
 

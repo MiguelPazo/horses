@@ -71,6 +71,7 @@ $(document).ready(function () {
         if (validateForm(form)) {
             var withcomma = true;
             var parents = true;
+            var sameParents = false;
 
             form.find('.namewlast').each(function (i, item) {
                 var val = $.trim($(item).val());
@@ -85,33 +86,53 @@ $(document).ready(function () {
             });
 
             form.find('.parents').each(function (i, item) {
+                var prefix = $.trim($('#prefix').val());
+                prefix = (prefix == '') ? '' : '(' + prefix + ') ';
+                var name = prefix + $.trim($('#name').val());
                 var val = $.trim($(item).val());
+                var count = 0;
 
-                if (val == $.trim($('#name').val())) {
+                if (val == name) {
                     parents = false;
+                }
+
+                if (val != '') {
+                    form.find('.parents').each(function (i2, item2) {
+                        var val2 = $.trim($(item2).val());
+
+                        if (val == val2) {
+                            count++;
+                        }
+
+                        sameParents = (count > 1) ? true : sameParents;
+                    });
                 }
             });
 
             if (withcomma) {
                 if (parents) {
-                    $.ajax({
-                        url: form.attr('action'),
-                        method: method,
-                        dataType: 'json',
-                        data: form.serialize(),
-                        success: function (response) {
-                            if (response.success) {
-                                location.href = response.url;
-                            } else {
-                                openPopup('Error', response.message, 1, null);
+                    if (!sameParents) {
+                        $.ajax({
+                            url: form.attr('action'),
+                            method: method,
+                            dataType: 'json',
+                            data: form.serialize(),
+                            success: function (response) {
+                                if (response.success) {
+                                    location.href = response.url;
+                                } else {
+                                    openPopup('Error', response.message, 1, null);
+                                }
+                            },
+                            error: function (response) {
+                                generalError();
                             }
-                        },
-                        error: function (response) {
-                            generalError();
-                        }
-                    });
+                        });
+                    } else {
+                        openPopup('Error', 'El nombre del padre y madre no pueden ser iguales.', 1, null);
+                    }
                 } else {
-                    openPopup('Error', 'El nombre del animal no puede ser el mismo que el de los padres', 1, null);
+                    openPopup('Error', 'El nombre del animal no puede ser el mismo que el de los padres.', 1, null);
                 }
             } else {
                 openPopup('Error', 'Separe los nombres y apellidos por ",". Ejemplo: Miguel Rodrigo, Pazo Sánchez', 1, null);

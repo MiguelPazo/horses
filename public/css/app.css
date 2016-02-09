@@ -11,6 +11,11 @@ form.formuppertext input {
     text-transform: uppercase;
 }
 
+#text_searched {
+    width: 30%;
+    text-transform: uppercase;
+}
+
 .title {
     margin: 15px 0;
 }
@@ -135,4 +140,34 @@ form.formuppertext input {
 
 .btn_categories + ul input.multiselect-search {
     text-transform: uppercase;
+}
+
+.autocomplete-suggestions {
+    border: 1px solid #999;
+    background: #FFF;
+    overflow: auto;
+}
+
+.autocomplete-suggestion {
+    padding: 2px 5px;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.autocomplete-selected {
+    background: #F0F0F0;
+}
+
+.autocomplete-suggestions strong {
+    font-weight: normal;
+    color: #3399FF;
+}
+
+.autocomplete-group {
+    padding: 2px 5px;
+}
+
+.autocomplete-group strong {
+    display: block;
+    border-bottom: 1px solid #000;
 }

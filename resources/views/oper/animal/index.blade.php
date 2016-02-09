@@ -7,7 +7,14 @@
 
     <div class="panel-body">
         <div class="table-responsive">
-            <a href="{{ route('oper.animal.create') }}" class="btn btn-primary">Nuevo</a>
+            <div class="form-inline">
+                <label for="text_searched">Buscar: </label>
+                <input id="text_searched" class="form-control" type="text" value="{{ $search }}">
+                <a href="{{ route('oper.animal.index') }}" id="btn_search"
+                   class="btn btn-primary glyphicon glyphicon-search"></a>
+                <a href="{{ route('oper.animal.create') }}" class="btn btn-primary">Nuevo</a>
+            </div>
+            <p></p>
             <table class="table table-striped table-hover">
                 <thead>
                 <tr>
@@ -25,19 +32,7 @@
                 @foreach($lstAnimals as $animal)
                     <tr>
                         <td>{{ $count }}</td>
-                        <?php $prefix = false ?>
-                        @if($animal->agents->count() > 0)
-                            @foreach($animal->agents as $agent)
-                                @if($agent->pivot->type == \Horses\Constants\ConstDb::AGENT_BREEDER)
-                                    <?php $prefix = true ?>
-                                    <td>{{ $agent->prefix }}</td>
-                                @endif
-                            @endforeach
-                        @endif
-                        @if(!$prefix)
-                            <td></td>
-                        @endif
-
+                        <td>{{ ($animal->breeder->count() > 0)? $animal->breeder->get(0)->prefix: '' }}</td>
                         <td>{{ $animal->name }}</td>
                         <td>{{ $animal->code }}</td>
                         <td>{{ $animal->birthdate }}</td>
@@ -59,5 +54,10 @@
                 </tbody>
             </table>
         </div>
+        {!! $lstAnimals->render() !!}
     </div>
+@endsection
+
+@section('scripts')
+    <script src="{{ asset('/js/app/oper/animal/index.js') }}"></script>
 @endsection

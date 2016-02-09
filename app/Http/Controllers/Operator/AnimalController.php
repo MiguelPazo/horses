@@ -1,15 +1,12 @@
 <?php namespace Horses\Http\Controllers\Operator;
 
-use Horses\Agent;
 use Horses\Animal;
-use Horses\Catalog;
 use Horses\Category;
 use Horses\Constants\ConstDb;
 use Horses\Constants\ConstMessages;
 use Horses\Http\Controllers\Controller;
+use Horses\Services\Facades\AnimalFac;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use PhpSpec\Exception\Exception;
 
 
 class AnimalController extends Controller
@@ -62,13 +59,20 @@ class AnimalController extends Controller
      *
      * @return Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $lstAnimals = Animal::with(['agents', 'catalogs' => function ($query) {
+        $search = strtoupper($request->get('query'));
+
+        //revisar luego - filtros
+        $lstAnimals = Animal::with(['breeder', 'catalogs' => function ($query) {
             return $query->where('tournament_id', $this->oTournament->id);
-        }])->get();
+        }])->where('name', 'like', "%$search%")
+            ->orWhere('code', 'like', "%$search%")
+            ->orderBy('name')
+            ->paginate(100);
 
         return view('oper.animal.index')
+            ->with('search', $search)
             ->with('tournament', $this->oTournament->description)
             ->with('lstAnimals', $lstAnimals);
     }
@@ -120,10 +124,10 @@ class AnimalController extends Controller
             $name = strtoupper($request->get('name'));
             $code = strtoupper($request->get('code'));
 
-            $lstAnimal = Animal::name($name)->code($code, true)->whereNull('deleted_at')->get();
+            $lstAnimal = $this->getVerifyAnimal($name, $code);
 
             if ($lstAnimal->count() == 0) {
-                $jResponse = $this->saveAnimal($request->all());
+                $jResponse = AnimalFac::save($request->all(), $this->oTournament->id);
             } else {
                 $jResponse['message'] = ConstMessages::ANIMAL_NAME_CODE_EXISTS;
             }
@@ -132,202 +136,6 @@ class AnimalController extends Controller
         }
 
         return response()->json($jResponse);
-    }
-
-    public function saveAnimal($data, $oAnimal = null)
-    {
-        $jResponse = [
-            'success' => false,
-            'message' => '',
-            'url' => ''
-        ];
-
-        $name = strtoupper($data['name']);
-        $code = strtoupper($data['code']);
-        $birthdate = $data['birthdate'];
-        $momName = strtoupper(trim(substr($data['mom_name'], strpos($data['mom_name'], ')'))));
-        $dadName = strtoupper(trim(substr($data['dad_name'], strpos($data['dad_name'], ')') + 1)));
-        $prefix = strtoupper($data['prefix']);
-        $next = true;
-        $oOwner = null;
-        $oBreeder = null;
-        $oMom = null;
-        $oDad = null;
-
-        $withOwner = ($data['owner_name'] != '') ? true : false;
-        $withBreeder = ($data['breeder_name'] != '') ? true : false;
-        $withMom = ($momName != '') ? true : false;
-        $withDad = ($dadName != '') ? true : false;
-
-        $dataOwner = explode(',', strtoupper($data['owner_name']));
-        $dataBreeder = explode(',', strtoupper($data['breeder_name']));
-
-        $next = ($withOwner) ? ((count($dataOwner) != 2) ? false : true) : true;
-        $next = ($withBreeder) ? ((count($dataBreeder) != 2) ? false : true) : true;
-
-        if ($next) {
-            $ownerNames = ($withOwner) ? trim($dataOwner[0]) : '';
-            $ownerLastnames = ($withOwner) ? trim($dataOwner[1]) : '';
-            $breederNames = ($withBreeder) ? trim($dataBreeder[0]) : '';
-            $breederLastnames = ($withBreeder) ? trim($dataBreeder[1]) : '';
-
-            $lstAgents = Agent::where(function ($query) use ($ownerNames, $ownerLastnames) {
-                return $query->where('names', $ownerNames)
-                    ->where('lastnames', $ownerLastnames);
-            })->orWhere(function ($query) use ($breederNames, $breederLastnames) {
-                return $query->where('names', $breederNames)
-                    ->where('lastnames', $breederLastnames);
-            })->get();
-
-            DB::beginTransaction();
-
-            try {
-                //Owner
-                if ($withOwner) {
-                    $oOwner = $lstAgents->filter(function ($item) use ($ownerNames, $ownerLastnames) {
-                        if ($item->names == $ownerNames && $item->lastnames == $ownerLastnames) {
-                            return $item;
-                        }
-                    })->first();
-
-                    if (!$oOwner) {
-                        $oOwner = Agent::create([
-                            'names' => $ownerNames,
-                            'lastnames' => $ownerLastnames
-                        ]);
-                    }
-                }
-
-                //Breeder
-                if ($withBreeder) {
-                    $oBreeder = $lstAgents->filter(function ($item) use ($breederNames, $breederLastnames) {
-                        if ($item->names == $breederNames && $item->lastnames == $breederLastnames) {
-                            return $item;
-                        }
-                    })->first();
-
-                    if (!$oBreeder) {
-                        if ($oOwner->names == $breederNames && $oOwner->lastnames == $breederLastnames) {
-                            $oOwner->prefix = strtoupper($data['prefix']);
-                            $oOwner->save();
-                            $oBreeder = $oOwner;
-                        } else {
-                            $oBreeder = Agent::create([
-                                'prefix' => strtoupper($data['prefix']),
-                                'names' => $breederNames,
-                                'lastnames' => $breederLastnames
-                            ]);
-                        }
-                    } else if ($oBreeder->prefix != $prefix) {
-                        $oBreeder->prefix = $prefix;
-                        $oBreeder->save();
-                    }
-                }
-
-                $lstParents = Animal::name($momName)->name($dadName, true)->get();
-
-                //Mom
-                if ($withMom) {
-                    $oMom = $lstParents->filter(function ($item) use ($momName) {
-                        return $item->name == $momName;
-                    })->first();
-
-                    if (!$oMom) {
-                        $oMom = Animal::create(['name' => $momName, 'gender' => ConstDb::GEN_FEMALE]);
-                    }
-                }
-
-                //Dad
-                if ($withDad) {
-                    $oDad = $lstParents->filter(function ($item) use ($dadName) {
-                        return $item->name == $dadName;
-                    })->first();
-
-                    if (!$oDad) {
-                        $oDad = Animal::create(['name' => $dadName, 'gender' => ConstDb::GEN_MALE]);;
-                    }
-                }
-
-                if ($oAnimal) {
-                    $oAnimal->agents()->detach();
-                    $oAnimal->catalogs()->delete();
-
-                    $oAnimal->code = $code;
-                    $oAnimal->name = $name;
-                    $oAnimal->birthdate = $birthdate;
-                    $oAnimal->mom = ($withMom) ? $oMom->id : null;
-                    $oAnimal->dad = ($withDad) ? $oDad->id : null;
-                    $oAnimal->save();
-                } else {
-                    $oAnimal = Animal::create([
-                        'code' => $code,
-                        'name' => $name,
-                        'birthdate' => $birthdate,
-                        'mom' => ($withMom) ? $oMom->id : null,
-                        'dad' => ($withDad) ? $oDad->id : null,
-                    ]);
-                }
-
-                //Agents
-                $dataAttach = [];
-
-                if ($withOwner) {
-                    $dataAttach[$oOwner->id] = ['type' => ConstDb::AGENT_OWNER];
-                }
-
-                if ($withBreeder) {
-                    $dataAttach[$oBreeder->id] = ['type' => ConstDb::AGENT_BREEDER];
-                }
-
-                switch (count($dataAttach)) {
-                    case 1:
-                        $oAnimal->agents()->attach($dataAttach);
-                        break;
-                    case 2:
-                        if ($oOwner->id == $oBreeder->id) {
-                            $oAnimal->agents()->attach([
-                                $oOwner->id => ['type' => ConstDb::AGENT_OWNER]
-                            ]);
-                            $oAnimal->agents()->attach([
-                                $oBreeder->id => ['type' => ConstDb::AGENT_BREEDER]
-                            ]);
-                        } else {
-                            $oAnimal->agents()->attach($dataAttach);
-                        }
-                        break;
-                }
-
-
-                //categories - catalog
-                $idsCat = explode(',', $data['categories']);
-                $lstCategoriesIds = (count($idsCat) > 0) ? Category::idsIn($idsCat)->get(['id'])->toArray() : null;
-
-                $catalogs = [];
-
-                if ($lstCategoriesIds) {
-                    foreach ($lstCategoriesIds as $key => $value) {
-                        $catalogs[] = new Catalog([
-                            'category_id' => $value['id'],
-                            'tournament_id' => $this->oTournament->id
-                        ]);
-                    }
-
-                    $oAnimal->catalogs()->saveMany($catalogs);
-                }
-
-                DB::commit();
-
-                $jResponse['success'] = true;
-                $jResponse['url'] = route('oper.animal.index');
-            } catch (Exception $ex) {
-                DB::rollback();
-                throw $ex;
-            }
-        } else {
-            $jResponse['message'] = ConstMessages::NAME_WITHOUT_COMMA;
-        }
-
-        return $jResponse;
     }
 
     /**
@@ -416,16 +224,16 @@ class AnimalController extends Controller
             $name = strtoupper($request->get('name'));
             $code = strtoupper($request->get('code'));
 
-            $lstAnimal = Animal::name($name)->code($code, true)->whereNull('deleted_at')->get();
+            $lstAnimal = $this->getVerifyAnimal($name, $code);
 
-            if ($lstAnimal->count() <= 1) {
+            if (!$lstAnimal || $lstAnimal->count() <= 1) {
                 $oAnimalS = ($lstAnimal->count() == 0) ? null : $lstAnimal->get(0);
                 $oAnimal = Animal::with(['agents', 'catalogs'])->findorFail($id);
 
-                if ($oAnimalS && $oAnimalS->id != $oAnimal->id) {
-                    $jResponse['message'] = ConstMessages::ANIMAL_NAME_CODE_EXISTS;
+                if (!$oAnimalS || $oAnimalS->id == $oAnimal->id) {
+                    $jResponse = AnimalFac::save($request->all(), $this->oTournament->id, $oAnimal);
                 } else {
-                    $jResponse = $this->saveAnimal($request->all(), $oAnimal);
+                    $jResponse['message'] = ConstMessages::ANIMAL_NAME_CODE_EXISTS;
                 }
 
             } else {
@@ -436,6 +244,21 @@ class AnimalController extends Controller
         }
 
         return response()->json($jResponse);
+    }
+
+    public function getVerifyAnimal($name, $code)
+    {
+        $lstAnimal = null;
+
+        if ($name != '' && $code != '') {
+            $lstAnimal = Animal::name($name)->code($code, true)->whereNull('deleted_at')->get();
+        } else if ($name != '') {
+            $lstAnimal = Animal::name($name)->whereNull('deleted_at')->get();
+        } else if ($code != '') {
+            $lstAnimal = Animal::code($code)->whereNull('deleted_at')->get();
+        }
+
+        return $lstAnimal;
     }
 
     /**
