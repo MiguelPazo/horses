@@ -19,7 +19,6 @@ class CategoryController extends Controller
     private $rules = [
         'description' => 'required|max:200',
         'type' => 'required',
-        'count_competitors' => 'required',
         'num_begin' => 'required'
     ];
 
@@ -104,7 +103,7 @@ class CategoryController extends Controller
         $lstJuryCategory = $lstJuries[1];
         $formHeader = ['url' => ['/admin/category/store', $oTournament->id], 'id' => 'formCategory', 'class' => 'formuppertext'];
 
-        return view('admin . category . maintenance')
+        return view('admin.category.maintenance')
             ->with('lstJury', $lstJury)
             ->with('lstJuryCategory', $lstJuryCategory)
             ->with('oTournament', $oTournament)
@@ -128,7 +127,6 @@ class CategoryController extends Controller
 
             $oCategory->description = $request->get('description');
             $oCategory->type = ($request->get('type') == 0) ? ConstDb::TYPE_CATEGORY_WSELECTION : ConstDb::TYPE_CATEGORY_SELECTION;
-            $oCategory->count_competitors = $request->get('count_competitors');
             $oCategory->num_begin = $request->get('num_begin');
             $oCategory->tournament_id = $oTournament->id;
             $oCategory->save();
@@ -153,7 +151,7 @@ class CategoryController extends Controller
         $lstJuryCategory = $lstJuries[1];
         $formHeader = ['url' => ['/admin/category/update', $oCategory->id], 'method' => 'PUT', 'id' => 'formCategory', 'class' => 'formuppertext'];
 
-        return view('admin . category . maintenance')
+        return view('admin.category.maintenance')
             ->with('oCategory', $oCategory)
             ->with('lstJury', $lstJury)
             ->with('lstJuryCategory', $lstJuryCategory)
@@ -161,7 +159,6 @@ class CategoryController extends Controller
             ->with('title', 'Editar Categoría de ' . $oTournament->description)
             ->with('formHeader', $formHeader);
     }
-
 
     public function putUpdate($id, Request $request)
     {
@@ -180,7 +177,6 @@ class CategoryController extends Controller
 
             $oCategory->description = $request->get('description');
             $oCategory->type = ($request->get('type') == 0) ? ConstDb::TYPE_CATEGORY_WSELECTION : ConstDb::TYPE_CATEGORY_SELECTION;
-            $oCategory->count_competitors = $request->get('count_competitors');
             $oCategory->num_begin = $request->get('num_begin');
             $oCategory->save();
 

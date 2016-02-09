@@ -95,7 +95,9 @@ class AnimalController extends Controller
 
     public function getLstCategory()
     {
-        $lstCategory = Category::tournament($this->oTournament->id)->statusDiff(ConstDb::STATUS_DELETED)->get(['id', 'description']);
+        $lstCategory = Category::tournament($this->oTournament->id)->statusDiff(ConstDb::STATUS_DELETED)
+            ->orderBy('order', 'ASC')
+            ->get(['id', 'description']);
         $lstData = [];
 
         foreach ($lstCategory as $key => $value) {

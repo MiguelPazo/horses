@@ -8,11 +8,11 @@
     {!! Form::select('type', ['1' => 'Sí', '0' => 'No'], (isset($oCategory)) ? (($oCategory->type ==
     \Horses\Constants\ConstDb::TYPE_CATEGORY_SELECTION)? '1': '0') : null ,['class' =>'form-control required']) !!}
 </div>
-<div class="form-group">
-    {!! Form::label('count_competitors', 'Cantidad de Competidores:') !!}
-    {!! Form::text('count_competitors', (isset($oCategory)) ? $oCategory->count_competitors : null, ['class'
-    =>'form-control integer required', 'maxlength' => 3]) !!}
-</div>
+{{--<div class="form-group">--}}
+    {{--{!! Form::label('count_competitors', 'Cantidad de Competidores:') !!}--}}
+    {{--{!! Form::text('count_competitors', (isset($oCategory)) ? $oCategory->count_competitors : null, ['class'--}}
+    {{--=>'form-control integer required', 'maxlength' => 3]) !!}--}}
+{{--</div>--}}
 <div class="form-group">
     {!! Form::label('num_begin', 'Número del Primer Competidor:') !!}
     {!! Form::text('num_begin', (isset($oCategory)) ? $oCategory->num_begin : 1, ['class'
