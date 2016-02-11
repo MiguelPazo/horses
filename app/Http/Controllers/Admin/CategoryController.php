@@ -24,25 +24,27 @@ class CategoryController extends Controller
 
     public function getIndex($id)
     {
-        $lstCategory = CategoryFac::fetchAll($this->oTournament->id);
+        $oTournament = Tournament::findorFail($id);
+        $lstCategory = CategoryFac::fetchAll($id);
 
         return view('admin.category.index')
             ->with('lstCategory', $lstCategory)
-            ->with('oTournament', $this->oTournament);
+            ->with('oTournament', $oTournament);
     }
 
     public function getCreate($id)
     {
+        $oTournament = Tournament::findorFail($id);
         $lstJuries = $this->listJuries();
         $lstJury = $lstJuries[0];
         $lstJuryCategory = $lstJuries[1];
-        $formHeader = ['url' => ['/admin/category/store', $this->oTournament->id], 'id' => 'formCategory', 'class' => 'formuppertext'];
+        $formHeader = ['url' => ['/admin/category/store', $oTournament->id], 'id' => 'formCategory', 'class' => 'formuppertext'];
 
         return view('admin.category.maintenance')
             ->with('lstJury', $lstJury)
             ->with('lstJuryCategory', $lstJuryCategory)
-            ->with('oTournament', $this->oTournament)
-            ->with('title', 'Nueva Categoría para ' . $this->oTournament->description)
+            ->with('oTournament', $oTournament)
+            ->with('title', 'Nueva Categoría para ' . $oTournament->description)
             ->with('formHeader', $formHeader);
     }
 
@@ -58,11 +60,12 @@ class CategoryController extends Controller
 
         if ($validator === true) {
             $oCategory = new Category();
+            $oTournament = Tournament::findorFail($id);
 
             $oCategory->description = $request->get('description');
             $oCategory->type = ($request->get('type') == 0) ? ConstDb::TYPE_CATEGORY_WSELECTION : ConstDb::TYPE_CATEGORY_SELECTION;
             $oCategory->num_begin = $request->get('num_begin');
-            $oCategory->tournament_id = $this->oTournament->id;
+            $oCategory->tournament_id = $oTournament->id;
             $oCategory->save();
 
             $this->registerJuries($request, $oCategory->id);
@@ -79,6 +82,7 @@ class CategoryController extends Controller
     public function getEdit($id)
     {
         $oCategory = Category::findorFail($id);
+        $oTournament = Tournament::findorFail($oCategory->tournament_id);
         $lstJuries = $this->listJuries($oCategory->id);
         $lstJury = $lstJuries[0];
         $lstJuryCategory = $lstJuries[1];
@@ -88,8 +92,8 @@ class CategoryController extends Controller
             ->with('oCategory', $oCategory)
             ->with('lstJury', $lstJury)
             ->with('lstJuryCategory', $lstJuryCategory)
-            ->with('oTournament', $this->oTournament)
-            ->with('title', 'Editar Categoría de ' . $this->oTournament->description)
+            ->with('oTournament', $oTournament)
+            ->with('title', 'Editar Categoría de ' . $oTournament->description)
             ->with('formHeader', $formHeader);
     }
 
