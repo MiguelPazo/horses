@@ -6,7 +6,7 @@ class ConstDb
     const PROFILE_COMMISSAR = 'commissar';
     const PROFILE_JURY = 'jury';
     const PROFILE_OPERATOR = 'operator';
-    const PROFILE_GCOMMISSAR = 'general_commissar';
+    const PROFILE_GENERAL_COMMISSAR = 'general_commissar';
 
     const USER_DISCONNECTED = 0;
     const USER_CONECTED = 1;

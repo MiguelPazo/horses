@@ -13,7 +13,6 @@ class AnimalController extends Controller
 {
 
     private $request;
-    private $oTournament;
 
     private $rules = [
         'name' => 'required|max:45',
@@ -24,7 +23,6 @@ class AnimalController extends Controller
     public function __construct(Request $request)
     {
         $this->request = $request;
-        $this->oTournament = $this->request->session()->get('oTournament');
     }
 
     public function listParents()

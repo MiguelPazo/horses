@@ -36,7 +36,7 @@ class Role
                     return redirect()->route('tournament.selection');
                     break;
                 case ConstDb::PROFILE_COMMISSAR:
-                    return redirect()->route('operator.assistance');
+                    return redirect()->to('/commissar');
                     break;
                 case ConstDb::PROFILE_OPERATOR:
                     return redirect()->route('oper.catalog.index');

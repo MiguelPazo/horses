@@ -16,22 +16,24 @@ class AssistanceController extends Controller
 
     public function __construct(Request $request)
     {
+        parent::__construct($request);
         $this->request = $request;
     }
 
-    public function index()
+    public function index($id)
     {
-        $oCategory = $this->request->session()->get('oCategory');
+        $oCategory = Category::tournament($this->oTournament->id)->findorFail($id);
         $totalComp = $oCategory->num_begin + $oCategory->count_competitors;
 
         return view('commissar.assistance')
+            ->with('oTournament', $this->oTournament)
             ->with('rpad', strlen($totalComp))
             ->with('oCategory', $oCategory);
     }
 
-    public function save()
+    public function save($id)
     {
-        $oCategory = $this->request->session()->get('oCategory');
+        $oCategory = Category::status(ConstDb::STATUS_DELETED, false, true)->findorFail($id);
 
         foreach ($this->request->all() as $key => $value) {
             if (strpos($key, ConstApp::PREFIX_COMPETITOR) !== false) {
@@ -54,17 +56,6 @@ class AssistanceController extends Controller
             }
         }
 
-        if ($oCategory->type == ConstDb::TYPE_CATEGORY_WSELECTION) {
-            $oCategory->actual_stage = ConstDb::STAGE_SELECTION;
-            CategoryUser::category($oCategory->id)->update(['actual_stage' => ConstDb::STAGE_SELECTION]);
-        } else {
-            $oCategory->actual_stage = ConstDb::STAGE_ASSISTANCE;
-            CategoryUser::category($oCategory->id)->update(['actual_stage' => ConstDb::STAGE_ASSISTANCE]);
-        }
-
-        $oCategory->status = ConstDb::STATUS_IN_PROGRESS;
-        $oCategory->save();
-
-        return redirect()->to('/auth/logout');
+        return redirect()->to('/commissar');
     }
 }

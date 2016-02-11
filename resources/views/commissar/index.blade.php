@@ -7,10 +7,6 @@
 
     <div class="panel-body">
         <div class="table-responsive">
-            <a href="{{ route('admin.tournament.index') }}" role="button" class="btn btn-default">
-                <span class="glyphicon glyphicon-menu-left"></span>
-            </a>
-            <a href="{{ url('/admin/category/create', $oTournament->id) }}" class="btn btn-primary">Nuevo</a>
             <table class="table table-striped table-hover">
                 <thead>
                 <tr>
@@ -18,8 +14,8 @@
                     <th>Categoria</th>
                     <th>Selección</th>
                     <th>Etapa Actual</th>
-                    <th>Cantidad de Competidores</th>
-                    {{--<th>Activa</th>--}}
+                    <th>Comp. Inscritos</th>
+                    <th>Comp. Presentes</th>
                     <th>Opciones</th>
                 </tr>
                 </thead>
@@ -28,7 +24,7 @@
                 @foreach( $lstCategory as  $category)
                     <tr class="{{ ($category->status == \Horses\Constants\ConstDb::STATUS_ACTIVE ||
                                     $category->status == \Horses\Constants\ConstDb::STATUS_IN_PROGRESS)? 'info' : '' }}
-                            {{ ($category->status == \Horses\Constants\ConstDb::STATUS_FINAL)? 'active' : '' }}">
+                    {{ ($category->status == \Horses\Constants\ConstDb::STATUS_FINAL)? 'active' : '' }}">
                         <th scope="row">{{ $count }}</th>
                         <td>{{ $category->description }}</td>
                         <td>{{ ($category->type == \Horses\Constants\ConstDb::TYPE_CATEGORY_SELECTION)? 'Sí': 'No' }}</td>
@@ -47,32 +43,17 @@
                             @endif
                         </td>
                         <td>{{ $category->count_competitors }}</td>
-                        {{--<td>--}}
-                            {{--@if($category->status != \Horses\Constants\ConstDb::STATUS_FINAL)--}}
-                                {{--@if($category->status == \Horses\Constants\ConstDb::STATUS_ACTIVE ||--}}
-                                    {{--$category->status == \Horses\Constants\ConstDb::STATUS_IN_PROGRESS)--}}
-                                    {{--<a href="{{ url('/admin/category/disable', $category->id ) }}" role="button"--}}
-                                       {{--class="btn btn-success btn_link_prevent">--}}
-                                        {{--<span class="glyphicon glyphicon-star"></span>--}}
-                                    {{--</a>--}}
-                                {{--@else--}}
-                                    {{--<a href="{{ url('/admin/category/enable', $category->id ) }}" role="button"--}}
-                                       {{--class="btn btn_link_prevent">--}}
-                                        {{--<span class="glyphicon glyphicon-star"></span>--}}
-                                    {{--</a>--}}
-                                {{--@endif--}}
-                            {{--@endif--}}
-                        {{--</td>--}}
+                        <td>{{ $category->count_competitors }}</td>
                         <td>
                             @if($category->status == \Horses\Constants\ConstDb::STATUS_INACTIVE)
-                                <a href="{{ url('/admin/category/edit', $category->id ) }}"
-                                   role="button" class="btn">
-                                    <span class="glyphicon glyphicon-pencil"></span>
+                                <a href="{{ url('/commissar/enable', $category->id ) }}" role="button"
+                                   class="btn" id="btn_star">
+                                    <span class="glyphicon glyphicon-star"></span>
                                 </a>
 
-                                <a href="{{ url('/admin/category/destroy', $category->id) }}"
-                                   role="button" class="btn" data-method="delete">
-                                    <span class=" glyphicon glyphicon-trash"></span>
+                                <a href="{{ route('commissar.assistance', $category->id) }}"
+                                   role="button" class="btn">
+                                    <span class="glyphicon glyphicon-user"></span>
                                 </a>
                             @endif
                         </td>
@@ -83,4 +64,8 @@
             </table>
         </div>
     </div>
+@endsection
+
+@section('scripts')
+    <script src="{{ asset('/js/app/commissar/category.js') }}"></script>
 @endsection

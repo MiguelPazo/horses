@@ -44,6 +44,8 @@
                                 Administrador
                             @elseif($user->profile == \Horses\Constants\ConstDb::PROFILE_COMMISSAR)
                                 Comisario
+                            @elseif($user->profile == \Horses\Constants\ConstDb::PROFILE_GENERAL_COMMISSAR)
+                                Comisario General
                             @elseif($user->profile == \Horses\Constants\ConstDb::PROFILE_OPERATOR)
                                 Operador
                             @else

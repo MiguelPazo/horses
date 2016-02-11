@@ -8,6 +8,7 @@ use Horses\Constants\ConstMessages;
 use Horses\Http\Requests;
 use Horses\Http\Controllers\Controller;
 
+use Horses\Services\Facades\CategoryFac;
 use Horses\Tournament;
 use Horses\User;
 use Illuminate\Database\Eloquent\Collection;
@@ -15,99 +16,33 @@ use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
-
     private $rules = [
         'description' => 'required|max:200',
         'type' => 'required',
         'num_begin' => 'required'
     ];
 
-    public function getDisable($id)
-    {
-        $jResponse = [
-            'success' => false,
-            'message' => '',
-            'url' => ''
-        ];
-
-        $oCategory = Category::findorFail($id);
-
-        if ($oCategory->status != ConstDb::STATUS_IN_PROGRESS) {
-            $oCategory->status = ConstDb::STATUS_INACTIVE;
-            $oCategory->save();
-
-            $jResponse['success'] = true;
-            $jResponse['url'] = route('admin.tournament.category', $oCategory->tournament_id);
-        } else {
-            $jResponse['message'] = 'No puede desactivar una categoría en proceso de evaluación!';
-        }
-
-        return response()->json($jResponse);
-    }
-
-    public function getEnable($id)
-    {
-        $jResponse = [
-            'success' => false,
-            'message' => '',
-            'url' => ''
-        ];
-
-        $oCategory = Category::findorFail($id);
-
-        $catInProgress = Category::status(ConstDb::STATUS_IN_PROGRESS)->count();
-
-        if ($catInProgress == 0) {
-            if ($oCategory->count_competitors > 0) {
-                if ($oCategory->juries->count() == 3) {
-                    Category::status(ConstDb::STATUS_ACTIVE)->tournament($oCategory->tournament_id)->update(['status' => ConstDb::STATUS_INACTIVE]);
-                    Tournament::status(ConstDb::STATUS_ACTIVE)->update(['status' => ConstDb::STATUS_INACTIVE]);
-                    Tournament::find($oCategory->tournament_id)->update(['status' => ConstDb::STATUS_ACTIVE]);
-
-                    $oCategory->status = ConstDb::STATUS_ACTIVE;
-                    $oCategory->save();
-
-                    $jResponse['success'] = true;
-                    $jResponse['url'] = route('admin.tournament.category', $oCategory->tournament_id);
-                } else {
-                    $jResponse['message'] = 'Falta asignar jueces a la categoría.';
-                }
-            } else {
-                $jResponse['message'] = 'No puede activar una categoría con 0 competidores.';
-            }
-
-        } else {
-            $jResponse['message'] = 'Existe otra categoría en proceso, espere a que termine. Sólo puede estar activa una categoría a la vez.';
-        }
-
-        return response()->json($jResponse);
-    }
-
     public function getIndex($id)
     {
-        if (isset($id)) {
-            $oTournament = Tournament::findorFail($id);
-            $lstCategory = Category::tournament($oTournament->id)->statusDiff(ConstDb::STATUS_DELETED)->orderBy('order', 'ASC')->get();
+        $lstCategory = CategoryFac::fetchAll($this->oTournament->id);
 
-            return view('admin.category.index')
-                ->with('lstCategory', $lstCategory)
-                ->with('oTournament', $oTournament);
-        }
+        return view('admin.category.index')
+            ->with('lstCategory', $lstCategory)
+            ->with('oTournament', $this->oTournament);
     }
 
     public function getCreate($id)
     {
-        $oTournament = Tournament::findorFail($id);
         $lstJuries = $this->listJuries();
         $lstJury = $lstJuries[0];
         $lstJuryCategory = $lstJuries[1];
-        $formHeader = ['url' => ['/admin/category/store', $oTournament->id], 'id' => 'formCategory', 'class' => 'formuppertext'];
+        $formHeader = ['url' => ['/admin/category/store', $this->oTournament->id], 'id' => 'formCategory', 'class' => 'formuppertext'];
 
         return view('admin.category.maintenance')
             ->with('lstJury', $lstJury)
             ->with('lstJuryCategory', $lstJuryCategory)
-            ->with('oTournament', $oTournament)
-            ->with('title', 'Nueva Categoría para ' . $oTournament->description)
+            ->with('oTournament', $this->oTournament)
+            ->with('title', 'Nueva Categoría para ' . $this->oTournament->description)
             ->with('formHeader', $formHeader);
     }
 
@@ -122,19 +57,18 @@ class CategoryController extends Controller
         $validator = $this->validateForms($request->all(), $this->rules);
 
         if ($validator === true) {
-            $oTournament = Tournament::findorFail($id);
             $oCategory = new Category();
 
             $oCategory->description = $request->get('description');
             $oCategory->type = ($request->get('type') == 0) ? ConstDb::TYPE_CATEGORY_WSELECTION : ConstDb::TYPE_CATEGORY_SELECTION;
             $oCategory->num_begin = $request->get('num_begin');
-            $oCategory->tournament_id = $oTournament->id;
+            $oCategory->tournament_id = $this->oTournament->id;
             $oCategory->save();
 
             $this->registerJuries($request, $oCategory->id);
 
             $jResponse['success'] = true;
-            $jResponse['url'] = route('admin . tournament . category', $id);
+            $jResponse['url'] = route('admin.tournament.category', $id);
         } else {
             $jResponse['message'] = ConstMessages::FORM_INCORRECT;
         }
@@ -145,7 +79,6 @@ class CategoryController extends Controller
     public function getEdit($id)
     {
         $oCategory = Category::findorFail($id);
-        $oTournament = Tournament::findorFail($oCategory->tournament_id);
         $lstJuries = $this->listJuries($oCategory->id);
         $lstJury = $lstJuries[0];
         $lstJuryCategory = $lstJuries[1];
@@ -155,8 +88,8 @@ class CategoryController extends Controller
             ->with('oCategory', $oCategory)
             ->with('lstJury', $lstJury)
             ->with('lstJuryCategory', $lstJuryCategory)
-            ->with('oTournament', $oTournament)
-            ->with('title', 'Editar Categoría de ' . $oTournament->description)
+            ->with('oTournament', $this->oTournament)
+            ->with('title', 'Editar Categoría de ' . $this->oTournament->description)
             ->with('formHeader', $formHeader);
     }
 
@@ -181,7 +114,7 @@ class CategoryController extends Controller
             $oCategory->save();
 
             $jResponse['success'] = true;
-            $jResponse['url'] = route('admin . tournament . category', $oCategory->tournament_id);
+            $jResponse['url'] = route('admin.tournament.category', $oCategory->tournament_id);
         } else {
             $jResponse['message'] = ConstMessages::FORM_INCORRECT;
         }
@@ -195,7 +128,7 @@ class CategoryController extends Controller
         $oCategory->status = ConstDb::STATUS_DELETED;
         $oCategory->save();
 
-        return redirect()->route('admin . tournament . category', $oCategory->tournament_id);
+        return redirect()->route('admin.tournament.category', $oCategory->tournament_id);
     }
 
     public function listJuries($idCategory = null)

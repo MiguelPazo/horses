@@ -3,6 +3,7 @@
 use Horses\Category;
 use Horses\CategoryUser;
 use Horses\Constants\ConstDb;
+use Horses\Constants\ConstMessages;
 use Horses\User;
 use Horses\Tournament;
 use Horses\Http\Controllers\Controller;
@@ -62,25 +63,15 @@ class AuthController extends Controller
                             break;
 
                         case ConstDb::PROFILE_COMMISSAR:
-                            $process = false;
-                            $categoryActive = $this->isCategoryActive();
-                            $oCategory = $categoryActive['category'];
-                            $oTournament = $categoryActive['tournament'];
+                            $oTournament = Tournament::status(ConstDb::STATUS_ACTIVE)->first();
 
-                            if ($oCategory) {
-                                if ($oCategory->actual_stage == null) {
-                                    $process = true;
-                                    $request->session()->put('oCategory', $oCategory);
-                                    $request->session()->put('oTournament', $oTournament);
-                                    $response['url'] = route('commissar.assistance');
-                                } else {
-                                    $response['message'] = 'No existen categorías pendientes para tomar asistencía.';
-                                }
-
+                            if ($oTournament) {
+                                $request->session()->put('oTournament', $oTournament);
+                                $response['url'] = url('/commissar');
                             } else {
-                                $response['message'] = $categoryActive['message'];
+                                $process = false;
+                                $response['message'] = ConstMessages::LOGIN_TOURNAMENT_NO_ACTIVE;
                             }
-
                             break;
 
                         case ConstDb::PROFILE_JURY:
@@ -137,7 +128,7 @@ class AuthController extends Controller
                                 $response['url'] = route('oper.animal.index');
                             } else {
                                 $process = false;
-                                $response['message'] = 'Aún no se ha activado ningún torneo.';
+                                $response['message'] = ConstMessages::LOGIN_TOURNAMENT_NO_ACTIVE;
                             }
 
                             break;

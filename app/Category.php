@@ -13,9 +13,11 @@ class Category extends Model
         return $query->where('tournament_id', $tournament);
     }
 
-    public function scopeStatus($query, $status)
+    public function scopeStatus($query, $status, $or = false, $diff = false)
     {
-        return $query->where('status', $status);
+        $operator = ($diff) ? '<>' : '=';
+        $query = ($or) ? $query->orWhere('status', $operator, $status) : $query->where('status', $operator, $status);
+        return $query;
     }
 
     public function scopeStatusDiff($query, $status)
