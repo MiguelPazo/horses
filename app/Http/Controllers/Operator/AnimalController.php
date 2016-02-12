@@ -22,6 +22,7 @@ class AnimalController extends Controller
 
     public function __construct(Request $request)
     {
+        parent::__construct($request);
         $this->request = $request;
     }
 
@@ -110,7 +111,7 @@ class AnimalController extends Controller
      *
      * @return Response
      */
-    public function store(Request $request)
+    public function store(Request $request, $id = null)
     {
         $jResponse = [
             'success' => false,
@@ -127,7 +128,12 @@ class AnimalController extends Controller
             $lstAnimal = $this->getVerifyAnimal($name, $code);
 
             if ($lstAnimal->count() == 0) {
-                $jResponse = AnimalFac::save($request->all(), $this->oTournament->id);
+                $data = $request->all();
+                
+                if ($id) {
+                    $data['categories'] = $id;
+                }
+                $jResponse = AnimalFac::save($data, $this->oTournament->id);
             } else {
                 $jResponse['message'] = ConstMessages::ANIMAL_NAME_CODE_EXISTS;
             }

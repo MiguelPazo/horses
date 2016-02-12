@@ -180,22 +180,49 @@ class AnimalService
                         break;
                 }
 
+                //less count competitors in categories
+                $idsCatOld = [];
+
+                foreach ($oAnimal->catalogs as $key => $value) {
+                    $idsCatOld[] = $value->category_id;
+                }
 
                 //categories - catalog
                 $idsCat = explode(',', $data['categories']);
-                $lstCategoriesIds = (count($idsCat) > 0) ? Category::idsIn($idsCat)->get(['id'])->toArray() : null;
+                $lstCategoriesIds = (count($idsCat) > 0) ? Category::idsIn($idsCat)->get() : null;
 
                 $catalogs = [];
 
                 if ($lstCategoriesIds) {
                     foreach ($lstCategoriesIds as $key => $value) {
                         $catalogs[] = new Catalog([
-                            'category_id' => $value['id'],
+                            'category_id' => $value->id,
                             'tournament_id' => $idTournament
                         ]);
+
+                        $value->save();
                     }
 
                     $oAnimal->catalogs()->saveMany($catalogs);
+                }
+
+                $idsCatPass = array_intersect($idsCatOld, $idsCat);
+                $idsLess = array_diff($idsCatOld, $idsCatPass);
+                $idsPlus = array_diff($idsCat, $idsCatPass);
+                $idsSearch = array_merge($idsLess, $idsPlus);
+
+                if (count($idsSearch) > 0) {
+                    $lstCatUpdate = Category::idsIn($idsSearch)->lockForUpdate()->get();
+
+                    foreach ($lstCatUpdate as $key => $value) {
+                        if (in_array($value->id, $idsLess)) {
+                            $value->count_competitors = ($value->count_competitors > 0) ? $value->count_competitors - 1 : 0;
+                        } else if (in_array($value->id, $idsPlus)) {
+                            $value->count_competitors = $value->count_competitors + 1;
+                        }
+
+                        $value->save();
+                    }
                 }
 
                 DB::commit();

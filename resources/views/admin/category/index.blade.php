@@ -19,7 +19,6 @@
                     <th>Selección</th>
                     <th>Etapa Actual</th>
                     <th>Cantidad de Competidores</th>
-                    {{--<th>Activa</th>--}}
                     <th>Opciones</th>
                 </tr>
                 </thead>
@@ -47,22 +46,6 @@
                             @endif
                         </td>
                         <td>{{ $category->count_competitors }}</td>
-                        {{--<td>--}}
-                            {{--@if($category->status != \Horses\Constants\ConstDb::STATUS_FINAL)--}}
-                                {{--@if($category->status == \Horses\Constants\ConstDb::STATUS_ACTIVE ||--}}
-                                    {{--$category->status == \Horses\Constants\ConstDb::STATUS_IN_PROGRESS)--}}
-                                    {{--<a href="{{ url('/admin/category/disable', $category->id ) }}" role="button"--}}
-                                       {{--class="btn btn-success btn_link_prevent">--}}
-                                        {{--<span class="glyphicon glyphicon-star"></span>--}}
-                                    {{--</a>--}}
-                                {{--@else--}}
-                                    {{--<a href="{{ url('/admin/category/enable', $category->id ) }}" role="button"--}}
-                                       {{--class="btn btn_link_prevent">--}}
-                                        {{--<span class="glyphicon glyphicon-star"></span>--}}
-                                    {{--</a>--}}
-                                {{--@endif--}}
-                            {{--@endif--}}
-                        {{--</td>--}}
                         <td>
                             @if($category->status == \Horses\Constants\ConstDb::STATUS_INACTIVE)
                                 <a href="{{ url('/admin/category/edit', $category->id ) }}"

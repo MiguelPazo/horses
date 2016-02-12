@@ -36,6 +36,14 @@ var generalError = function () {
     openPopup('Error', 'Ha ocurrido un error, se recargará la página', 1, null);
 
     reloadPage();
+};
+
+var disableButtons = function (disable) {
+    if (disable) {
+        $('.btn_disable').attr('disabled', 'disabled');
+    } else {
+        $('.btn_disable').removeAttr('disabled');
+    }
 }
 
 $(document).ready(function () {

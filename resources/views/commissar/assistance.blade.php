@@ -1,5 +1,9 @@
 @extends('layout')
 
+@section('css')
+    <link rel="stylesheet" href="{{ asset('/js/libs/jquery-ui/themes/base/jquery-ui.min.css') }}">
+@endsection
+
 @section('content')
     <h3 class="text-center text-primary">
         {{ $oTournament->description }}
@@ -26,7 +30,7 @@
                             <input type="hidden" name="comp_{{ $i + $oCategory->num_begin }}" value="0"/>
                         @endfor
                         <input type="hidden" id="last_pos" value="{{ $i + $oCategory->num_begin }}">
-                        <button type="button" class="btn_add btn btn-block btn-lg btn-info">
+                        <button type="button" id="btn_add" class="btn btn-block btn-lg btn-info">
                             Agregar Adicional
                         </button>
                         <input type="hidden" name="" value="0"/>
@@ -44,8 +48,40 @@
             0
         </div>
     </div>
+
+    <div class="modal fade" id="modal_new_animal" role="dialog"
+         aria-labelledby="modal_max_select_label" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"
+                            aria-hidden="true"> ×
+                    </button>
+                    <h4 class="modal-title"> Nuevo Competidor </h4>
+                </div>
+                {!! Form::open(['route' => ['oper.animal.store', $oCategory->id],'method' => 'POST', 'id' => 'formAnimal', 'class' => 'formuppertext']) !!}
+                <div class="modal-body">
+                    <p class="bg-danger" id="error_message" style="display: none">Error</p>
+
+                    @include('commissar._partials.fields')
+
+                </div>
+                <div class="modal-footer">
+                    {!! Form::submit('Guardar', ['class' => 'btn btn-default btn_disable']) !!}
+                    <button type="button" class="btn btn-default btn_disable" data-dismiss="modal">
+                        Cancelar
+                    </button>
+                </div>
+                {!! Form::close() !!}
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('scripts')
+    <script src="{{ asset('/js/libs/jquery-ui/jquery-ui.min.js') }}"></script>
+    <script src="{{ asset('/js/libs/jquery-ui/ui/minified/i18n/datepicker-es.min.js') }}"></script>
+    <script src="{{ asset('/js/libs/devbridge-autocomplete/dist/jquery.autocomplete.min.js') }}"></script>
+    <script src="{{ asset('/js/app/oper/animal/maintenance_common.js') }}"></script>
     <script src="{{ asset('/js/app/commissar/assistance.js') }}"></script>
 @endsection

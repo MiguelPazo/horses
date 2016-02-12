@@ -13,9 +13,8 @@
     <div class="panel-body">
         {!! Form::open($formHeader) !!}
 
-        {!! Form::submit('Guardar', ['class' => 'btn btn-success']) !!}
-        <a href="{{ route('oper.animal.index') }}"
-           class="btn btn-danger">Cancelar</a>
+        {!! Form::submit('Guardar', ['class' => 'btn btn-success btn_disable']) !!}
+        <a href="{{ route('oper.animal.index') }}" class="btn btn-danger btn_disable">Cancelar</a>
 
         <p></p>
         @include('oper.animal._partials.fields')
@@ -29,5 +28,6 @@
     <script src="{{ asset('/js/libs/jquery-ui/jquery-ui.min.js') }}"></script>
     <script src="{{ asset('/js/libs/jquery-ui/ui/minified/i18n/datepicker-es.min.js') }}"></script>
     <script src="{{ asset('/js/libs/devbridge-autocomplete/dist/jquery.autocomplete.min.js') }}"></script>
+    <script src="{{ asset('/js/app/oper/animal/maintenance_common.js') }}"></script>
     <script src="{{ asset('/js/app/oper/animal/maintenance.js') }}"></script>
 @endsection
