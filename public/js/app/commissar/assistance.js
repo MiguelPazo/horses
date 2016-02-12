@@ -1,5 +1,8 @@
 $(document).ready(function () {
     var totalSelected = 0;
+    var actualMax = $('#last_pos').val();
+    var idSelected = 0;
+    var valSelected = '';
 
     $(".datepicker").datepicker({
         'dateFormat': 'dd-mm-yy',
@@ -41,7 +44,9 @@ $(document).ready(function () {
     $('#btn_add').click(function () {
         $('#formAnimal').trigger("reset");
         disableButtons(false);
+        disableForm(false);
         $('#modal_new_animal').modal('show');
+        $('#name').focus();
     });
 
     $('#formAnimal').submit(function (e) {
@@ -134,9 +139,55 @@ $(document).ready(function () {
         }
     });
 
+    $('#name').devbridgeAutocomplete({
+        serviceUrl: BASE_URL + 'oper/animal/list-parents',
+        minChars: 3,
+        params: {
+            prefix: false
+        },
+        onSelect: function (suggestion) {
+            $.get(BASE_URL + 'oper/animal/info-animal/' + suggestion.data, null, function (response) {
+                if (response.success) {
+                    idSelected = suggestion;
+                    valSelected = suggestion.value;
+
+                    $('#birthdate').val(response.birthdate);
+                    $('#code').val(response.code);
+                    $('#owner_name').val(response.owner);
+                    $('#breeder_name').val(response.breeder);
+                    $('#prefix').val(response.prefix);
+                    $('#dad_name').val(response.dad);
+                    $('#mom_name').val(response.mom);
+                    disableForm(true);
+                }
+            });
+        }
+    });
+
+    $('#name').keyup(function () {
+        if (valSelected != '' && valSelected != $(this).val()) {
+            idSelected = 0;
+            valSelected = '';
+            disableForm(false);
+        }
+    });
+
+    var disableForm = function (disable) {
+        $('#formAnimal').find('input').each(function (i, item) {
+            if (!$(item).hasClass('no_disable')) {
+                if (disable) {
+                    $(item).attr('disabled', 'disabled');
+                } else {
+                    $(item).val('');
+                    $(item).removeAttr('disabled');
+                }
+            }
+        });
+    }
+
     var showErrorMessage = function (message) {
         disableButtons(false);
         $('#error_message').text(message);
         $('#error_message').show();
-    }
+    };
 });

@@ -30,16 +30,21 @@ class AnimalController extends Controller
     {
         $gender = $this->request->get('gender');
         $query = strtoupper($this->request->get('query'));
+        $wPrefix = $this->request->get('prefix', true);
+
         $lstAnimal = Animal::with('breeder')
             ->where(function ($query) use ($gender) {
-                return $query->where('gender', null)
-                    ->orWhere('gender', $gender);
+                if ($gender) {
+                    return $query->where('gender', null)
+                        ->orWhere('gender', $gender);
+                }
+                return $query;
             })->where('name', 'like', "%$query%")
             ->get(['name', 'id']);
 
         $data = [];
         foreach ($lstAnimal as $key => $animal) {
-            $prefix = ($animal->breeder->count() == 1) ? "({$animal->breeder->get(0)->prefix}) " : '';
+            $prefix = ($animal->breeder->count() == 1 && $wPrefix === true) ? "({$animal->breeder->get(0)->prefix}) " : '';
             $anData['value'] = $prefix . $animal->name;
             $anData['data'] = $animal->id;
 
@@ -51,6 +56,65 @@ class AnimalController extends Controller
         ];
 
         return response()->json($dataFinal);
+    }
+
+    public function infoAnimal($id)
+    {
+        $jResponse = [
+            'success' => true,
+            'birthdate' => null,
+            'code' => null,
+            'owner' => null,
+            'breeder' => null,
+            'prefix' => null,
+            'mom' => null,
+            'dad' => null
+        ];
+
+        $oAnimal = Animal::with('agents')->findorFail($id);
+        $lstAnimal = Animal::with('agents')->idsIn([$oAnimal->mom, $oAnimal->dad])->get();
+        $oMom = null;
+        $oDad = null;
+        $oMomBreeder = null;
+        $oDadBreeder = null;
+
+        $oOwner = $oAnimal->agents->filter(function ($item) {
+            return $item->pivot->type = ConstDb::AGENT_OWNER;
+        })->first();
+
+        $oBreeder = $oAnimal->agents->filter(function ($item) {
+            return $item->pivot->type = ConstDb::AGENT_BREEDER;
+        })->first();
+
+        if ($oAnimal->mom) {
+            $oMom = $lstAnimal->filter(function ($item) use ($oAnimal) {
+                return $item->id == $oAnimal->mom;
+            })->first();
+
+            $oMomBreeder = $oMom->agents->filter(function ($item) {
+                return $item->type == ConstDb::AGENT_BREEDER;
+            })->first();
+        }
+
+        if ($oAnimal->dad) {
+            $oDad = $lstAnimal->filter(function ($item) use ($oAnimal) {
+                return $item->id == $oAnimal->dad;
+            })->first();
+
+            $oDadBreeder = $oDad->agents->filter(function ($item) {
+                return $item->type == ConstDb::AGENT_BREEDER;
+            })->first();
+        }
+
+        $jResponse['birthdate'] = $oAnimal->birthdate;
+        $jResponse['code'] = $oAnimal->code;
+        $jResponse['owner'] = ($oOwner) ? $oOwner->names . ', ' . $oOwner->lastnames : null;
+        $jResponse['breeder'] = ($oBreeder) ? $oBreeder->names . ', ' . $oBreeder->lastnames : null;
+        $jResponse['prefix'] = $oBreeder->prefix;
+        $jResponse['mom'] = ($oMom) ? (($oMomBreeder) ? '(' . $oMomBreeder->prefix . ') ' . $oMom->name : $oMom->name) : null;
+        $jResponse['dad'] = ($oDad) ? (($oDadBreeder) ? '(' . $oDadBreeder->prefix . ') ' . $oDad->name : $oDad->name) : null;
+
+        return response()->json($jResponse);
     }
 
     /**
@@ -129,7 +193,7 @@ class AnimalController extends Controller
 
             if ($lstAnimal->count() == 0) {
                 $data = $request->all();
-                
+
                 if ($id) {
                     $data['categories'] = $id;
                 }

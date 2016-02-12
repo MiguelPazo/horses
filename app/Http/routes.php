@@ -51,11 +51,20 @@ Route::group([
         'uses' => 'AgentController@listall'
     ]);
 
-    Route::get('/animal/list-parents', [
-        'roles' => ['operator', 'commissar'],
-        'as' => 'oper.animal.listParents',
-        'uses' => 'AnimalController@listParents'
-    ]);
+    Route::group([
+        'roles' => ['operator', 'commissar']
+    ], function () {
+        Route::get('/animal/list-parents', [
+            'as' => 'oper.animal.listParents',
+            'uses' => 'AnimalController@listParents'
+        ]);
+
+        Route::get('/animal/info-animal/{id}', [
+            'as' => 'oper.animal.infoAnimal',
+            'uses' => 'AnimalController@infoAnimal'
+        ]);
+    });
+
 
     Route::resource('/animal', 'AnimalController');
     Route::resource('/agent', 'AgentController');

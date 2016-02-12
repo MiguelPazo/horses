@@ -17,6 +17,9 @@ class ConstDb
     const GEN_FEMALE = 'female';
     const GEN_MALE = 'male';
 
+    const COMPETITOR_PRESENT = 'present';
+    const COMPETITOR_MISSING = 'missing';
+
     const STATUS_DELETED = 'deleted';
     const STATUS_INACTIVE = 'inactive';
     const STATUS_ACTIVE = 'active';

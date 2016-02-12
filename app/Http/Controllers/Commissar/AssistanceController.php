@@ -37,19 +37,22 @@ class AssistanceController extends Controller
 
         foreach ($this->request->all() as $key => $value) {
             if (strpos($key, ConstApp::PREFIX_COMPETITOR) !== false) {
-                $id = str_replace(ConstApp::PREFIX_COMPETITOR, '', $key);
-                if ($value != '0' && is_numeric($value)) {
+                $idCompetitor = str_replace(ConstApp::PREFIX_COMPETITOR, '', $key);
+                if (is_numeric($value)) {
+                    $status = ($value != '0') ? ConstDb::COMPETITOR_PRESENT : ConstDb::COMPETITOR_MISSING;
 
                     if ($oCategory->type == ConstDb::TYPE_CATEGORY_WSELECTION) {
-                        $competitor = Competitor::create([
-                            'number' => $id,
+                        Competitor::create([
+                            'number' => $idCompetitor,
                             'category_id' => $oCategory->id,
-                            'position' => 0
+                            'position' => 0,
+                            'status' => $status
                         ]);
                     } else {
-                        $competitor = Competitor::create([
-                            'number' => $id,
-                            'category_id' => $oCategory->id
+                        Competitor::create([
+                            'number' => $idCompetitor,
+                            'category_id' => $oCategory->id,
+                            'status' => $status
                         ]);
                     }
                 }

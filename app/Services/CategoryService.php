@@ -34,8 +34,6 @@ class CategoryService
                     DB::beginTransaction();
                     try {
                         Category::status(ConstDb::STATUS_ACTIVE)->tournament($oCategory->tournament_id)->update(['status' => ConstDb::STATUS_INACTIVE]);
-                        Tournament::status(ConstDb::STATUS_ACTIVE)->update(['status' => ConstDb::STATUS_INACTIVE]);
-                        Tournament::find($oCategory->tournament_id)->update(['status' => ConstDb::STATUS_ACTIVE]);
 
                         $oCategory->status = ConstDb::STATUS_ACTIVE;
                         $oCategory->save();

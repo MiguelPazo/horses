@@ -1,6 +1,6 @@
 <div class="form-group">
     {!! Form::label('name', 'Nombre:') !!}
-    {!! Form::text('name', null, ['class' => 'form-control required', 'id'=> 'name', 'maxlength' => 45]) !!}
+    {!! Form::text('name', null, ['class' => 'form-control required no_disable', 'id'=> 'name', 'maxlength' => 45]) !!}
 </div>
 <div class="form-group">
     {!! Form::label('birthdate', 'Fecha de Nacimiento:') !!}

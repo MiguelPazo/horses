@@ -67,7 +67,7 @@
 
                 </div>
                 <div class="modal-footer">
-                    {!! Form::submit('Guardar', ['class' => 'btn btn-default btn_disable']) !!}
+                    {!! Form::submit('Guardar', ['class' => 'btn btn-default btn_disable no_disable']) !!}
                     <button type="button" class="btn btn-default btn_disable" data-dismiss="modal">
                         Cancelar
                     </button>
