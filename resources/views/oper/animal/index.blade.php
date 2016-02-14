@@ -2,7 +2,7 @@
 
 @section('content')
     <h3 class="text-center text-primary">
-        Catalogo para {{ $tournament }}
+        Catalogo para {{ $oTournament->description }}
     </h3>
 
     <div class="panel-body">
@@ -29,7 +29,7 @@
                 </thead>
                 <tbody>
                 <?php $count = 1; ?>
-                @foreach($lstAnimals as $animal)
+                @foreach($oTournament->animals as $animal)
                     <tr>
                         <td>{{ $count }}</td>
                         <td>{{ ($animal->breeder->count() > 0)? $animal->breeder->get(0)->prefix: '' }}</td>
@@ -54,7 +54,6 @@
                 </tbody>
             </table>
         </div>
-        {!! $lstAnimals->render() !!}
     </div>
 @endsection
 

@@ -6,6 +6,7 @@ use Horses\Constants\ConstDb;
 use Horses\Constants\ConstMessages;
 use Horses\Http\Controllers\Controller;
 use Horses\Services\Facades\AnimalFac;
+use Horses\Tournament;
 use Illuminate\Http\Request;
 
 
@@ -60,59 +61,7 @@ class AnimalController extends Controller
 
     public function infoAnimal($id)
     {
-        $jResponse = [
-            'success' => true,
-            'birthdate' => null,
-            'code' => null,
-            'owner' => null,
-            'breeder' => null,
-            'prefix' => null,
-            'mom' => null,
-            'dad' => null
-        ];
-
-        $oAnimal = Animal::with('agents')->findorFail($id);
-        $lstAnimal = Animal::with('agents')->idsIn([$oAnimal->mom, $oAnimal->dad])->get();
-        $oMom = null;
-        $oDad = null;
-        $oMomBreeder = null;
-        $oDadBreeder = null;
-
-        $oOwner = $oAnimal->agents->filter(function ($item) {
-            return $item->pivot->type = ConstDb::AGENT_OWNER;
-        })->first();
-
-        $oBreeder = $oAnimal->agents->filter(function ($item) {
-            return $item->pivot->type = ConstDb::AGENT_BREEDER;
-        })->first();
-
-        if ($oAnimal->mom) {
-            $oMom = $lstAnimal->filter(function ($item) use ($oAnimal) {
-                return $item->id == $oAnimal->mom;
-            })->first();
-
-            $oMomBreeder = $oMom->agents->filter(function ($item) {
-                return $item->type == ConstDb::AGENT_BREEDER;
-            })->first();
-        }
-
-        if ($oAnimal->dad) {
-            $oDad = $lstAnimal->filter(function ($item) use ($oAnimal) {
-                return $item->id == $oAnimal->dad;
-            })->first();
-
-            $oDadBreeder = $oDad->agents->filter(function ($item) {
-                return $item->type == ConstDb::AGENT_BREEDER;
-            })->first();
-        }
-
-        $jResponse['birthdate'] = $oAnimal->birthdate;
-        $jResponse['code'] = $oAnimal->code;
-        $jResponse['owner'] = ($oOwner) ? $oOwner->names . ', ' . $oOwner->lastnames : null;
-        $jResponse['breeder'] = ($oBreeder) ? $oBreeder->names . ', ' . $oBreeder->lastnames : null;
-        $jResponse['prefix'] = $oBreeder->prefix;
-        $jResponse['mom'] = ($oMom) ? (($oMomBreeder) ? '(' . $oMomBreeder->prefix . ') ' . $oMom->name : $oMom->name) : null;
-        $jResponse['dad'] = ($oDad) ? (($oDadBreeder) ? '(' . $oDadBreeder->prefix . ') ' . $oDad->name : $oDad->name) : null;
+        $jResponse = AnimalFac::getInfo($id);
 
         return response()->json($jResponse);
     }
@@ -125,19 +74,18 @@ class AnimalController extends Controller
     public function index(Request $request)
     {
         $search = strtoupper($request->get('query'));
-
-        //revisar luego - filtros
-        $lstAnimals = Animal::with(['breeder', 'catalogs' => function ($query) {
-            return $query->where('tournament_id', $this->oTournament->id);
-        }])->where('name', 'like', "%$search%")
-            ->orWhere('code', 'like', "%$search%")
-            ->orderBy('name')
-            ->paginate(100);
+        $oTournament = Tournament::with(['animals' => function ($query) use ($search) {
+            return $query->with('agents')
+                ->where('name', 'like', "%$search%")
+                ->orWhere('code', 'like', "%$search%")
+                ->whereNull('deleted_at')
+                ->orderBy('name')
+                ->distinct('code');
+        }])->find($this->oTournament->id);
 
         return view('oper.animal.index')
             ->with('search', $search)
-            ->with('tournament', $this->oTournament->description)
-            ->with('lstAnimals', $lstAnimals);
+            ->with('oTournament', $oTournament);
     }
 
     /**
@@ -175,7 +123,7 @@ class AnimalController extends Controller
      *
      * @return Response
      */
-    public function store(Request $request, $id = null)
+    public function store(Request $request)
     {
         $jResponse = [
             'success' => false,
@@ -193,10 +141,6 @@ class AnimalController extends Controller
 
             if ($lstAnimal->count() == 0) {
                 $data = $request->all();
-
-                if ($id) {
-                    $data['categories'] = $id;
-                }
                 $jResponse = AnimalFac::save($data, $this->oTournament->id);
             } else {
                 $jResponse['message'] = ConstMessages::ANIMAL_NAME_CODE_EXISTS;
@@ -228,50 +172,55 @@ class AnimalController extends Controller
     public function edit($id)
     {
         $formHeader = ['route' => ['oper.animal.update', $id], 'method' => 'PUT', 'id' => 'formAnimal', 'class' => 'formuppertext'];
-        $oAnimal = Animal::with(['catalogs', 'agents'])->findorFail($id);
-        $lstCategory = $this->getLstCategory();
-        $lstCategorySelected = [];
-        $oOwner = null;
-        $oBreeder = null;
-        $oMom = null;
-        $oDad = null;
+        $oAnimal = Animal::with(['catalogs', 'agents'])->find($id);
 
-        foreach ($oAnimal->catalogs as $key => $value) {
-            $lstCategorySelected[] = $value->category_id;
-        }
+        if ($oAnimal) {
+            $lstCategory = $this->getLstCategory();
+            $lstCategorySelected = [];
+            $oOwner = null;
+            $oBreeder = null;
+            $oMom = null;
+            $oDad = null;
 
-        foreach ($oAnimal->agents as $key => $value) {
-            if ($value->pivot->type == ConstDb::AGENT_OWNER) {
-                $oOwner = $value;
-            } else if ($value->pivot->type == ConstDb::AGENT_BREEDER) {
-                $oBreeder = $value;
+            foreach ($oAnimal->catalogs as $key => $value) {
+                $lstCategorySelected[] = $value->category_id;
             }
+
+            foreach ($oAnimal->agents as $key => $value) {
+                if ($value->pivot->type == ConstDb::AGENT_OWNER) {
+                    $oOwner = $value;
+                } else if ($value->pivot->type == ConstDb::AGENT_BREEDER) {
+                    $oBreeder = $value;
+                }
+            }
+
+            //mom and dad
+            if ($oAnimal->mom != '' || $oAnimal->dad != '') {
+                $ids = [$oAnimal->mom, $oAnimal->dad];
+                $lstParents = Animal::idsIn($ids)->get();
+
+                $oMom = $lstParents->filter(function ($item) use ($oAnimal) {
+                    return $item->id == $oAnimal->mom;
+                })->first();
+
+                $oDad = $lstParents->filter(function ($item) use ($oAnimal) {
+                    return $item->id == $oAnimal->dad;
+                })->first();
+            }
+
+            return view('oper.animal.maintenance')
+                ->with('lstCategory', $lstCategory)
+                ->with('oAnimal', $oAnimal)
+                ->with('lstCategorySelected', $lstCategorySelected)
+                ->with('oOwner', $oOwner)
+                ->with('oBreeder', $oBreeder)
+                ->with('oMom', $oMom)
+                ->with('oDad', $oDad)
+                ->with('title', 'Editar Animal')
+                ->with('formHeader', $formHeader);
+        } else {
+            return redirect()->route('oper.animal.index');
         }
-
-        //mom and dad
-        if ($oAnimal->mom != '' || $oAnimal->dad != '') {
-            $ids = [$oAnimal->mom, $oAnimal->dad];
-            $lstParents = Animal::idsIn($ids)->get();
-
-            $oMom = $lstParents->filter(function ($item) use ($oAnimal) {
-                return $item->id == $oAnimal->mom;
-            })->first();
-
-            $oDad = $lstParents->filter(function ($item) use ($oAnimal) {
-                return $item->id == $oAnimal->dad;
-            })->first();
-        }
-
-        return view('oper.animal.maintenance')
-            ->with('lstCategory', $lstCategory)
-            ->with('oAnimal', $oAnimal)
-            ->with('lstCategorySelected', $lstCategorySelected)
-            ->with('oOwner', $oOwner)
-            ->with('oBreeder', $oBreeder)
-            ->with('oMom', $oMom)
-            ->with('oDad', $oDad)
-            ->with('title', 'Editar Animal')
-            ->with('formHeader', $formHeader);
     }
 
     /**

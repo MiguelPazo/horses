@@ -81,6 +81,21 @@ form.formuppertext input {
     margin-bottom: 10px;
 }
 
+.btn_competitor div {
+    display: inline-block;
+    width: 50%;
+}
+
+.btn_competitor .path_left {
+    padding-right: 15px;
+    text-align: right;
+}
+
+.btn_competitor .path_right {
+    padding-left: 15px;
+    text-align: left;
+}
+
 .comp_position {
     background: #000 none repeat scroll 0 0;
     border-radius: 15px;
@@ -170,4 +185,8 @@ form.formuppertext input {
 .autocomplete-group strong {
     display: block;
     border-bottom: 1px solid #000;
+}
+
+.contextual_message {
+    padding: 3px 10px;
 }

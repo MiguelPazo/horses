@@ -23,7 +23,8 @@
                 <tbody>
                 <?php $count = 1; ?>
                 @foreach( $lstTournaments as  $tournament)
-                    <tr class="{{ ($tournament->status == \Horses\Constants\ConstDb::STATUS_ACTIVE)? 'info' : '' }}">
+                    <tr class="{{ ($tournament->status == \Horses\Constants\ConstDb::STATUS_ACTIVE ||
+                                $tournament->status == \Horses\Constants\ConstDb::STATUS_JOURNAL )? 'info' : '' }}">
                         <th scope="row">{{ $count }}</th>
                         <td>{{ $tournament->description }}</td>
                         <td>
@@ -36,12 +37,13 @@
                         <td>{{ $tournament->date_begin }}</td>
                         <td>{{ $tournament->date_end }}</td>
                         <td>
-                            @if( $tournament->status == \Horses\Constants\ConstDb::STATUS_ACTIVE )
+                            @if( $tournament->status == \Horses\Constants\ConstDb::STATUS_ACTIVE ||
+                                $tournament->status == \Horses\Constants\ConstDb::STATUS_JOURNAL)
                                 <a href="{{ route('admin.tournament.disable', $tournament->id) }}" role="button"
                                    class="btn btn-success btn_link_prevent">
                                     <span class="glyphicon glyphicon-star"></span>
                                 </a>
-                            @else
+                            @elseif($tournament->status == \Horses\Constants\ConstDb::STATUS_INACTIVE)
                                 <a href="{{ route('admin.tournament.enable', $tournament->id) }}" role="button"
                                    class="btn btn_link_prevent">
                                     <span class="glyphicon glyphicon-star"></span>
@@ -58,6 +60,27 @@
                                class="btn">
                                 <span class="glyphicon glyphicon-th-list"></span>
                             </a>
+
+                            @if( $tournament->status == \Horses\Constants\ConstDb::STATUS_ACTIVE)
+                                <a href="#" role="button"
+                                   class="btn">
+                                    <span class="glyphicon glyphicon-check"></span>
+                                </a>
+                            @endif
+
+                            @if( $tournament->status == \Horses\Constants\ConstDb::STATUS_ACTIVE)
+                                <a href="{{ route('tournament.change.journal', ['idTournament' =>  $tournament->id, 'status' => 1]) }}"
+                                   role="button" class="btn">
+                                    <span class="glyphicon glyphicon-play"></span>
+                                </a>
+                            @endif
+
+                            @if( $tournament->status == \Horses\Constants\ConstDb::STATUS_JOURNAL)
+                                <a href="{{ route('tournament.change.journal', ['idTournament' =>  $tournament->id, 'status' => 0]) }}"
+                                   role="button" class="btn">
+                                    <span class="glyphicon glyphicon-stop"></span>
+                                </a>
+                            @endif
 
                             @if($tournament->status == \Horses\Constants\ConstDb::STATUS_INACTIVE)
                                 <a href="{{ route('admin.tournament.edit', $tournament->id) }}" role="button"

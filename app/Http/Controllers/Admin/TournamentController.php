@@ -18,6 +18,16 @@ class TournamentController extends Controller
         'date_end' => 'required'
     ];
 
+    public function beginJournal($idTournament, $begin)
+    {
+        $oTournament = Tournament::findorFail($idTournament);
+
+        $oTournament->status = ($begin == 1) ? ConstDb::STATUS_JOURNAL : ConstDb::STATUS_FINAL;
+        $oTournament->save();
+
+        return redirect()->route('admin.tournament.index');
+    }
+
     public function enable($id)
     {
         $jResponse = [
@@ -26,21 +36,20 @@ class TournamentController extends Controller
             'url' => ''
         ];
 
-        $catInProgress = Category::status(ConstDb::STATUS_IN_PROGRESS)->count();
+        $catInProgress = Tournament::status(ConstDb::STATUS_JOURNAL)->count();
 
         if ($catInProgress == 0) {
             Tournament::status(ConstDb::STATUS_ACTIVE)->update(['status' => ConstDb::STATUS_INACTIVE]);
+            Category::status(ConstDb::STATUS_ACTIVE)->update(['status' => ConstDb::STATUS_INACTIVE]);
 
             $oTournament = Tournament::findorFail($id);
             $oTournament->status = ConstDb::STATUS_ACTIVE;
             $oTournament->save();
 
-            Category::status(ConstDb::STATUS_ACTIVE)->update(['status' => ConstDb::STATUS_INACTIVE]);
-
             $jResponse['success'] = true;
             $jResponse['url'] = route('admin.tournament.index');
         } else {
-            $jResponse['message'] = 'Existe otro concurso con una categoria en proceso, espere a que termine. Sólo puede estar activo un concurso con una categoría a la vez.';
+            $jResponse['message'] = 'Existe otro concurso que ha inicado su jornada, debe finalizarla primero para activar este concurso.';
         }
 
         return response()->json($jResponse);
@@ -54,10 +63,9 @@ class TournamentController extends Controller
             'url' => ''
         ];
 
-        $oTournament = Tournament::with('category')->findorFail($id);
-        $catInProgress = Category::tournament($oTournament->id)->status(ConstDb::STATUS_IN_PROGRESS)->count();
+        $oTournament = Tournament::findorFail($id);
 
-        if ($catInProgress == 0) {
+        if ($oTournament->status == ConstDb::STATUS_ACTIVE) {
             $oTournament->status = ConstDb::STATUS_INACTIVE;
             $oTournament->save();
 
@@ -66,7 +74,7 @@ class TournamentController extends Controller
             $jResponse['success'] = true;
             $jResponse['url'] = route('admin.tournament.index');
         } else {
-            $jResponse['message'] = 'No puede desactivar una concurso con una categoría en proceso de evaluación!';
+            $jResponse['message'] = 'No puede desactivar un concurso con la jornada ya iniciada.';
         }
 
         return response()->json($jResponse);

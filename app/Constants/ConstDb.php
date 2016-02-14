@@ -23,7 +23,7 @@ class ConstDb
     const STATUS_DELETED = 'deleted';
     const STATUS_INACTIVE = 'inactive';
     const STATUS_ACTIVE = 'active';
-    const STATUS_IN_PROGRESS = 'in_progress';
+    const STATUS_JOURNAL = 'journal';
     const STATUS_FINAL = 'final';
 
     const TYPE_CATEGORY_SELECTION = 'selection';

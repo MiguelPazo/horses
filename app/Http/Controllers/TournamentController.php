@@ -292,15 +292,13 @@ class TournamentController extends Controller
 
     public function calculateFinal($id, $stageStatus)
     {
-        $oCategory = Category::find($id);
+        $oCategory = Category::status(ConstDb::STATUS_ACTIVE)->find($id);
 
-        if ($oCategory->status == ConstDb::STATUS_IN_PROGRESS) {
-            $this->filterCompetitorsWithJury($oCategory, $stageStatus);
-            $oCategory->status = ConstDb::STATUS_FINAL;
-            $oCategory->save();
+        $this->filterCompetitorsWithJury($oCategory, $stageStatus);
+        $oCategory->status = ConstDb::STATUS_FINAL;
+        $oCategory->save();
 
-            Stage::category($id)->update(['status' => ConstDb::STATUS_FINAL]);
-        }
+        Stage::category($id)->update(['status' => ConstDb::STATUS_FINAL]);
     }
 
     public function verifyStageClosed($oCategory, $stage)

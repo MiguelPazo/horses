@@ -25,16 +25,17 @@
                 <tbody>
                 <?php $count = 1; ?>
                 @foreach( $lstCategory as  $category)
-                    <tr class="{{ ($category->status == \Horses\Constants\ConstDb::STATUS_ACTIVE ||
-                                    $category->status == \Horses\Constants\ConstDb::STATUS_IN_PROGRESS)? 'info' : '' }}
+                    <tr class="{{ ($category->status == \Horses\Constants\ConstDb::STATUS_ACTIVE)? 'info' : '' }}
                             {{ ($category->status == \Horses\Constants\ConstDb::STATUS_FINAL)? 'active' : '' }}">
                         <th scope="row">{{ $count }}</th>
                         <td>{{ $category->description }}</td>
                         <td>{{ ($category->type == \Horses\Constants\ConstDb::TYPE_CATEGORY_SELECTION)? 'Sí': 'No' }}</td>
                         <td>
-                            @if($category->status == \Horses\Constants\ConstDb::STATUS_ACTIVE &&
-                                $category->actual_stage == null)
+                            @if($category->status == \Horses\Constants\ConstDb::STATUS_INACTIVE &&
+                                $category->actual_stage == \Horses\Constants\ConstDb::STAGE_ASSISTANCE)
                                 {{ \Horses\Constants\ConstApp::STAGE_ASSISTANCE }}
+                            @elseif($category->actual_stage == \Horses\Constants\ConstDb::STAGE_ASSISTANCE)
+                                {{ \Horses\Constants\ConstApp::STAGE_SELECCTION }}
                             @elseif($category->actual_stage == \Horses\Constants\ConstDb::STAGE_ASSISTANCE)
                                 {{ \Horses\Constants\ConstApp::STAGE_SELECCTION }}
                             @elseif($category->actual_stage == \Horses\Constants\ConstDb::STAGE_SELECTION)

@@ -1,5 +1,5 @@
 $(document).ready(function () {
-    $('#btn_star').click(function (e) {
+    $('.btn_star').click(function (e) {
         e.preventDefault();
         var url = $(this).attr('href');
 

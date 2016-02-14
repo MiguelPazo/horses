@@ -10,6 +10,73 @@ use Illuminate\Support\Facades\DB;
 
 class AnimalService
 {
+
+    public function getInfo($id)
+    {
+        $jResponse = [
+            'success' => false,
+            'name' => null,
+            'birthdate' => null,
+            'code' => null,
+            'owner' => null,
+            'breeder' => null,
+            'prefix' => null,
+            'mom' => null,
+            'dad' => null
+        ];
+
+        $oAnimal = Animal::with('agents')->find($id);
+
+        if ($oAnimal) {
+            $lstAnimal = Animal::with('agents')->idsIn([$oAnimal->mom, $oAnimal->dad])->get();
+            $oMom = null;
+            $oDad = null;
+            $oMomBreeder = null;
+            $oDadBreeder = null;
+
+            $oOwner = $oAnimal->agents->filter(function ($item) {
+                return $item->pivot->type = ConstDb::AGENT_OWNER;
+            })->first();
+
+            $oBreeder = $oAnimal->agents->filter(function ($item) {
+                return $item->pivot->type = ConstDb::AGENT_BREEDER;
+            })->first();
+
+            if ($oAnimal->mom) {
+                $oMom = $lstAnimal->filter(function ($item) use ($oAnimal) {
+                    return $item->id == $oAnimal->mom;
+                })->first();
+
+                $oMomBreeder = $oMom->agents->filter(function ($item) {
+                    return $item->type == ConstDb::AGENT_BREEDER;
+                })->first();
+            }
+
+            if ($oAnimal->dad) {
+                $oDad = $lstAnimal->filter(function ($item) use ($oAnimal) {
+                    return $item->id == $oAnimal->dad;
+                })->first();
+
+                $oDadBreeder = $oDad->agents->filter(function ($item) {
+                    return $item->type == ConstDb::AGENT_BREEDER;
+                })->first();
+            }
+
+            $jResponse['success'] = true;
+            $jResponse['id'] = $oAnimal->id;
+            $jResponse['name'] = $oAnimal->name;
+            $jResponse['birthdate'] = $oAnimal->birthdate;
+            $jResponse['code'] = $oAnimal->code;
+            $jResponse['owner'] = ($oOwner) ? $oOwner->names . ', ' . $oOwner->lastnames : null;
+            $jResponse['breeder'] = ($oBreeder) ? $oBreeder->names . ', ' . $oBreeder->lastnames : null;
+            $jResponse['prefix'] = ($oBreeder) ? $oBreeder->prefix : '';
+            $jResponse['mom'] = ($oMom) ? (($oMomBreeder) ? '(' . $oMomBreeder->prefix . ') ' . $oMom->name : $oMom->name) : null;
+            $jResponse['dad'] = ($oDad) ? (($oDadBreeder) ? '(' . $oDadBreeder->prefix . ') ' . $oDad->name : $oDad->name) : null;
+        }
+
+        return $jResponse;
+    }
+
     public function save($data, $idTournament, $oAnimal = null)
     {
         $jResponse = [
@@ -188,40 +255,44 @@ class AnimalService
                 }
 
                 //categories - catalog
-                $idsCat = explode(',', $data['categories']);
-                $lstCategoriesIds = (count($idsCat) > 0) ? Category::idsIn($idsCat)->get() : null;
+                $wCategories = array_key_exists('categories', $data);
 
-                $catalogs = [];
+                if ($wCategories) {
+                    $idsCat = explode(',', $data['categories']);
+                    $lstCategoriesIds = (count($idsCat) > 0) ? Category::idsIn($idsCat)->get() : null;
 
-                if ($lstCategoriesIds) {
-                    foreach ($lstCategoriesIds as $key => $value) {
-                        $catalogs[] = new Catalog([
-                            'category_id' => $value->id,
-                            'tournament_id' => $idTournament
-                        ]);
+                    $catalogs = [];
 
-                        $value->save();
-                    }
+                    if ($lstCategoriesIds) {
+                        foreach ($lstCategoriesIds as $key => $value) {
+                            $dataCatalog = [
+                                'category_id' => $value->id,
+                                'tournament_id' => $idTournament
+                            ];
 
-                    $oAnimal->catalogs()->saveMany($catalogs);
-                }
-
-                $idsCatPass = array_intersect($idsCatOld, $idsCat);
-                $idsLess = array_diff($idsCatOld, $idsCatPass);
-                $idsPlus = array_diff($idsCat, $idsCatPass);
-                $idsSearch = array_merge($idsLess, $idsPlus);
-
-                if (count($idsSearch) > 0) {
-                    $lstCatUpdate = Category::idsIn($idsSearch)->lockForUpdate()->get();
-
-                    foreach ($lstCatUpdate as $key => $value) {
-                        if (in_array($value->id, $idsLess)) {
-                            $value->count_competitors = ($value->count_competitors > 0) ? $value->count_competitors - 1 : 0;
-                        } else if (in_array($value->id, $idsPlus)) {
-                            $value->count_competitors = $value->count_competitors + 1;
+                            $catalogs[] = new Catalog($dataCatalog);
                         }
 
-                        $value->save();
+                        $oAnimal->catalogs()->saveMany($catalogs);
+                    }
+
+                    $idsCatPass = array_intersect($idsCatOld, $idsCat);
+                    $idsLess = array_diff($idsCatOld, $idsCatPass);
+                    $idsPlus = array_diff($idsCat, $idsCatPass);
+                    $idsSearch = array_merge($idsLess, $idsPlus);
+
+                    if (count($idsSearch) > 0) {
+                        $lstCatUpdate = Category::idsIn($idsSearch)->lockForUpdate()->get();
+
+                        foreach ($lstCatUpdate as $key => $value) {
+                            if (in_array($value->id, $idsLess)) {
+                                $value->count_competitors = ($value->count_competitors > 0) ? $value->count_competitors - 1 : 0;
+                            } else if (in_array($value->id, $idsPlus)) {
+                                $value->count_competitors = $value->count_competitors + 1;
+                            }
+
+                            $value->save();
+                        }
                     }
                 }
 

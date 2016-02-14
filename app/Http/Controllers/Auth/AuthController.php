@@ -63,14 +63,14 @@ class AuthController extends Controller
                             break;
 
                         case ConstDb::PROFILE_COMMISSAR:
-                            $oTournament = Tournament::status(ConstDb::STATUS_ACTIVE)->first();
+                            $oTournament = Tournament::status(ConstDb::STATUS_JOURNAL)->first();
 
                             if ($oTournament) {
                                 $request->session()->put('oTournament', $oTournament);
                                 $response['url'] = url('/commissar');
                             } else {
                                 $process = false;
-                                $response['message'] = ConstMessages::LOGIN_TOURNAMENT_NO_ACTIVE;
+                                $response['message'] = ConstMessages::LOGIN_TOURNAMENT_NO_JOURNAL;
                             }
                             break;
 
@@ -85,9 +85,6 @@ class AuthController extends Controller
 
                                 if ($oCategoryJury) {
                                     switch ($oCategoryJury->actual_stage) {
-                                        case null:
-                                            $response['message'] = 'Aún no se ha tomado asistencia, espere un momento por favor.';
-                                            break;
                                         case ConstDb::STAGE_ASSISTANCE:
                                             $process = true;
                                             $response['url'] = route('tournament.selection');
@@ -121,14 +118,19 @@ class AuthController extends Controller
                             }
                             break;
                         case ConstDb::PROFILE_OPERATOR:
-                            $oTournament = Tournament::status(ConstDb::STATUS_ACTIVE)->first();
+                            $oTournament = Tournament::statusIn([ConstDb::STATUS_ACTIVE, ConstDb::STATUS_JOURNAL])->first();
 
                             if ($oTournament) {
-                                $request->session()->put('oTournament', $oTournament);
-                                $response['url'] = route('oper.animal.index');
+                                if ($oTournament->status == ConstDb::STATUS_ACTIVE) {
+                                    $request->session()->put('oTournament', $oTournament);
+                                    $response['url'] = route('oper.animal.index');
+                                } else {
+                                    $process = false;
+                                    $response['message'] = 'No se encuentra autorizado para ingresar, ya inicio la jornada del concurso.';
+                                }
                             } else {
                                 $process = false;
-                                $response['message'] = ConstMessages::LOGIN_TOURNAMENT_NO_ACTIVE;
+                                $response['message'] = ConstMessages::LOGIN_TOURNAMENT_INACTIVE;
                             }
 
                             break;
@@ -166,7 +168,7 @@ class AuthController extends Controller
         $oTournament = Tournament::status(ConstDb::STATUS_ACTIVE)->first();
 
         if ($oTournament) {
-            $oCategory = Category::tournament($oTournament->id)->statusIn([ConstDb::STATUS_ACTIVE, ConstDb::STATUS_IN_PROGRESS])->first();
+            $oCategory = Category::tournament($oTournament->id)->status(ConstDb::STATUS_ACTIVE)->first();
 
             if ($oCategory) {
                 $category['category'] = $oCategory;
@@ -175,7 +177,7 @@ class AuthController extends Controller
                 $category['message'] = 'Aún no se ha activado ninguna categoría, espere un momento por favor.';
             }
         } else {
-            $category['message'] = 'Aún no se ha activado ningún concurso, espere un momento por favor.';
+            $category['message'] = ConstMessages::LOGIN_TOURNAMENT_INACTIVE;
         }
 
         return $category;

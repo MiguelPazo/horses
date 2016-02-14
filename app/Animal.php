@@ -20,6 +20,11 @@ class Animal extends Model
         return $this->hasMany('Horses\Catalog');
     }
 
+    public function tournaments()
+    {
+        return $this->belongsToMany('Horses\Tournament', 'catalogs');
+    }
+
     public function breeder()
     {
         return $this->agents()->wherePivot('type', ConstDb::AGENT_BREEDER);

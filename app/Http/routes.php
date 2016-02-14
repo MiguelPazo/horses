@@ -69,7 +69,7 @@ Route::group([
     Route::resource('/animal', 'AnimalController');
     Route::resource('/agent', 'AgentController');
 
-    Route::post('/animal/{id?}', [
+    Route::post('/animal/', [
         'roles' => ['operator', 'commissar'],
         'as' => 'oper.animal.store',
         'uses' => 'AnimalController@store'
@@ -124,6 +124,20 @@ Route::group([
         'as' => 'admin.user.destroy',
         'uses' => 'UserController@destroy'
     ]);
+
+    Route::get('/journal/{idTournament}/{status}', [
+        'as' => 'tournament.change.journal',
+        'uses' => 'TournamentController@beginJournal'
+    ]);
+
+    Route::group([
+        'roles' => ['admin', 'commissar']
+    ], function () {
+        Route::get('/catalog/info/{idTournament}/catalog/{numCatalog}', 'CatalogController@infoCatalog');
+        Route::get('/catalog/add-animal/{idAnimal}/catalog/{idCategory}', 'CatalogController@addAnimal');
+    });
+
+    Route::resource('/catalog', 'CatalogController');
 });
 
 Route::group([

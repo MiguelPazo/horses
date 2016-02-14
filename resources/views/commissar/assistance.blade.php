@@ -20,27 +20,38 @@
                 <p></p>
 
                 <div class="row">
-                    <div class="col-md-12">
+                    <div id="content_competitors" class="col-md-12">
                         <p></p>
                         <?php $i = 0?>
-                        @for($i; $i < $oCategory->count_competitors; $i++)
-                            <button type="button" class="btn_competitor btn btn-block btn-lg btn-primary">
-                                Participante #{{ str_pad($i + $oCategory->num_begin, $rpad, "0", STR_PAD_LEFT) }}
-                            </button>
-                            <input type="hidden" name="comp_{{ $i + $oCategory->num_begin }}" value="0"/>
+                        @for($i; $i < count($catalog); $i++)
+                            <div class="btn_competitor btn btn-block btn-lg btn-primary
+                            {{ ($catalog[$i]['present'])? 'btn-success':'' }}">
+                                <div class="path_left">
+                                    N° Cancha: {{ str_pad($i + $oCategory->num_begin, $rpad, "0", STR_PAD_LEFT) }}
+                                </div>
+                                <div class="path_right">
+                                    N° Catálogo: {{ $catalog[$i]['number'] }}
+                                </div>
+                            </div>
+                            <input type="hidden" name="comp_{{ $catalog[$i]['number']}}"
+                                   value="{{ ($catalog[$i]['present'])? 1:0 }}"/>
                         @endfor
+
+                        <input type="hidden" id="lst_catalog" value="{{ $catalogNumbers }}"/>
                         <input type="hidden" id="last_pos" value="{{ $i + $oCategory->num_begin }}">
-                        <button type="button" id="btn_add" class="btn btn-block btn-lg btn-info">
-                            Agregar Adicional
-                        </button>
-                        <input type="hidden" name="" value="0"/>
+                        <input type="hidden" id="total_present" value="{{ $totalPresent }}"/>
+                        <input type="hidden" id="tournament" value="{{ $oTournament->id }}"/>
                     </div>
+                    <button type="button" id="btn_add" class="btn btn-block btn-lg btn-info">
+                        Agregar Adicional
+                    </button>
                 </div>
                 <p></p>
             </div>
         </div>
 
-        <a id="btn_confirm" role="button" class="btn btn-danger">Confirmar</a>
+        <a id="btn_confirm" role="button" class="btn btn-success">Confirmar</a>
+        <a href="{{ url('/commissar') }}" class="btn btn-danger">Cancelar</a>
 
         {!! Form::close() !!}
 
@@ -49,33 +60,7 @@
         </div>
     </div>
 
-    <div class="modal fade" id="modal_new_animal" role="dialog"
-         aria-labelledby="modal_max_select_label" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal"
-                            aria-hidden="true"> ×
-                    </button>
-                    <h4 class="modal-title"> Nuevo Competidor </h4>
-                </div>
-                {!! Form::open(['route' => ['oper.animal.store', $oCategory->id],'method' => 'POST', 'id' => 'formAnimal', 'class' => 'formuppertext']) !!}
-                <div class="modal-body">
-                    <p class="bg-danger" id="error_message" style="display: none">Error</p>
-
-                    @include('commissar._partials.fields')
-
-                </div>
-                <div class="modal-footer">
-                    {!! Form::submit('Guardar', ['class' => 'btn btn-default btn_disable no_disable']) !!}
-                    <button type="button" class="btn btn-default btn_disable" data-dismiss="modal">
-                        Cancelar
-                    </button>
-                </div>
-                {!! Form::close() !!}
-            </div>
-        </div>
-    </div>
+    @include('commissar._partials.new_competitor')
 @endsection
 
 @section('scripts')

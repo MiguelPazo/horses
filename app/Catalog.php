@@ -17,9 +17,19 @@ class Catalog extends Model
         return $query->where('tournament_id', $id);
     }
 
-    public function scope()
+    public function scopeCategory($query, $category)
     {
+        return $query->where('category_id', $category);
+    }
 
+    public function scopeNumber($query, $number)
+    {
+        return $query->where('number', $number);
+    }
+
+    public function scopeAnimal($query, $idAnimal)
+    {
+        return $query->where('animal_id', $idAnimal);
     }
 
 }

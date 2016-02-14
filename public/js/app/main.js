@@ -108,4 +108,14 @@ $(document).ready(function () {
     $('.btn_print').click(function () {
         print();
     });
+
+
+});
+
+$(document).ajaxError(function (event, xhr, settings, thrownError) {
+    if (xhr.status === 0 || xhr.readyState === 0) {
+        return;
+    }
+
+    generalError();
 });
