@@ -15,6 +15,7 @@ class AnimalService
     {
         $jResponse = [
             'success' => false,
+            'id' => null,
             'name' => null,
             'birthdate' => null,
             'code' => null,
@@ -81,8 +82,9 @@ class AnimalService
     {
         $jResponse = [
             'success' => false,
-            'message' => '',
-            'url' => ''
+            'message' => null,
+            'url' => null,
+            'id' => null
         ];
 
         $name = strtoupper($data['name']);
@@ -300,6 +302,7 @@ class AnimalService
 
                 $jResponse['success'] = true;
                 $jResponse['url'] = route('oper.animal.index');
+                $jResponse['id'] = $oAnimal->id;
             } catch (Exception $ex) {
                 DB::rollback();
                 throw $ex;

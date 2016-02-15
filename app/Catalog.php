@@ -27,6 +27,11 @@ class Catalog extends Model
         return $query->where('number', $number);
     }
 
+    public function scopeNumberIn($query, $numbers)
+    {
+        return $query->whereIn('number', $numbers);
+    }
+
     public function scopeAnimal($query, $idAnimal)
     {
         return $query->where('animal_id', $idAnimal);

@@ -22,6 +22,11 @@ class Competitor extends Model
         return $query->where('position', $position);
     }
 
+    public function scopeStatus($query, $status)
+    {
+        return $query->where('status', $status);
+    }
+
     public function scopeIdIn($query, $ids)
     {
         return $query->whereIn('id', $ids);

@@ -48,5 +48,34 @@
         </div>
     </div>
 
+    <div class="modal fade" id="modal_verify" role="dialog"
+         aria-labelledby="modal-container-label" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"
+                            aria-hidden="true"> ×
+                    </button>
+                    <h4 class="modal-title"> Confirmación de Clasificados </h4>
+                </div>
+                <div class="modal-body row_sorteable" id="space_verify">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        Cancelar
+                    </button>
+                    <button type="button" class="btn btn-primary" disabled="disabled" id="btn_confirm">
+                        Confirmar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+@endsection
+
+@section('scripts')
+    <script src="{{ asset('/js/libs/jquery-ui/jquery-ui.min.js') }}"></script>
     <script src="{{ asset('/js/app/classify.js') }}"></script>
 @endsection

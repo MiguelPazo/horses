@@ -28,6 +28,7 @@ class CategoryController extends Controller
         }
 
         unset($jResponse['object']);
+
         return response()->json($jResponse);
     }
 

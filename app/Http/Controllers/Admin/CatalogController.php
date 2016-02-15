@@ -17,10 +17,11 @@ class CatalogController extends Controller
             'success' => false
         ];
 
-        $oCatalog = Catalog::tournament($idTournament)->number($numCatalog)->first(['animal_id']);
+        $oCatalog = Catalog::tournament($idTournament)->number($numCatalog)->first(['animal_id', 'number']);
 
         if ($oCatalog) {
             $jResponse = AnimalFac::getInfo($oCatalog->animal_id);
+            $jResponse['number'] = $oCatalog->number;
         }
 
         return response()->json($jResponse);
@@ -50,16 +51,13 @@ class CatalogController extends Controller
                     $jResponse['number'] = $number;
                 }
             } else {
-                $jResponse['message'] = 'El animal ya se encuentra registrado en esta categoría';
+                $jResponse['message'] = 'El animal ya se encuentra registrado en esta categoría.';
             }
         } else {
-            $oAnimal = Animal::findorFail($idAnimal);
-            $number = $this->saveAnimalCatalog($oCategory, $oAnimal->id);
+            $number = Catalog::tournament($this->oTournament->id)->max('number');
 
-            if ($number != 0) {
-                $jResponse['success'] = true;
-                $jResponse['number'] = $number;
-            }
+            $jResponse['success'] = true;
+            $jResponse['number'] = $number;
         }
 
         return response()->json($jResponse);

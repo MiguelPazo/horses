@@ -27,6 +27,7 @@ $(document).ready(function () {
 
     $('#form_pane').submit(function (e) {
         e.preventDefault();
+        disableButtons(true);
         prepareForm();
         $('#process').val('2')
 
@@ -55,8 +56,8 @@ $(document).ready(function () {
         });
     });
 
-    $('#btn_confirm').click(function () {
-        openPopup('Adventencia', 'Al cerrar la etapa no podrá volver a modificar los resultados, ¿Esta usted seguro?', 2, function () {
+    $('#btn_close_step').click(function () {
+        openPopup('Adventencia', 'Al cerrar la etapa no podrá volver a modificar los resultados, ¿Esta seguro?', 2, function () {
             $('#form_pane').submit();
         });
     });

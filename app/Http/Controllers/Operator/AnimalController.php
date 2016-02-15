@@ -1,6 +1,7 @@
 <?php namespace Horses\Http\Controllers\Operator;
 
 use Horses\Animal;
+use Horses\Catalog;
 use Horses\Category;
 use Horses\Constants\ConstDb;
 use Horses\Constants\ConstMessages;
@@ -62,6 +63,8 @@ class AnimalController extends Controller
     public function infoAnimal($id)
     {
         $jResponse = AnimalFac::getInfo($id);
+        $oCatalog = Catalog::tournament($this->oTournament->id)->animal($jResponse['id'])->first(['number']);
+        $jResponse['number'] = ($oCatalog) ? $oCatalog->number : null;
 
         return response()->json($jResponse);
     }

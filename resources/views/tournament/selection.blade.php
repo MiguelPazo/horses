@@ -25,6 +25,8 @@
             0
         </div>
     </div>
+@endsection
 
+@section('scripts')
     <script src="{{ asset('/js/app/selection.js') }}"></script>
 @endsection

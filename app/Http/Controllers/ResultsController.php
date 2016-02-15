@@ -1,16 +1,10 @@
 <?php namespace Horses\Http\Controllers;
 
 use Horses\Category;
-use Horses\CategoryUser;
-use Horses\Competitor;
-use Horses\Constants\ConstApp;
 use Horses\Constants\ConstDb;
 use Horses\Http\Requests;
-use Horses\Http\Controllers\Controller;
-
-use Horses\Stage;
+use Horses\Services\Facades\CategoryFac;
 use Horses\Tournament;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 
 class ResultsController extends Controller
@@ -49,49 +43,20 @@ class ResultsController extends Controller
             ) {
                 $oTournament = Tournament::find($tournament);
                 $lstCategory = $this->getCategories($oTournament->id);
-                $lenCompNum = strlen(Competitor::category($oCategory->id)->max('number'));
-                $selection = false;
-                $showSecond = false;
-                $juryDiriment = null;
-                $lstCompetitorWinners = null;
-                $lstCompetitorHonorable = null;
 
-                if ($oCategory->actual_stage == ConstDb::STAGE_SELECTION) {
-                    $selection = true;
-                    $lstCompetitorWinners = Competitor::category($oCategory->id)->selected()->orderBy('number')->get();
-                } else {
-                    $showSecond = ($oCategory->actual_stage == ConstDb::STAGE_CLASSIFY_2) ? true : false;
-                    $juryDiriment = CategoryUser::category($oCategory->id)->diriment(ConstDb::JURY_DIRIMENT)->first();
-                    $lstCompetitor = Competitor::category($oCategory->id)->classified()->with('stages.jury')->orderBy('position')->get();
-                    $count = $lstCompetitor->count();
-
-                    for ($i = 0; $i < $count; $i++) {
-                        $lstCompetitor->get($i)->stages->sortBy(function ($item) {
-                            return $item->jury->id;
-                        });
-                    }
-
-                    $lstCompetitorWinners = new Collection();
-                    $lstCompetitorHonorable = new Collection();
-                    $count = 1;
-
-                    foreach ($lstCompetitor as $key => $competitor) {
-                        if ($count <= ConstApp::MAX_WINNERS) {
-                            $lstCompetitorWinners->add($competitor);
-
-                        } else if (($count - ConstApp::MAX_WINNERS) <= ConstApp::MAX_HONORABLE) {
-                            $lstCompetitorHonorable->add($competitor);
-                        }
-
-                        $count++;
-                    }
-                }
+                $data = CategoryFac::results($oCategory);
+                $selection = $data['selection'];
+                $lenCompNum = $data['lenCompNum'];
+                $showSecond = $data['showSecond'];
+                $juryDiriment = $data['juryDiriment'];
+                $lstCompetitorWinners = $data['lstCompetitorWinners'];
+                $lstCompetitorHonorable = $data['lstCompetitorHonorable'];
 
                 return view('results.category')
-                    ->with('selection', $selection)
-                    ->with('oCategory', $oCategory)
                     ->with('lstCategory', $lstCategory)
                     ->with('oTournament', $oTournament)
+                    ->with('oCategory', $oCategory)
+                    ->with('selection', $selection)
                     ->with('lenCompNum', $lenCompNum)
                     ->with('showSecond', $showSecond)
                     ->with('juryDiriment', $juryDiriment)

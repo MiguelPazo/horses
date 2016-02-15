@@ -2,7 +2,8 @@ $(document).ready(function () {
     var totalSelected = $('#total_present').val();
     var actualMax = $('#last_pos').val();
     var step = 1;
-    var catalogNumbers = $('#lst_catalog').val().split(',');
+    var maxCatalog = $('#max_catalog').val();
+    var idsSelected = [];
 
     $('#count_sel').html(totalSelected);
 
@@ -13,7 +14,7 @@ $(document).ready(function () {
         changeYear: true
     });
 
-    $('#pane_stage .btn_competitor').click(function () {
+    $('#content_competitors').on('click', '.btn_competitor', function () {
         if ($(this).hasClass('btn-success')) {
             totalSelected--;
             $(this).removeClass('btn-success');
@@ -104,23 +105,18 @@ $(document).ready(function () {
                 if (withcomma) {
                     if (parents) {
                         if (!sameParents) {
-                            $.ajax({
-                                url: form.attr('action'),
-                                method: method,
-                                dataType: 'json',
-                                data: form.serialize(),
-                                success: function (response) {
-                                    if (response.success) {
-                                        $('#modal_new_animal').modal('hide');
-                                        //////////////////// more
-                                    } else {
-                                        showErrorMessage(response.message);
-                                        disableButtons(false);
-                                    }
-                                },
-                                error: function (response) {
+                            var url = form.attr('action');
+                            var data = form.serialize();
+
+                            $.post(url, data, function (response) {
+                                if (response.success) {
                                     $('#modal_new_animal').modal('hide');
-                                    generalError();
+                                    idsSelected.push(response.id);
+                                    maxCatalog++;
+                                    addCompetitor(maxCatalog);
+                                } else {
+                                    showErrorMessage(response.message);
+                                    disableButtons(false);
                                 }
                             });
                         } else {
@@ -136,12 +132,26 @@ $(document).ready(function () {
                 showErrorMessage('Debe llenar el nombre del animal.');
             }
         } else {
-            $('#modal_new_animal').modal('hide');
-            console.log(infoSelected);//recuperar catalogo
-            //////////////////// more
-        }
-    });
+            if (idsSelected.indexOf(infoSelected.id) == -1) {
+                $('#modal_new_animal').modal('hide');
+                idsSelected.push(infoSelected.id);
+                var catalogPrint = 0;
+                console.log(infoSelected.number);
+                if (infoSelected.number != null && infoSelected.number != 0) {
+                    catalogPrint = infoSelected.number;
+                } else {
+                    maxCatalog++;
+                    catalogPrint = maxCatalog;
+                }
 
+                addCompetitor(catalogPrint);
+            } else {
+                showErrorMessage('El animal ya se encuentra registrado en esta categoría.');
+            }
+        }
+
+        console.log(idsSelected);
+    });
 
     $('#btn_next').click(function () {
         switch (step) {
@@ -178,14 +188,30 @@ $(document).ready(function () {
         }
     });
 
+    var addCompetitor = function (numberCatalog) {
+        actualMax++;
+
+        var html = '<div class="btn_competitor btn btn-block btn-lg btn-primary btn-success">' +
+            '<div class="path_left"> N° Cancha: ' + actualMax + ' </div>' +
+            '<div class="path_right"> N° Catálogo: ' + numberCatalog + ' </div>' +
+            '</div>' +
+            '<input type="hidden" name="comp_' + numberCatalog + '" value="1"/>';
+
+        $('#content_competitors').append(html);
+        totalSelected++;
+        $('#count_sel').html(totalSelected);
+    };
+
     var prepareForm = function () {
-        $('#pane_stage .btn_competitor').each(function (i, e) {
+        $('#content_competitors .btn_competitor').each(function (i, e) {
             if ($(e).hasClass('btn-success')) {
                 $(e).next('input').val('1');
             } else {
                 $(e).next('input').val('0');
             }
         });
+
+        $('#ids_selected').val(idsSelected.toString());
     };
 
     var showErrorMessage = function (message) {

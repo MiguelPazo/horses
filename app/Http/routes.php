@@ -22,6 +22,15 @@ Route::get('/puesta_cero', [
 
 Route::group([
     'middleware' => ['auth', 'role'],
+    'prefix' => 'general-commissar',
+    'namespace' => 'GeneralCommissar',
+    'roles' => 'general_commissar'
+], function () {
+    Route::get('/{id?}', 'HomeController@index');
+});
+
+Route::group([
+    'middleware' => ['auth', 'role'],
     'prefix' => 'commissar',
     'namespace' => 'Commissar',
     'roles' => 'commissar'

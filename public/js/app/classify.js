@@ -1,4 +1,7 @@
 $(document).ready(function () {
+    var countConfirm = 0;
+    var countNeedConfirm = 0;
+
     var prepareForm = function () {
         var position = 1;
 
@@ -47,6 +50,7 @@ $(document).ready(function () {
 
     $('#form_pane').submit(function (e) {
         e.preventDefault();
+        disableButtons(true);
         prepareForm();
         $('#process').val('2');
 
@@ -54,11 +58,11 @@ $(document).ready(function () {
         var data = $(this).serialize();
 
         $.ajax({
-             url: url,
-             method: 'GET',
-             dataType: 'json',
-             data: data,
-             success: function (response) {
+            url: url,
+            method: 'GET',
+            dataType: 'json',
+            data: data,
+            success: function (response) {
                 if (response.success) {
                     if (response.url != '') {
                         location.href = response.url;
@@ -69,23 +73,52 @@ $(document).ready(function () {
                     openPopup('Error', response.message, 1, null)
                 }
             },
-            error: function (response){
+            error: function (response) {
                 generalError();
             }
         });
     });
 
-     $('#btn_confirm').click(function () {
+    $('#btn_close_step').click(function () {
         var countUnclassify = $('.comp_list').find('li').length;
+        countConfirm = 0;
+        countNeedConfirm = $('.comp_classify').find('li').length;
+        $('#btn_confirm').attr('disabled', 'disabled');
 
         if (countUnclassify == 0) {
-            openPopup('Adventencia', 'Al cerrar la etapa no podrá volver a modificar los resultados, ¿Esta usted seguro?', 2, function(){
-                $('#form_pane').submit();
-            });
+            var html = $('.comp_classify').html().replace(/btn-success/g, '');
+
+            $('#space_verify').html(html);
+            $('#modal_verify').modal('show');
         } else {
             openPopup('Error', 'Debe clasificar a todos los concursantes!', 1, null);
         }
     });
+
+    $('#space_verify').on('click', '.btn', function () {
+        if ($(this).hasClass('btn-success')) {
+            countConfirm--;
+            $(this).removeClass('btn-success');
+        } else {
+            countConfirm++;
+            $(this).addClass('btn-success');
+        }
+
+        if (countConfirm == countNeedConfirm) {
+            $('#btn_confirm').removeAttr('disabled');
+        } else {
+            $('#btn_confirm').attr('disabled', 'disabled');
+        }
+    });
+
+    $('#btn_confirm').click(function () {
+        $('#modal_verify').modal('hide');
+
+        openPopup('Adventencia', 'Al cerrar la etapa no podrá volver a modificar los resultados, ¿Esta seguro?', 2, function () {
+            $('#form_pane').submit();
+        });
+    });
+
 
     fixPositions();
 });

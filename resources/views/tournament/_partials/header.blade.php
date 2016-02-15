@@ -11,7 +11,7 @@
 <p><b>Etapa: </b> {{ $stage }}</p>
 
 @if($valid)
-    <a role="button" class="btn btn-danger" id="btn_confirm">
+    <a role="button" class="btn btn-danger" id="btn_close_step">
         CERRAR ETAPA
     </a>
 @endif

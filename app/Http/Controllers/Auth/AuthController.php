@@ -62,12 +62,40 @@ class AuthController extends Controller
                             $response['url'] = route('admin.dashboard');
                             break;
 
+                        case ConstDb::PROFILE_OPERATOR:
+                            $oTournament = Tournament::statusIn([ConstDb::STATUS_ACTIVE, ConstDb::STATUS_JOURNAL])->first();
+
+                            if ($oTournament) {
+                                if ($oTournament->status == ConstDb::STATUS_ACTIVE) {
+                                    $request->session()->put('oTournament', $oTournament);
+                                    $response['url'] = route('oper.animal.index');
+                                } else {
+                                    $process = false;
+                                    $response['message'] = 'No se encuentra autorizado para ingresar, ya inicio la jornada del concurso.';
+                                }
+                            } else {
+                                $process = false;
+                                $response['message'] = ConstMessages::LOGIN_TOURNAMENT_INACTIVE;
+                            }
+                            break;
+
                         case ConstDb::PROFILE_COMMISSAR:
                             $oTournament = Tournament::status(ConstDb::STATUS_JOURNAL)->first();
 
                             if ($oTournament) {
                                 $request->session()->put('oTournament', $oTournament);
                                 $response['url'] = url('/commissar');
+                            } else {
+                                $process = false;
+                                $response['message'] = ConstMessages::LOGIN_TOURNAMENT_NO_JOURNAL;
+                            }
+                            break;
+                        case ConstDb::PROFILE_GENERAL_COMMISSAR:
+                            $oTournament = Tournament::status(ConstDb::STATUS_JOURNAL)->first();
+
+                            if ($oTournament) {
+                                $request->session()->put('oTournament', $oTournament);
+                                $response['url'] = url('/general-commissar');
                             } else {
                                 $process = false;
                                 $response['message'] = ConstMessages::LOGIN_TOURNAMENT_NO_JOURNAL;
@@ -117,22 +145,9 @@ class AuthController extends Controller
                                 $response['message'] = $categoryActive['message'];
                             }
                             break;
-                        case ConstDb::PROFILE_OPERATOR:
-                            $oTournament = Tournament::statusIn([ConstDb::STATUS_ACTIVE, ConstDb::STATUS_JOURNAL])->first();
-
-                            if ($oTournament) {
-                                if ($oTournament->status == ConstDb::STATUS_ACTIVE) {
-                                    $request->session()->put('oTournament', $oTournament);
-                                    $response['url'] = route('oper.animal.index');
-                                } else {
-                                    $process = false;
-                                    $response['message'] = 'No se encuentra autorizado para ingresar, ya inicio la jornada del concurso.';
-                                }
-                            } else {
-                                $process = false;
-                                $response['message'] = ConstMessages::LOGIN_TOURNAMENT_INACTIVE;
-                            }
-
+                        default:
+                            $process = false;
+                            $response['message'] = 'No se encuentra autorizado para ingresar al sistema.';
                             break;
                     }
 
@@ -165,7 +180,7 @@ class AuthController extends Controller
     {
         $category = ['category' => null, 'tournament' => null, 'message' => ''];
 
-        $oTournament = Tournament::status(ConstDb::STATUS_ACTIVE)->first();
+        $oTournament = Tournament::status(ConstDb::STATUS_JOURNAL)->first();
 
         if ($oTournament) {
             $oCategory = Category::tournament($oTournament->id)->status(ConstDb::STATUS_ACTIVE)->first();

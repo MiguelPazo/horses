@@ -37,6 +37,7 @@ class TournamentController extends Controller
     public function selection()
     {
         $lstCompetitor = Competitor::category($this->category->id)
+            ->status(ConstDb::COMPETITOR_PRESENT)
             ->orderBy('number')
             ->get();
 

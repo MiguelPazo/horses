@@ -24,8 +24,7 @@
                         <p></p>
                         <?php $i = 0?>
                         @for($i; $i < count($catalog); $i++)
-                            <div class="btn_competitor btn btn-block btn-lg btn-primary
-                            {{ ($catalog[$i]['present'])? 'btn-success':'' }}">
+                            <div class="btn_competitor btn btn-block btn-lg btn-primary {{ ($catalog[$i]['present'])? 'btn-success':'' }}">
                                 <div class="path_left">
                                     N° Cancha: {{ str_pad($i + $oCategory->num_begin, $rpad, "0", STR_PAD_LEFT) }}
                                 </div>
@@ -36,15 +35,18 @@
                             <input type="hidden" name="comp_{{ $catalog[$i]['number']}}"
                                    value="{{ ($catalog[$i]['present'])? 1:0 }}"/>
                         @endfor
-
-                        <input type="hidden" id="lst_catalog" value="{{ $catalogNumbers }}"/>
-                        <input type="hidden" id="last_pos" value="{{ $i + $oCategory->num_begin }}">
-                        <input type="hidden" id="total_present" value="{{ $totalPresent }}"/>
-                        <input type="hidden" id="tournament" value="{{ $oTournament->id }}"/>
                     </div>
-                    <button type="button" id="btn_add" class="btn btn-block btn-lg btn-info">
-                        Agregar Adicional
-                    </button>
+                    <input type="hidden" id="max_catalog" value="{{ $maxCatalog }}"/>
+                    <input type="hidden" id="last_pos" value="{{ $i + $oCategory->num_begin - 1 }}">
+                    <input type="hidden" id="total_present" value="{{ $totalPresent }}"/>
+                    <input type="hidden" id="ids_selected" value="" name="ids_selected"/>
+                    <input type="hidden" id="tournament" value="{{ $oTournament->id }}"/>
+
+                    <div class="col-md-12">
+                        <button type="button" id="btn_add" class="btn btn-block btn-lg btn-info">
+                            Agregar Adicional
+                        </button>
+                    </div>
                 </div>
                 <p></p>
             </div>

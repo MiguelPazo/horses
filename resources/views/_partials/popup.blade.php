@@ -12,10 +12,10 @@
                 Al cerrar la etapa no podrá volver a modificar los resultados, ¿Esta usted seguro?
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">
+                <button type="button" class="btn btn-default btn_disable" data-dismiss="modal">
                     No
                 </button>
-                <button type="button" class="btn btn-primary" id="btn_ok">
+                <button type="button" class="btn btn-primary btn_disable" id="btn_ok">
                     Sí
                 </button>
             </div>
@@ -37,7 +37,7 @@
 
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">
+                <button type="button" class="btn btn-default btn_disable" data-dismiss="modal">
                     Aceptar
                 </button>
             </div>

@@ -1,10 +1,11 @@
 @extends('layout')
 
 @section('content')
-    @include('results._partials.header')
-    <div class="col-md-10">
-        <h4 class="label_category">Categoría: {{ $oCategory->description}}</h4>
-
+    <h5>Concurso: {{ $oTournament->description }}</h5>
+    @if($wData)
+        <h3 class="text-center text-primary">
+            Categoría: {{ $oCategory->description}}
+        </h3>
         <div class="col-md-12">
             @if($selection)
                 <div class="tab-pane">
@@ -120,20 +121,18 @@
                             </tbody>
                         </table>
                     </div>
-
-                    @if(Auth::check())
-                        <button class="btn btn-success btn_print">IMPRIMIR</button>
-                    @endif
                 </div>
             @endif
         </div>
-    </div>
-
+        @if($suggest != 0)
+            <a class="suggest btn btn-success btn-lg" href="{{ url('/general-commissar', $suggest) }}">
+                Ver Siguiente <span class="glyphicon glyphicon-chevron-right"></span>
+            </a>
+        @endif
+    @endif
 @endsection
 
 
 @section('scripts')
-    @if(!Auth::check())
-        <script src="{{ asset('/js/app/results.js') }}"></script>
-    @endif
+    {{--<script src="{{ asset('/js/app/results.js') }}"></script>--}}
 @endsection

@@ -6,7 +6,6 @@ var wDisable = true;
 $(document).ready(function () {
     var fillPrefix = true;
     var prefix = '';
-    var catSelected = [];
 
     wDisable = ($('#name').attr('rel') == 'disable') ? true : false;
 
