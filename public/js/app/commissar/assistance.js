@@ -3,9 +3,8 @@ $(document).ready(function () {
     var actualMax = $('#last_pos').val();
     var step = 1;
     var maxCatalog = $('#max_catalog').val();
-    var idsSelected = [];
-
-    $('#count_sel').html(totalSelected);
+    var idsSelected = ($('#ids_selected').val() == '') ? [] : $('#ids_selected').val().split(',');
+    console.log(idsSelected);
 
     $(".datepicker").datepicker({
         'dateFormat': 'dd-mm-yy',

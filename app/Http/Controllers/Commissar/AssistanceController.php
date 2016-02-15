@@ -31,12 +31,15 @@ class AssistanceController extends Controller
         $oCategory = Category::tournament($this->oTournament->id)->status(ConstDb::STATUS_INACTIVE)->findorFail($id);
         $totalComp = $oCategory->num_begin + $oCategory->count_competitors;
         $maxCatalog = Catalog::tournament($this->oTournament->id)->max('number');
+        $maxCatalog = ($maxCatalog) ? $maxCatalog : 0;
         $lstCatalog = Catalog::tournament($oCategory->tournament_id)->category($oCategory->id)->orderBy('number')->get();
+        $ids = [];
 
         if ($oCategory->actual_stage == ConstDb::STAGE_ASSISTANCE) {
             $lstCompetitors = Competitor::category($oCategory->id)->orderBy('number')->get();
 
             foreach ($lstCompetitors as $key => $value) {
+                $ids[] = $value->id;
                 $dCat['number'] = $value->catalog;
                 $dCat['present'] = ($value->status == ConstDb::COMPETITOR_PRESENT) ? true : false;
                 $totalPresent = ($value->status == ConstDb::COMPETITOR_PRESENT) ? $totalPresent + 1 : $totalPresent;
@@ -44,7 +47,12 @@ class AssistanceController extends Controller
             }
         } else {
             foreach ($lstCatalog as $key => $value) {
-                $dCat['number'] = $value->number;
+                if (!$value->catalog) {
+                    $maxCatalog++;
+                }
+
+                $ids[] = $value->animal_id;
+                $dCat['number'] = ($value->number) ? $value->number : $maxCatalog;
                 $dCat['present'] = false;
                 $catalog[] = $dCat;
             }
@@ -53,6 +61,7 @@ class AssistanceController extends Controller
         return view('commissar.assistance')
             ->with('oTournament', $this->oTournament)
             ->with('catalog', $catalog)
+            ->with('ids', implode(',', $ids))
             ->with('maxCatalog', $maxCatalog)
             ->with('totalPresent', $totalPresent)
             ->with('rpad', strlen($totalComp))
@@ -66,7 +75,6 @@ class AssistanceController extends Controller
         $nCatalog = [];
         $totalPresent = 0;
         $idsSelected = explode(',', $data['ids_selected']);
-        $posIdSelected = 0;
 
         foreach ($data as $key => $value) {
             if (strpos($key, ConstApp::PREFIX_COMPETITOR) !== false) {
@@ -83,6 +91,7 @@ class AssistanceController extends Controller
         $count = count($nCatalog);
         $insertComp = [];
         $insertCatalog = [];
+        $idsAnimalCatalogDelete = [];
 
         for ($i = 0; $i < $count; $i++) {
             $numCatalog = $nCatalog[$i];
@@ -94,15 +103,13 @@ class AssistanceController extends Controller
                 $totalPresent++;
             }
 
-            $oCatalog = $lstCatalog->filter(function ($item) use ($numCatalog) {
-                return $item->number == $numCatalog;
+            $oCatalog = $lstCatalog->filter(function ($item) use ($numCatalog, $oCategory) {
+                return $item->number == $numCatalog && $item->category_id == $oCategory->id;
             })->first();
 
-            if ($oCatalog) {
-                $posIdSelected = (in_array($oCatalog->animal_id, $idsSelected)) ? $posIdSelected + 1 : $posIdSelected;
-            } else {
-                $idAnimal = $idsSelected[$posIdSelected];
-                $posIdSelected++;
+            if (!$oCatalog) {
+                $idAnimal = $idsSelected[$i];
+                $idsAnimalCatalogDelete[] = $idAnimal;
 
                 $insertCatalog[] = [
                     'number' => $numCatalog,
@@ -124,6 +131,7 @@ class AssistanceController extends Controller
         DB::beginTransaction();
 
         try {
+            Catalog::category($oCategory->id)->animalIn($idsAnimalCatalogDelete)->delete();
             Competitor::category($oCategory->id)->delete();
 
             if (count($insertCatalog) > 0) {

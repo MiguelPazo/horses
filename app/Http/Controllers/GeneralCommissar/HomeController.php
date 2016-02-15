@@ -28,6 +28,7 @@ class HomeController extends Controller
 
         $oCategory = null;
         $data = null;
+        $show = false;
         $suggest = 0;
         $wData = false;
         $selection = null;
@@ -46,7 +47,17 @@ class HomeController extends Controller
 
                 if ($oCategory) {
                     $data = CategoryFac::results($oCategory);
-                    $suggest = ($oCategory->status == ConstDb::STATUS_ACTIVE) ? 0 : $lstCategory->get(0)->id;
+
+                    if ($oCategory->status == ConstDb::STATUS_FINAL) {
+                        if ($lstCategory->count() > 1) {
+                            if (($lstCategory->get(0)->status == ConstDb::STATUS_ACTIVE
+                                    || $lstCategory->get(0)->status == ConstDb::STATUS_FINAL)
+                                && $lstCategory->get(0)->id != $oCategory->id
+                            ) {
+                                $suggest = $lstCategory->get(0)->id;
+                            }
+                        }
+                    }
                 } else {
                     return redirect()->to('/general-commissar/' . $lstCategory->get(0)->id);
                 }
@@ -58,6 +69,7 @@ class HomeController extends Controller
 
         if ($data) {
             $wData = true;
+            $show = (count($data['lstCompetitorWinners']) > 0) ? true : false;
             $selection = $data['selection'];
             $lenCompNum = $data['lenCompNum'];
             $showSecond = $data['showSecond'];
@@ -70,6 +82,7 @@ class HomeController extends Controller
         return view('gcommissar.home')
             ->with('oTournament', $this->oTournament)
             ->with('wData', $wData)
+            ->with('show', $show)
             ->with('suggest', $suggest)
             ->with('oCategory', $oCategory)
             ->with('selection', $selection)

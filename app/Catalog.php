@@ -37,4 +37,9 @@ class Catalog extends Model
         return $query->where('animal_id', $idAnimal);
     }
 
+    public function scopeAnimalIn($query, $idsAnimal)
+    {
+        return $query->whereIn('animal_id', $idsAnimal);
+    }
+
 }

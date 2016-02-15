@@ -37,9 +37,9 @@
                         @endfor
                     </div>
                     <input type="hidden" id="max_catalog" value="{{ $maxCatalog }}"/>
+                    <input type="hidden" id="ids_selected" value="{{ $ids }}" name="ids_selected"/>
                     <input type="hidden" id="last_pos" value="{{ $i + $oCategory->num_begin - 1 }}">
                     <input type="hidden" id="total_present" value="{{ $totalPresent }}"/>
-                    <input type="hidden" id="ids_selected" value="" name="ids_selected"/>
                     <input type="hidden" id="tournament" value="{{ $oTournament->id }}"/>
 
                     <div class="col-md-12">
