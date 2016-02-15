@@ -33,6 +33,7 @@ var reloadPage = function () {
 };
 
 var generalError = function () {
+    disableButtons(false);
     openPopup('Error', 'Ha ocurrido un error, se recargará la página', 1, null);
 
     reloadPage();
