@@ -38,19 +38,21 @@ class HomeController extends Controller
         $lstCompetitorHonorable = null;
 
 
-        if ($category) {
-            $oCategory = $lstCategory->filter(function ($item) use ($category) {
-                return $item->id == $category;
-            })->first();
+        if ($count > 0) {
+            if ($category) {
+                $oCategory = $lstCategory->filter(function ($item) use ($category) {
+                    return $item->id == $category;
+                })->first();
 
-            if ($oCategory) {
-                $data = CategoryFac::results($oCategory);
-                $suggest = ($oCategory->status == ConstDb::STATUS_ACTIVE) ? 0 : $lstCategory->get(0)->id;
+                if ($oCategory) {
+                    $data = CategoryFac::results($oCategory);
+                    $suggest = ($oCategory->status == ConstDb::STATUS_ACTIVE) ? 0 : $lstCategory->get(0)->id;
+                } else {
+                    return redirect()->to('/general-commissar/' . $lstCategory->get(0)->id);
+                }
             } else {
                 return redirect()->to('/general-commissar/' . $lstCategory->get(0)->id);
             }
-        } else {
-            return redirect()->to('/general-commissar/' . $lstCategory->get(0)->id);
         }
 
 

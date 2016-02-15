@@ -1,5 +1,6 @@
 <?php namespace Horses\Services;
 
+use Horses\Catalog;
 use Horses\Category;
 use Horses\CategoryUser;
 use Horses\Competitor;
@@ -31,17 +32,20 @@ class CategoryService
 
         if ($oCategory->actual_stage == ConstDb::STAGE_SELECTION) {
             $selection = true;
-            $lstCompetitors = Competitor::category($oCategory->id)->status(ConstDb::COMPETITOR_PRESENT)->get();
-            $lstCompetitorWinners = $lstCompetitors->filter(function ($item) {
+            $lstCompetitor = Competitor::category($oCategory->id)->status(ConstDb::COMPETITOR_PRESENT)->get();
+            $lstCompetitor = $this->getAnimalsDetails($lstCompetitor, $oCategory);
+
+            $lstCompetitorWinners = $lstCompetitor->filter(function ($item) {
                 return $item->position === 0;
             });
-            $lstCompetitorHonorable = $lstCompetitors->filter(function ($item) {
+            $lstCompetitorHonorable = $lstCompetitor->filter(function ($item) {
                 return $item->position === null;
-            });;
+            });
         } else {
             $showSecond = ($oCategory->actual_stage == ConstDb::STAGE_CLASSIFY_2) ? true : false;
             $juryDiriment = CategoryUser::category($oCategory->id)->diriment(ConstDb::JURY_DIRIMENT)->first();
             $lstCompetitor = Competitor::category($oCategory->id)->classified()->with('stages.jury')->orderBy('position')->get();
+            $lstCompetitor = $this->getAnimalsDetails($lstCompetitor, $oCategory);
             $count = $lstCompetitor->count();
 
             for ($i = 0; $i < $count; $i++) {
@@ -74,6 +78,44 @@ class CategoryService
         $jResponse['lstCompetitorHonorable'] = $lstCompetitorHonorable;
 
         return $jResponse;
+    }
+
+    private function getAnimalsDetails($lstCompetitor, $oCategory)
+    {
+        $numbers = [];
+        $idsAnimals = [];
+
+        foreach ($lstCompetitor as $key => $value) {
+            $numbers[] = $value->catalog;
+        }
+
+        $lstCatalog = Catalog::category($oCategory->id)->numberIn($numbers)->get(['animal_id', 'number']);
+
+        foreach ($lstCatalog as $key => $value) {
+            $idsAnimals[] = $value->animal_id;
+        }
+
+        $animalsDetails = DB::table('animal_report')->whereIn('id', $idsAnimals)->get();
+
+        foreach ($lstCompetitor as $key => $value) {
+            $animal = null;
+
+            $oCatalog = $lstCatalog->filter(function ($item) use ($value) {
+                return $item->number == $value->catalog;
+            })->first();
+
+            foreach ($animalsDetails as $key2 => $value2) {
+                if ($oCatalog->animal_id == $value2->id) {
+                    $animal = $value2;
+                    break;
+                }
+            }
+
+            $value->animal_details = $animal;
+            $numbers[] = $value->catalog;
+        }
+
+        return $lstCompetitor;
     }
 
     public function fetchAll($idTournament)

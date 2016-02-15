@@ -9,16 +9,23 @@
             @if($selection)
                 <div class="tab-pane">
                     <div class="table-responsive">
+                        <b>Competidores Seleccionados ({{ $lstCompetitorWinners->count() }})</b>
                         <table class="table table-striped">
                             <thead>
                             <tr>
-                                <th>Competidores Seleccionados ({{ $lstCompetitorWinners->count() }})</th>
+                                <th width="20%">N° de Cancha</th>
+                                <th width="20%">N° de Catálogo</th>
+                                <th width="20%">Prefijo</th>
+                                <th width="40%">Nombre</th>
                             </tr>
                             </thead>
                             <tbody>
                             @foreach($lstCompetitorWinners as $competitor)
                                 <tr>
                                     <td>{{ str_pad($competitor->number, $lenCompNum, "0", STR_PAD_LEFT) }}</td>
+                                    <td>{{ $competitor->catalog }}</td>
+                                    <td>{{ $competitor->animal_details->prefix }}</td>
+                                    <td>{{ $competitor->animal_details->name }}</td>
                                 </tr>
                             @endforeach
                             </tbody>
@@ -27,16 +34,23 @@
                 </div>
                 <div class="tab-pane">
                     <div class="table-responsive">
+                        <b>Competidores No Seleccionados ({{ $lstCompetitorHonorable->count() }})</b>
                         <table class="table table-striped">
                             <thead>
                             <tr>
-                                <th>Competidores No Seleccionados ({{ $lstCompetitorHonorable->count() }})</th>
+                                <th width="20%">N° de Cancha</th>
+                                <th width="20%">N° de Catálogo</th>
+                                <th width="20%">Prefijo</th>
+                                <th width="40%">Nombre</th>
                             </tr>
                             </thead>
                             <tbody>
                             @foreach($lstCompetitorHonorable as $competitor)
                                 <tr>
                                     <td>{{ str_pad($competitor->number, $lenCompNum, "0", STR_PAD_LEFT) }}</td>
+                                    <td>{{ $competitor->catalog }}</td>
+                                    <td>{{ $competitor->animal_details->prefix }}</td>
+                                    <td>{{ $competitor->animal_details->name }}</td>
                                 </tr>
                             @endforeach
                             </tbody>
@@ -50,11 +64,14 @@
                             <thead>
                             <tr>
                                 <th rowspan="2">Puesto</th>
-                                <th rowspan="2">Número de Cancha</th>
-                                <th rowspan="2">Número de Catálogo</th>
-                                <th colspan="{{ $oCategory->juries->count() + 1 }}" class="center">Primera Clasificación
+                                <th rowspan="2">N° de Cancha</th>
+                                <th rowspan="2">N° de Catálogo</th>
+                                <th rowspan="2">Nombre</th>
+                                <th colspan="{{ $oCategory->juries->count() + 1 }}" class="center">
+                                    Primera Clasificación
                                 </th>
-                                <th colspan="{{ $oCategory->juries->count() + 1 }}" class="center">Segunda Clasificación
+                                <th colspan="{{ $oCategory->juries->count() + 1 }}" class="center">
+                                    Segunda Clasificación
                                 </th>
                             </tr>
                             <tr>
@@ -76,6 +93,7 @@
                                     <td scope="row">{{ $position }}</td>
                                     <td>{{ str_pad($competitor->number, $lenCompNum, "0", STR_PAD_LEFT) }}</td>
                                     <td scope="row">{{ $competitor->catalog }}</td>
+                                    <td scope="row">{{ $competitor->animal_details->name }}</td>
                                     <?php $acum = 0 ?>
                                     @foreach($competitor->stages as $stage)
                                         @if($stage->stage == \Horses\Constants\ConstDb::STAGE_CLASSIFY_1)
@@ -105,7 +123,7 @@
                                     <td scope="row">MH{{ $position }}</td>
                                     <td>{{ str_pad($competitor->number, $lenCompNum, "0", STR_PAD_LEFT) }}</td>
                                     <td scope="row">{{ $competitor->catalog }}</td>
-
+                                    <td scope="row">{{ $competitor->animal_details->name }}</td>
                                     <?php $acum = 0 ?>
                                     @foreach($competitor->stages as $stage)
                                         @if($stage->stage == \Horses\Constants\ConstDb::STAGE_CLASSIFY_1)

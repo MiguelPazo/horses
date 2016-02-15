@@ -1,10 +1,10 @@
 @extends('layout')
 
 @section('content')
-    <h5>Concurso: {{ $oTournament->description }}</h5>
+    <h5><b>Concurso: {{ $oTournament->description }}</b></h5>
     @if($wData)
         <h3 class="text-center text-primary">
-            Categoría: {{ $oCategory->description}}
+            {{ $oCategory->description}}
         </h3>
         <div class="col-md-12">
             @if($selection)
@@ -134,5 +134,5 @@
 
 
 @section('scripts')
-    {{--<script src="{{ asset('/js/app/results.js') }}"></script>--}}
+    <script src="{{ asset('/js/app/results.js') }}"></script>
 @endsection
