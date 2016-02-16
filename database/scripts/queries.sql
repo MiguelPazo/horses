@@ -4,11 +4,11 @@ DELETE FROM agents;
 DELETE FROM catalogs;
 DELETE FROM animals;
 
-DELETE FROM category_users WHERE category_id IN (SELECT id FROM categories WHERE tournament_id = 2);
-DELETE FROM stages WHERE category_id IN (SELECT id FROM categories WHERE tournament_id = 2);
-DELETE FROM competitors WHERE category_id IN (SELECT id FROM categories WHERE tournament_id = 2);
-DELETE FROM categories WHERE tournament_id = 2;
-DELETE FROM tournaments WHERE id = 2;
+DELETE FROM category_users WHERE category_id IN (SELECT id FROM categories WHERE tournament_id = 3);
+DELETE FROM stages WHERE category_id IN (SELECT id FROM categories WHERE tournament_id = 3);
+DELETE FROM competitors WHERE category_id IN (SELECT id FROM categories WHERE tournament_id = 3);
+DELETE FROM categories WHERE tournament_id = 3;
+DELETE FROM tournaments WHERE id = 3;
 SET FOREIGN_KEY_CHECKS = 1;
 
 
@@ -36,7 +36,7 @@ OWNER VARCHAR(100)
 
 /*INSERT AGENTS*/
 INSERT INTO agents (prefix, NAMES, created_at, updated_at)
-SELECT a.*, CURRENT_TIMESTAMP AS created_at, CURRENT_TIMESTAMP AS deleted_at FROM (
+SELECT a.*, CURRENT_TIMESTAMP AS created_at, CURRENT_TIMESTAMP AS updated_at FROM (
 SELECT b.prefix, a.name FROM (
 SELECT DISTINCT NAME FROM (
 SELECT breeder AS NAME
@@ -46,6 +46,7 @@ SELECT OWNER AS NAME
 FROM temp1) a ) a
 LEFT JOIN (SELECT prefix, breeder
 FROM temp1
+WHERE prefix <> ''
 GROUP BY breeder) b ON b.breeder = a.name) a
 WHERE a.name NOT IN(
     SELECT TRIM(CONCAT(NAMES, ' ' , lastnames)) FROM agents
@@ -55,10 +56,11 @@ WHERE a.name NOT IN(
 ALTER TABLE animals ADD prefix VARCHAR(20);
 
 /*INSERT ANIMALS*/
-INSERT INTO animals(prefix, CODE, NAME, birthdate)
+INSERT INTO animals(prefix, CODE, NAME, birthdate, created_at, updated_at)
 SELECT a.prefix, IF(a.code = '', NULL, a.code) AS CODE, 
-a.name, a.birthdate FROM (
-SELECT prefix, CODE, NAME, STR_TO_DATE(birthdate, '%d/%m/%Y') AS birthdate
+a.name, a.birthdate, CURRENT_TIMESTAMP AS created_at, CURRENT_TIMESTAMP AS updated_at 
+FROM (
+SELECT prefix, CODE, NAME, IF(birthdate <> '', STR_TO_DATE(birthdate, '%d/%m/%Y'), NULL) AS birthdate
 FROM temp1
 UNION ALL
 SELECT dad_prefix, NULL AS CODE, dad_name, NULL AS birthdate
@@ -66,7 +68,7 @@ FROM temp1
 UNION ALL
 SELECT mom_prefix, NULL AS CODE, mom_name, NULL AS birthdate
 FROM temp1) a
-WHERE a.name <> ''
+WHERE a.name <> '' AND CONCAT(prefix, NAME) NOT IN (SELECT CONCAT(prefix, NAME) FROM animals)
 GROUP BY a.name, a.prefix;
 
 /*UPDATE MOM AND DAD*/
@@ -112,65 +114,85 @@ SELECT g.dad FROM (
 	    INNER JOIN animals b ON b.name = a.mom_name AND b.prefix = a.mom_prefix
 	) b ON b.mom_name = a.mom_name AND b.mom_prefix = a.mom_prefix
 ) g WHERE g.id = a.id GROUP BY g.id
-)
+);
 
 /*UPDATE GENDER*/
-UPDATE animals SET gender = (
-    SELECT id, 'female' AS gender 
-    FROM animals
-    WHERE id IN (SELECT mom FROM animals GROUP BY mom)
-)
-WHERE id IN (SELECT a.mom FROM animals a GROUP BY a.mom);
+UPDATE animals a SET a.gender = (
+    SELECT gender
+    FROM (
+        SELECT id, 'female' AS gender
+	FROM animals
+	WHERE id IN (SELECT mom FROM animals WHERE mom IS NOT NULL)
+	UNION ALL
+	SELECT id, 'male' AS gender
+	FROM animals
+	WHERE id IN (SELECT dad FROM animals WHERE dad IS NOT NULL)) b
+	WHERE b.id = a.id
+);
 
-
-
-
-
-SELECT * FROM temp1 WHERE NAME LIKE '%TITA%'
-
-
-
-
-
-SELECT d.id, a.prefix, a.name, b.id AS dad, c.id AS mom
+/*INSERT BREEDERS*/
+INSERT INTO animal_agent(animal_id, agent_id, TYPE)
+SELECT * FROM (
+SELECT b.id AS animal_id, c.id AS agent_id, 'breeder' AS TYPE
 FROM temp1 a
-LEFT JOIN (
-    SELECT b.id, a.* 
-    FROM (
-    SELECT prefix, NAME
-    FROM temp1
-    GROUP BY NAME, prefix) a
-    LEFT JOIN animals b ON b.name = a.name AND b.prefix = a.prefix
-) d ON d.name = a.name AND d.prefix = a.prefix
-LEFT JOIN (
-    SELECT b.id, a.* 
-    FROM (
-    SELECT dad_prefix, dad_name
-    FROM temp1
-    GROUP BY dad_name, dad_prefix) a
-    INNER JOIN animals b ON b.name = a.dad_name AND b.prefix = a.dad_prefix
-) b ON b.dad_name = a.dad_name AND b.dad_prefix = a.dad_prefix
-LEFT JOIN (
-    SELECT b.id, a.* 
-    FROM (
-    SELECT mom_prefix, mom_name
-    FROM temp1
-    GROUP BY mom_name, mom_prefix) a
-    INNER JOIN animals b ON b.name = a.mom_name AND b.prefix = a.mom_prefix
-) c ON c.mom_name = a.mom_name AND c.mom_prefix = a.mom_prefix
+INNER JOIN animals b ON b.name = a.name AND b.prefix = a.prefix
+INNER JOIN agents c ON c.names = a.breeder AND c.prefix = a.prefix
+GROUP BY b.id
+) c WHERE CONCAT(animal_id, agent_id, TYPE) NOT IN (SELECT 
+CONCAT(animal_id, agent_id, TYPE) FROM animal_agent);
 
 
+/*INSERT OWNERS*/
+INSERT INTO animal_agent(animal_id, agent_id, TYPE)
+SELECT * FROM (
+SELECT b.id AS animal_id, c.id AS agent_id, 'owner' AS TYPE
+FROM temp1 a
+INNER JOIN animals b ON b.name = a.name AND b.prefix = a.prefix
+INNER JOIN agents c ON c.names = a.owner
+GROUP BY b.id
+) c WHERE CONCAT(animal_id, agent_id, TYPE) NOT IN (SELECT 
+CONCAT(animal_id, agent_id, TYPE) FROM animal_agent);
 
+/*INSERT BREEDERS OF PARENTS*/
+INSERT INTO animal_agent(animal_id, agent_id, TYPE)
+SELECT * FROM (
+SELECT a.id AS animal_id, b.id AS agent_id, 'breeder' AS TYPE
+FROM (
+SELECT a.id, a.prefix 
+FROM animals a
+WHERE id IN (
+	SELECT DISTINCT(mom) FROM animals
+	UNION ALL
+	SELECT DISTINCT(dad) FROM animals
+)) a INNER JOIN agents b ON b.prefix = a.prefix
+) c WHERE CONCAT(animal_id, agent_id, TYPE) NOT IN (SELECT 
+CONCAT(animal_id, agent_id, TYPE) FROM animal_agent);
 
+/*INSERT CATALOGS*/
+INSERT INTO catalogs(number, category_id, tournament_id, animal_id)
+SELECT catalog AS number, category AS category_id, 1 AS tournament_id, b.id AS animal_id
+FROM temp1 a
+INNER JOIN animals b ON b.name = a.name AND b.prefix = a.prefix
 
+/*VERIFY AGENTS*/
+SELECT * FROM (
+SELECT b.id
+FROM temp1 a
+INNER JOIN animals b ON b.name = a.name AND b.prefix = a.prefix
+INNER JOIN agents c ON c.names = a.owner
+GROUP BY b.id) a
+WHERE id NOT IN (
+SELECT b.id
+FROM temp1 a
+INNER JOIN animals b ON b.name = a.name AND b.prefix = a.prefix
+INNER JOIN agents c ON c.names = a.breeder AND c.prefix = a.prefix
+GROUP BY b.id
+)
 
-SELECT * FROM animals WHERE NAME = 'DOMINICA'
+SELECT * FROM animals WHERE id IN (1856,1946)
 
-SELECT * FROM temp1 WHERE NAME = 'DOMINICA'
+SELECT * FROM animal_agent WHERE animal_id IN (1856,1946)
 
+SELECT * FROM temp1 WHERE NAME IN ('II CALAMBUCO','MULATO')
 
-DELETE FROM animals
-
-SELECT animal_id, agent_id, TYPE
-FROM animal_agent
-
+SELECT * FROM agents WHERE NAMES IN ('WILFREDO MONTALVO BERNILLA','CARLOS RAMIREZ CHUPICA')

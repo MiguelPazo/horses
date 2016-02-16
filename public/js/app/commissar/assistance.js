@@ -4,7 +4,6 @@ $(document).ready(function () {
     var step = 1;
     var maxCatalog = $('#max_catalog').val();
     var idsSelected = ($('#ids_selected').val() == '') ? [] : $('#ids_selected').val().split(',');
-    console.log(idsSelected);
 
     $(".datepicker").datepicker({
         'dateFormat': 'dd-mm-yy',
