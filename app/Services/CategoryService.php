@@ -27,20 +27,34 @@ class CategoryService
         $selection = false;
         $showSecond = false;
         $juryDiriment = null;
-        $lstCompetitorWinners = null;
-        $lstCompetitorHonorable = null;
+        $lstCompetitorWinners = new Collection();
+        $lstCompetitorHonorable = new Collection();
 
         if ($oCategory->actual_stage == ConstDb::STAGE_SELECTION) {
             $selection = true;
             $lstCompetitor = Competitor::category($oCategory->id)->status(ConstDb::COMPETITOR_PRESENT)->get();
             $lstCompetitor = $this->getAnimalsDetails($lstCompetitor, $oCategory);
 
-            $lstCompetitorWinners = $lstCompetitor->filter(function ($item) {
-                return $item->position === 0;
-            });
-            $lstCompetitorHonorable = $lstCompetitor->filter(function ($item) {
-                return $item->position === null;
-            });
+            if ($oCategory->mode == ConstDb::MODE_PERSONAL) {
+                $lstCompetitorWinners = $lstCompetitor->filter(function ($item) {
+                    return $item->position === 0;
+                });
+                $lstCompetitorHonorable = $lstCompetitor->filter(function ($item) {
+                    return $item->position === null;
+                });
+            } else {
+                foreach ($lstCompetitor as $key => $lstSubCompetitor) {
+                    $selected = $lstSubCompetitor->filter(function ($item) {
+                        return $item->position === 0;
+                    })->first();
+
+                    if ($selected) {
+                        $lstCompetitorWinners->push($lstSubCompetitor);
+                    } else {
+                        $lstCompetitorHonorable->push($lstSubCompetitor);
+                    }
+                }
+            }
         } else {
             $showSecond = ($oCategory->actual_stage == ConstDb::STAGE_CLASSIFY_2) ? true : false;
             $juryDiriment = CategoryUser::category($oCategory->id)->diriment(ConstDb::JURY_DIRIMENT)->first();
@@ -49,13 +63,21 @@ class CategoryService
             $count = $lstCompetitor->count();
 
             for ($i = 0; $i < $count; $i++) {
-                $lstCompetitor->get($i)->stages->sortBy(function ($item) {
-                    return $item->jury->id;
-                });
+                if ($oCategory->mode == ConstDb::MODE_PERSONAL) {
+                    $lstCompetitor->get($i)->stages->sortBy(function ($item) {
+                        return $item->jury->id;
+                    });
+                } else {
+                    $subCount = $lstCompetitor->get($i)->count();
+
+                    for ($y = 0; $y < $subCount; $y++) {
+                        $lstCompetitor->get($i)->get($y)->stages->sortBy(function ($item) {
+                            return $item->jury->id;
+                        });
+                    }
+                }
             }
 
-            $lstCompetitorWinners = new Collection();
-            $lstCompetitorHonorable = new Collection();
             $count = 1;
 
             foreach ($lstCompetitor as $key => $competitor) {
@@ -83,10 +105,27 @@ class CategoryService
     private function getAnimalsDetails($lstCompetitor, $oCategory)
     {
         $numbers = [];
+        $numbersGroup = [];
         $idsAnimals = [];
 
-        foreach ($lstCompetitor as $key => $value) {
-            $numbers[] = $value->catalog;
+        $count = $lstCompetitor->count();
+
+        for ($i = 0; $i < $count; $i++) {
+            if ($oCategory->mode == ConstDb::MODE_PERSONAL) {
+                $numbers[] = $lstCompetitor->get($i)->catalog;
+            } else {
+                $dataTemp = explode(',', $lstCompetitor->get($i)->catalog);
+                $numbersGroup[] = $dataTemp;
+                $lstCompetitor->get($i)->catalog = $dataTemp[0];
+
+                for ($y = 1; $y < count($dataTemp); $y++) {
+                    $compTemp = clone $lstCompetitor->get($i);
+                    $compTemp->catalog = $dataTemp[$y];
+                    $lstCompetitor->push($compTemp);
+                }
+
+                $numbers = array_merge($dataTemp, $numbers);
+            }
         }
 
         $lstCatalog = Catalog::category($oCategory->id)->numberIn($numbers)->get(['animal_id', 'number']);
@@ -104,15 +143,36 @@ class CategoryService
                 return $item->number == $value->catalog;
             })->first();
 
-            foreach ($animalsDetails as $key2 => $value2) {
-                if ($oCatalog->animal_id == $value2->id) {
-                    $animal = $value2;
-                    break;
+            if ($oCatalog) {
+                foreach ($animalsDetails as $key2 => $value2) {
+                    if ($oCatalog->animal_id == $value2->id) {
+                        $animal = $value2;
+                        break;
+                    }
                 }
             }
 
             $value->animal_details = $animal;
-            $numbers[] = $value->catalog;
+        }
+
+        if ($oCategory->mode == ConstDb::MODE_GROUP) {
+            $lstGroupCompetitors = new \Illuminate\Support\Collection();
+
+            foreach ($numbersGroup as $key => $value) {
+                $lstSubCompetitors = new \Illuminate\Support\Collection();
+
+                foreach ($value as $index => $catalog) {
+                    $competitor = $lstCompetitor->filter(function ($item) use ($catalog) {
+                        return $item->catalog == $catalog;
+                    })->first();
+
+                    $lstSubCompetitors->push($competitor);
+                }
+
+                $lstGroupCompetitors->push($lstSubCompetitors);
+            }
+
+            return $lstGroupCompetitors;
         }
 
         return $lstCompetitor;

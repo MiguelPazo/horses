@@ -9,10 +9,12 @@ LEFT JOIN agents c ON c.id = b.agent_id
 LEFT JOIN animal_agent d ON d.animal_id = a.id AND d.type = 'owner'
 LEFT JOIN agents e ON e.id = d.agent_id
 LEFT JOIN animal_report_short mom ON mom.id = a.mom
-LEFT JOIN animal_report_short dad ON dad.id = a.dad;
+LEFT JOIN animal_report_short dad ON dad.id = a.dad
+WHERE a.deleted_at IS NULL;
 
 CREATE VIEW animal_report_short AS
 SELECT a.id, a.name, c.prefix, c.names , c.lastnames
 FROM animals a
 LEFT JOIN animal_agent b ON b.animal_id = a.id AND b.type = 'breeder'
-LEFT JOIN agents c ON c.id = b.agent_id;
+LEFT JOIN agents c ON c.id = b.agent_id
+WHERE a.deleted_at IS NULL;

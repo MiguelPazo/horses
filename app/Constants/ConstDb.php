@@ -11,6 +11,9 @@ class ConstDb
     const USER_DISCONNECTED = 0;
     const USER_CONECTED = 1;
 
+    const MODE_PERSONAL = 'personal';
+    const MODE_GROUP = 'group';
+
     const AGENT_OWNER = 'owner';
     const AGENT_BREEDER = 'breeder';
 

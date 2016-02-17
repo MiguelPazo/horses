@@ -18,6 +18,8 @@ DELETE FROM competitors WHERE category_id IN (SELECT id FROM categories WHERE ST
 DELETE FROM categories WHERE STATUS = 'deleted';
 
 /*MIGRACION*/
+DROP TABLE temp1;
+
 CREATE TABLE temp1 (
 category VARCHAR(5),
 number VARCHAR(5),
@@ -173,6 +175,11 @@ INSERT INTO catalogs(number, category_id, tournament_id, animal_id)
 SELECT catalog AS number, category AS category_id, 1 AS tournament_id, b.id AS animal_id
 FROM temp1 a
 INNER JOIN animals b ON b.name = a.name AND b.prefix = a.prefix
+
+
+/*DROP PREFIX COLUMNN TO ANIMALS*/
+ALTER TABLE animals DROP prefix;
+
 
 /*VERIFY AGENTS*/
 SELECT * FROM (

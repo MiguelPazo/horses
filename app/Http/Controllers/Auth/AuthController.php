@@ -26,15 +26,6 @@ class AuthController extends Controller
 
     public function __construct(Guard $auth)
     {
-        $redis = Redis::connection();
-
-        $redis->set('name', 'Taylor');
-        $name = $redis->get('name');
-        dd($name);
-
-        $values = $redis->lrange('names', 5, 10);
-
-
         $this->auth = $auth;
 
         $this->middleware('guest', ['except' => 'getLogout']);
@@ -42,15 +33,6 @@ class AuthController extends Controller
 
     public function getLogin()
     {
-        $redis = Redis::connection();
-
-        $redis->set('name', 'Taylor');
-        $name = $redis->get('name');
-
-        $values = $redis->lrange('names', 5, 10);
-
-        dd($values);
-
         return view('auth.login');
     }
 

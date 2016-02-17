@@ -86,9 +86,8 @@ class AgentController extends Controller
     public function listall(Request $request)
     {
         $query = strtoupper($request->get('query'));
-        $lstAgents = Agent::selectRaw('CONCAT(names, ", ", lastnames) AS value, prefix as data')
+        $lstAgents = Agent::selectRaw('names AS value, prefix as data')
             ->where('names', 'like', "%$query%")
-            ->orWhere('lastnames', 'like', "%$query%")
             ->get();
 
         $data = [

@@ -36,21 +36,8 @@ $(document).ready(function () {
 
         if (validateForm(form)) {
             if (catSelected.length > 0) {
-                var withcomma = true;
                 var parents = true;
                 var sameParents = false;
-
-                form.find('.namewlast').each(function (i, item) {
-                    var val = $.trim($(item).val());
-
-                    if (val != '') {
-                        var pos = val.indexOf(',');
-
-                        if (pos === -1) {
-                            withcomma = false;
-                        }
-                    }
-                });
 
                 form.find('.parents').each(function (i, item) {
                     var prefix = $.trim($('#prefix').val());
@@ -76,46 +63,42 @@ $(document).ready(function () {
                     }
                 });
 
-                if (withcomma) {
-                    if (parents) {
-                        if (!sameParents) {
-                            disableButtons(true);
-                            var url = form.attr('action');
-                            var data = form.serialize();
+                if (parents) {
+                    if (!sameParents) {
+                        disableButtons(true);
+                        var url = form.attr('action');
+                        var data = form.serialize();
 
-                            if (idSelected == 0) {
-                                $.post(url, data, function (response) {
+                        if (idSelected == 0) {
+                            $.post(url, data, function (response) {
+                                if (response.success) {
+                                    location.href = response.url;
+                                } else {
+                                    openPopup('Error', response.message, 1, null);
+                                    disableButtons(false);
+                                }
+                            });
+                        } else {
+                            $.ajax({
+                                url: BASE_URL + '/oper/animal/' + idSelected,
+                                method: 'PUT',
+                                dataType: 'json',
+                                data: data,
+                                success: function (response) {
                                     if (response.success) {
                                         location.href = response.url;
                                     } else {
                                         openPopup('Error', response.message, 1, null);
                                         disableButtons(false);
                                     }
-                                });
-                            } else {
-                                $.ajax({
-                                    url: BASE_URL + '/oper/animal/' + idSelected,
-                                    method: 'PUT',
-                                    dataType: 'json',
-                                    data: data,
-                                    success: function (response) {
-                                        if (response.success) {
-                                            location.href = response.url;
-                                        } else {
-                                            openPopup('Error', response.message, 1, null);
-                                            disableButtons(false);
-                                        }
-                                    }
-                                });
-                            }
-                        } else {
-                            openPopup('Error', 'El nombre del padre y madre no pueden ser iguales.', 1, null);
+                                }
+                            });
                         }
                     } else {
-                        openPopup('Error', 'El nombre del animal no puede ser el mismo que el de los padres.', 1, null);
+                        openPopup('Error', 'El nombre del padre y madre no pueden ser iguales.', 1, null);
                     }
                 } else {
-                    openPopup('Error', 'Separe los nombres y apellidos por ",". Ejemplo: Miguel Rodrigo, Pazo Sánchez', 1, null);
+                    openPopup('Error', 'El nombre del animal no puede ser el mismo que el de los padres.', 1, null);
                 }
             } else {
                 openPopup('Error', 'Debe seleccionar por lo menos una categoría.', 1, null);

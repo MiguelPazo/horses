@@ -9,6 +9,7 @@ use Horses\Http\Controllers\Controller;
 use Horses\Services\Facades\AnimalFac;
 use Horses\Tournament;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 
 class AnimalController extends Controller
@@ -139,10 +140,11 @@ class AnimalController extends Controller
         if ($validator === true) {
             $name = strtoupper($request->get('name'));
             $code = strtoupper($request->get('code'));
+            $prefix = strtoupper($request->get('prefix'));
 
-            $lstAnimal = $this->getVerifyAnimal($name, $code);
+            $lstAnimal = $this->getVerifyAnimal($name, $code, $prefix);
 
-            if ($lstAnimal->count() == 0) {
+            if (count($lstAnimal) == 0) {
                 $data = $request->all();
                 $jResponse = AnimalFac::save($data, $this->oTournament->id);
             } else {
@@ -245,11 +247,12 @@ class AnimalController extends Controller
         if ($validator === true) {
             $name = strtoupper($request->get('name'));
             $code = strtoupper($request->get('code'));
+            $prefix = strtoupper($request->get('prefix'));
 
-            $lstAnimal = $this->getVerifyAnimal($name, $code);
+            $lstAnimal = $this->getVerifyAnimal($name, $code, $prefix);
 
-            if (!$lstAnimal || $lstAnimal->count() <= 1) {
-                $oAnimalS = ($lstAnimal->count() == 0) ? null : $lstAnimal->get(0);
+            if (!$lstAnimal || count($lstAnimal) <= 1) {
+                $oAnimalS = (count($lstAnimal) == 0) ? null : $lstAnimal[0];
                 $oAnimal = Animal::with(['agents', 'catalogs'])->findorFail($id);
 
                 if (!$oAnimalS || $oAnimalS->id == $oAnimal->id) {
@@ -268,17 +271,15 @@ class AnimalController extends Controller
         return response()->json($jResponse);
     }
 
-    public function getVerifyAnimal($name, $code)
+    public function getVerifyAnimal($name, $code, $prefix)
     {
         $lstAnimal = null;
 
-        if ($name != '' && $code != '') {
-            $lstAnimal = Animal::name($name)->code($code, true)->whereNull('deleted_at')->get();
-        } else if ($name != '') {
-            $lstAnimal = Animal::name($name)->whereNull('deleted_at')->get();
-        } else if ($code != '') {
-            $lstAnimal = Animal::code($code)->whereNull('deleted_at')->get();
-        }
+        $lstAnimal = DB::table('animal_report')
+            ->where('prefix', $prefix)
+            ->where('name', $name)
+            ->orWhere('code', $code)
+            ->get();
 
         return $lstAnimal;
     }

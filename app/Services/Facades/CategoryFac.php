@@ -1,6 +1,6 @@
 <?php namespace Horses\Services\Facades;
 
-use Barryvdh\Debugbar\Facade;
+use Illuminate\Support\Facades\Facade;
 
 class CategoryFac extends Facade
 {
