@@ -79,12 +79,13 @@ class AnimalController extends Controller
     {
         $search = strtoupper($request->get('query'));
         $lstAnimal = DB::table('animal_tournament')
-            ->where('prefix', 'like', "%$search%")
-            ->orWhere('name', 'like', "%$search%")
-            ->orWhere('code', 'like', "%$search%")
-            ->orWhere('owner', 'like', "%$search%")
             ->where('tournament_id', $this->oTournament->id)
-            ->paginate(10);
+            ->where(function ($query) use ($search) {
+                return $query->where('prefix', 'like', "%$search%")
+                    ->orWhere('name', 'like', "%$search%")
+                    ->orWhere('code', 'like', "%$search%")
+                    ->orWhere('owner', 'like', "%$search%");
+            })->paginate(10);
 
         return view('oper.animal.index')
             ->with('search', $search)

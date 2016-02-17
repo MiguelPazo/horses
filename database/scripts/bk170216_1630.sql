@@ -1,6 +1,6 @@
 /*
-SQLyog Ultimate v9.63 
-MySQL - 5.6.16 : Database - horses
+SQLyog Community v12.09 (64 bit)
+MySQL - 10.1.9-MariaDB : Database - horses
 *********************************************************************
 */
 
@@ -223,7 +223,7 @@ CREATE TABLE `users` (
 
 /*Data for the table `users` */
 
-insert  into `users`(`id`,`names`,`lastname`,`user`,`password`,`login`,`remember_token`,`profile`,`status`) values (1,'Miguel','Pazo Sánchez','admin','$2y$10$4H4J2nPfxtfujPYxdcqAROboWri0X2C2La1FJY9KEQ6nY8TwIhS2e',0,'psJr4m7mZfJm7UInPjDHRmTwL5fCAEajpBYLoDlyeLwvwzlqZW','admin','active'),(2,'Jose','Canario','comisario','$2y$10$jj9x0cNGKCb4YhnFzvSXZ.giSRpcpzT5LP8CcCQ.Az7l8CHNXWtom',0,'Ni18MUHYqeNBRcW52vpqqfqqc8UbNlqDGcphXIcJhbjTvX53yE','commissar','active'),(3,'Roque','Benavides','jurado1','$2y$10$ZtAzyg6gtEH72hw6GpRUwOgOvcU87N4duubTA2pK7Eo78kHSaxVIi',0,'xoibyx91cpJDnnLmNOIfZb3TBd3gwhArcmZYWyesjUW38hAThS','jury','active'),(4,'Ernesto','Roca','jurado2','$2y$10$8fkJzO2lkPqx3egjIjGs1O8Vidti87xFDzmEwKAKCEoc4UQlKvI9a',0,'FSxtisDstb4WidlMrYnLFQA9qlMQ9yOK8Ltef8tyCPyiAbeJnl','jury','active'),(5,'Luis Pablo','Vasquez','jurado3','$2y$10$4xwAE8n0d2c54cWdmt5RLurNiHk9hCIKw19ktKbmmoOXD15K5G.Aq',0,'AA1936hXh6qxvY2naBU8Id2mDrmRHsRMGu1xYTynwS3plnBzHf','jury','active'),(6,'Miguel','Pazo','oper1','$2y$10$xPvEW6GhjsdO5o49ff1wJ.9EeNYrTKqcPqWFKLmHBty412BBUf44u',0,'pY5aoWpbOWJCg2EXUuy5SAJ6FDJRY1Rrav8Ve7iO6Pr17JaeRb','operator','active'),(7,'miguel','pazo','gcomisario','$2y$10$9VAlEPyT2z6plFO/HcxziuCTyraI6bdN./MMzTvyt4YBS3qm.NTtq',1,NULL,'general_commissar','active');
+insert  into `users`(`id`,`names`,`lastname`,`user`,`password`,`login`,`remember_token`,`profile`,`status`) values (1,'Miguel','Pazo Sánchez','admin','$2y$10$4H4J2nPfxtfujPYxdcqAROboWri0X2C2La1FJY9KEQ6nY8TwIhS2e',0,'N9QIUqwo7XCG9xXboAfEQftoipgEtYMrBO7PfPO685jylZFlHM','admin','active'),(2,'Jose','Canario','comisario','$2y$10$jj9x0cNGKCb4YhnFzvSXZ.giSRpcpzT5LP8CcCQ.Az7l8CHNXWtom',0,'Ni18MUHYqeNBRcW52vpqqfqqc8UbNlqDGcphXIcJhbjTvX53yE','commissar','active'),(3,'Roque','Benavides','jurado1','$2y$10$ZtAzyg6gtEH72hw6GpRUwOgOvcU87N4duubTA2pK7Eo78kHSaxVIi',0,'xoibyx91cpJDnnLmNOIfZb3TBd3gwhArcmZYWyesjUW38hAThS','jury','active'),(4,'Ernesto','Roca','jurado2','$2y$10$8fkJzO2lkPqx3egjIjGs1O8Vidti87xFDzmEwKAKCEoc4UQlKvI9a',0,'FSxtisDstb4WidlMrYnLFQA9qlMQ9yOK8Ltef8tyCPyiAbeJnl','jury','active'),(5,'Luis Pablo','Vasquez','jurado3','$2y$10$4xwAE8n0d2c54cWdmt5RLurNiHk9hCIKw19ktKbmmoOXD15K5G.Aq',0,'AA1936hXh6qxvY2naBU8Id2mDrmRHsRMGu1xYTynwS3plnBzHf','jury','active'),(6,'Miguel','Pazo','oper1','$2y$10$xPvEW6GhjsdO5o49ff1wJ.9EeNYrTKqcPqWFKLmHBty412BBUf44u',1,'hurAZsXfKF2MtJlhNvlJ613hOVvPKzpAAjYJkaxVQFze9Qrn8i','operator','active'),(7,'miguel','pazo','gcomisario','$2y$10$9VAlEPyT2z6plFO/HcxziuCTyraI6bdN./MMzTvyt4YBS3qm.NTtq',1,NULL,'general_commissar','active');
 
 /*Table structure for table `animal_report` */
 
@@ -261,6 +261,37 @@ DROP TABLE IF EXISTS `animal_report_short`;
  `lastnames` varchar(100) 
 )*/;
 
+/*Table structure for table `animal_tournament` */
+
+DROP TABLE IF EXISTS `animal_tournament`;
+
+/*!50001 DROP VIEW IF EXISTS `animal_tournament` */;
+/*!50001 DROP TABLE IF EXISTS `animal_tournament` */;
+
+/*!50001 CREATE TABLE  `animal_tournament`(
+ `tournament_id` int(10) unsigned ,
+ `animal_id` int(10) unsigned ,
+ `total_categories` bigint(21) ,
+ `prefix` varchar(20) ,
+ `name` varchar(60) ,
+ `code` varchar(20) ,
+ `birthdate` varchar(10) ,
+ `owner` varchar(100) 
+)*/;
+
+/*Table structure for table `animal_tournament_short` */
+
+DROP TABLE IF EXISTS `animal_tournament_short`;
+
+/*!50001 DROP VIEW IF EXISTS `animal_tournament_short` */;
+/*!50001 DROP TABLE IF EXISTS `animal_tournament_short` */;
+
+/*!50001 CREATE TABLE  `animal_tournament_short`(
+ `tournament_id` int(10) unsigned ,
+ `animal_id` int(10) unsigned ,
+ `total_categories` bigint(21) 
+)*/;
+
 /*View structure for view animal_report */
 
 /*!50001 DROP TABLE IF EXISTS `animal_report` */;
@@ -274,6 +305,20 @@ DROP TABLE IF EXISTS `animal_report_short`;
 /*!50001 DROP VIEW IF EXISTS `animal_report_short` */;
 
 /*!50001 CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `animal_report_short` AS select `a`.`id` AS `id`,`a`.`name` AS `name`,`c`.`prefix` AS `prefix`,`c`.`names` AS `names`,`c`.`lastnames` AS `lastnames` from ((`animals` `a` left join `animal_agent` `b` on(((`b`.`animal_id` = `a`.`id`) and (`b`.`type` = 'breeder')))) left join `agents` `c` on((`c`.`id` = `b`.`agent_id`))) where isnull(`a`.`deleted_at`) */;
+
+/*View structure for view animal_tournament */
+
+/*!50001 DROP TABLE IF EXISTS `animal_tournament` */;
+/*!50001 DROP VIEW IF EXISTS `animal_tournament` */;
+
+/*!50001 CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `animal_tournament` AS select `a`.`tournament_id` AS `tournament_id`,`a`.`animal_id` AS `animal_id`,`a`.`total_categories` AS `total_categories`,`d`.`prefix` AS `prefix`,`b`.`name` AS `name`,`b`.`code` AS `code`,date_format(`b`.`birthdate`,'%d-%m-%Y') AS `birthdate`,`d`.`names` AS `owner` from (((`animal_tournament_short` `a` join `animals` `b` on((`b`.`id` = `a`.`animal_id`))) left join `animal_agent` `c` on(((`c`.`animal_id` = `b`.`id`) and (`c`.`type` = 'breeder')))) left join `agents` `d` on((`d`.`id` = `c`.`agent_id`))) */;
+
+/*View structure for view animal_tournament_short */
+
+/*!50001 DROP TABLE IF EXISTS `animal_tournament_short` */;
+/*!50001 DROP VIEW IF EXISTS `animal_tournament_short` */;
+
+/*!50001 CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `animal_tournament_short` AS select `catalogs`.`tournament_id` AS `tournament_id`,`catalogs`.`animal_id` AS `animal_id`,count(0) AS `total_categories` from `catalogs` group by `catalogs`.`animal_id`,`catalogs`.`tournament_id` */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;

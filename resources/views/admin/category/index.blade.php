@@ -10,7 +10,9 @@
             <a href="{{ route('admin.tournament.index') }}" role="button" class="btn btn-default">
                 <span class="glyphicon glyphicon-menu-left"></span>
             </a>
-            <a href="{{ url('/admin/category/create', $oTournament->id) }}" class="btn btn-primary">Nuevo</a>
+            @if($oTournament->status != \Horses\Constants\ConstDb::STATUS_FINAL)
+                <a href="{{ url('/admin/category/create', $oTournament->id) }}" class="btn btn-primary">Nuevo</a>
+            @endif
             <table class="table table-striped table-hover">
                 <thead>
                 <tr>
@@ -48,16 +50,18 @@
                         </td>
                         <td class="center">{{ $category->count_competitors }}</td>
                         <td class="center">
-                            @if($category->status == \Horses\Constants\ConstDb::STATUS_INACTIVE)
-                                <a href="{{ url('/admin/category/edit', $category->id ) }}"
-                                   role="button" class="btn">
-                                    <span class="glyphicon glyphicon-pencil"></span>
-                                </a>
+                            @if($oTournament->status != \Horses\Constants\ConstDb::STATUS_FINAL)
+                                @if($category->status == \Horses\Constants\ConstDb::STATUS_INACTIVE)
+                                    <a href="{{ url('/admin/category/edit', $category->id ) }}"
+                                       role="button" class="btn">
+                                        <span class="glyphicon glyphicon-pencil"></span>
+                                    </a>
 
-                                <a href="{{ url('/admin/category/destroy', $category->id) }}"
-                                   role="button" class="btn" data-method="delete">
-                                    <span class=" glyphicon glyphicon-trash"></span>
-                                </a>
+                                    <a href="{{ url('/admin/category/destroy', $category->id) }}"
+                                       role="button" class="btn" data-method="delete">
+                                        <span class=" glyphicon glyphicon-trash"></span>
+                                    </a>
+                                @endif
                             @endif
                         </td>
                     </tr>

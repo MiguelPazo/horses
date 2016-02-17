@@ -125,6 +125,7 @@ class TournamentController extends Controller
         $oTournament = Tournament::findorFail($id);
         $formHeader = ['route' => ['admin.tournament.update', $oTournament->id], 'method' => 'PUT', 'class' =>
             'formValid formuppertext'];
+        
         return view('admin.tournament.maintenance')
             ->with('oTournament', $oTournament)
             ->with('title', 'Editar Concurso')
