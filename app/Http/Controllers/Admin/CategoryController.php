@@ -25,7 +25,10 @@ class CategoryController extends Controller
     public function getIndex($id)
     {
         $oTournament = Tournament::findorFail($id);
-        $lstCategory = CategoryFac::fetchAll($id);
+        $lstCategory = Category::tournament($oTournament->id)
+            ->statusDiff(ConstDb::STATUS_DELETED)
+            ->orderBy('order', 'ASC')
+            ->paginate(15);
 
         return view('admin.category.index')
             ->with('lstCategory', $lstCategory)

@@ -14,23 +14,23 @@
             <table class="table table-striped table-hover">
                 <thead>
                 <tr>
-                    <th>#</th>
-                    <th>Categoria</th>
-                    <th>Selección</th>
-                    <th>Etapa Actual</th>
-                    <th>Cantidad de Competidores</th>
-                    <th>Opciones</th>
+                    <th width="1%">#</th>
+                    <th width="52%">Categoria</th>
+                    <th width="8%" class="center">Selección</th>
+                    <th width="14%" class="center">Etapa Actual</th>
+                    <th width="17%" class="center">Cantidad de Competidores</th>
+                    <th width="8%" class="center">Opciones</th>
                 </tr>
                 </thead>
                 <tbody>
-                <?php $count = 1; ?>
+                <?php $count = $lstCategory->perPage() * ($lstCategory->currentPage() - 1) + 1; ?>
                 @foreach( $lstCategory as  $category)
                     <tr class="{{ ($category->status == \Horses\Constants\ConstDb::STATUS_ACTIVE)? 'info' : '' }}
-                            {{ ($category->status == \Horses\Constants\ConstDb::STATUS_FINAL)? 'active' : '' }}">
+                    {{ ($category->status == \Horses\Constants\ConstDb::STATUS_FINAL)? 'active' : '' }}">
                         <th scope="row">{{ $count }}</th>
                         <td>{{ $category->description }}</td>
-                        <td>{{ ($category->type == \Horses\Constants\ConstDb::TYPE_CATEGORY_SELECTION)? 'Sí': 'No' }}</td>
-                        <td>
+                        <td class="center">{{ ($category->type == \Horses\Constants\ConstDb::TYPE_CATEGORY_SELECTION)? 'Sí': 'No' }}</td>
+                        <td class="center">
                             @if($category->status == \Horses\Constants\ConstDb::STATUS_INACTIVE &&
                                 $category->actual_stage == \Horses\Constants\ConstDb::STAGE_ASSISTANCE)
                                 {{ \Horses\Constants\ConstApp::STAGE_ASSISTANCE }}
@@ -46,8 +46,8 @@
                                 {{ \Horses\Constants\ConstApp::STAGE_RESULTS }}
                             @endif
                         </td>
-                        <td>{{ $category->count_competitors }}</td>
-                        <td>
+                        <td class="center">{{ $category->count_competitors }}</td>
+                        <td class="center">
                             @if($category->status == \Horses\Constants\ConstDb::STATUS_INACTIVE)
                                 <a href="{{ url('/admin/category/edit', $category->id ) }}"
                                    role="button" class="btn">
@@ -65,6 +65,7 @@
                 @endforeach
                 </tbody>
             </table>
+            {!! str_replace('/?', '?', $lstCategory->render()) !!}
         </div>
     </div>
 @endsection

@@ -4,15 +4,13 @@ use Horses\Category;
 use Horses\CategoryUser;
 use Horses\Constants\ConstDb;
 use Horses\Constants\ConstMessages;
-use Horses\User;
-use Horses\Tournament;
 use Horses\Http\Controllers\Controller;
+use Horses\Tournament;
+use Horses\User;
 use Illuminate\Auth\GenericUser;
 use Illuminate\Contracts\Auth\Guard;
-use Illuminate\Contracts\Auth\Registrar;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Redis;
 
 class AuthController extends Controller
 {

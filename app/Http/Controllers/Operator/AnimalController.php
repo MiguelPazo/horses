@@ -78,18 +78,18 @@ class AnimalController extends Controller
     public function index(Request $request)
     {
         $search = strtoupper($request->get('query'));
-        $oTournament = Tournament::with(['animals' => function ($query) use ($search) {
-            return $query->with('agents')
-                ->where('name', 'like', "%$search%")
-                ->orWhere('code', 'like', "%$search%")
-                ->whereNull('deleted_at')
-                ->orderBy('name')
-                ->distinct('code');
-        }])->find($this->oTournament->id);
+        $lstAnimal = DB::table('animal_tournament')
+            ->where('prefix', 'like', "%$search%")
+            ->orWhere('name', 'like', "%$search%")
+            ->orWhere('code', 'like', "%$search%")
+            ->orWhere('owner', 'like', "%$search%")
+            ->where('tournament_id', $this->oTournament->id)
+            ->paginate(10);
 
         return view('oper.animal.index')
             ->with('search', $search)
-            ->with('oTournament', $oTournament);
+            ->with('lstAnimal', $lstAnimal)
+            ->with('oTournament', $this->oTournament);
     }
 
     /**

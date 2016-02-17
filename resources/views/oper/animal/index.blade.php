@@ -18,32 +18,32 @@
             <table class="table table-striped table-hover">
                 <thead>
                 <tr>
-                    <th>#</th>
-                    <th>Prefijo</th>
-                    <th>Nombre</th>
-                    <th>Código</th>
-                    <th>Fecha de Nac.</th>
-                    <th>Categorías</th>
-                    <th>Opciones</th>
+                    <th width="1%">#</th>
+                    <th width="10%">Prefijo</th>
+                    <th width="44%">Nombre</th>
+                    <th width="10%" class="center">Código</th>
+                    <th width="15%" class="center">Fecha de Nac.</th>
+                    <th width="5%" class="center">Categorías</th>
+                    <th width="15%" class="center">Opciones</th>
                 </tr>
                 </thead>
                 <tbody>
-                <?php $count = 1; ?>
-                @foreach($oTournament->animals as $animal)
+                <?php $count = $lstAnimal->perPage() * ($lstAnimal->currentPage() - 1) + 1; ?>
+                @foreach($lstAnimal as $animal)
                     <tr>
                         <td>{{ $count }}</td>
-                        <td>{{ ($animal->breeder->count() > 0)? $animal->breeder->get(0)->prefix: '' }}</td>
+                        <td>{{ $animal->prefix }}</td>
                         <td>{{ $animal->name }}</td>
-                        <td>{{ $animal->code }}</td>
-                        <td>{{ $animal->birthdate }}</td>
-                        <td>{{ $animal->catalogs->count() }}</td>
-                        <td>
-                            <a href="{{ route('oper.animal.edit', $animal->id) }}" role="button"
+                        <td class="center">{{ $animal->code }}</td>
+                        <td class="center">{{ $animal->birthdate }}</td>
+                        <td class="center">{{ $animal->total_categories }}</td>
+                        <td class="center">
+                            <a href="{{ route('oper.animal.edit', $animal->animal_id) }}" role="button"
                                class="btn">
                                 <span class="glyphicon glyphicon-pencil"></span>
                             </a>
 
-                            <a href="{{ route('oper.animal.destroy', $animal->id) }}" role="button"
+                            <a href="{{ route('oper.animal.destroy', $animal->animal_id) }}" role="button"
                                class="btn btn_link_prevent" data-method="delete">
                                 <span class=" glyphicon glyphicon-trash"></span>
                             </a>
@@ -53,6 +53,7 @@
                 @endforeach
                 </tbody>
             </table>
+            {!! str_replace('/?', '?', $lstAnimal->render()) !!}
         </div>
     </div>
 @endsection
