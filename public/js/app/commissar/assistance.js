@@ -5,6 +5,12 @@ $(document).ready(function () {
     var maxCatalog = $('#max_catalog').val();
     var idsSelected = ($('#ids_selected').val() == '') ? [] : $('#ids_selected').val().split(',');
 
+    if (idsSelected.length > 0) {
+        for (i = 0; i < idsSelected.length; i++) {
+            idsSelected[i] = parseInt(idsSelected[i]);
+        }
+    }
+
     $(".datepicker").datepicker({
         'dateFormat': 'dd-mm-yy',
         showButtonPanel: true,

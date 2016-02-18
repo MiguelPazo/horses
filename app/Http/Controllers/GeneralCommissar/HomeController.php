@@ -45,21 +45,24 @@ class HomeController extends Controller
                     return $item->id == $category;
                 })->first();
 
+                $oCatActive = $lstCategory->filter(function ($item) {
+                    return $item->status == ConstDb::STATUS_ACTIVE;
+                })->first();
+
+                $oCatActive = ($oCatActive) ? $oCatActive : $lstCategory->get(0);
+
                 if ($oCategory) {
                     $data = CategoryFac::results($oCategory);
 
                     if ($oCategory->status == ConstDb::STATUS_FINAL) {
                         if ($lstCategory->count() > 1) {
-                            if (($lstCategory->get(0)->status == ConstDb::STATUS_ACTIVE
-                                    || $lstCategory->get(0)->status == ConstDb::STATUS_FINAL)
-                                && $lstCategory->get(0)->id != $oCategory->id
-                            ) {
-                                $suggest = $lstCategory->get(0)->id;
+                            if ($oCatActive && $oCatActive->id != $oCategory->id) {
+                                $suggest = $oCatActive->id;
                             }
                         }
                     }
                 } else {
-                    return redirect()->to('/general-commissar/' . $lstCategory->get(0)->id);
+                    return redirect()->to('/general-commissar/' . $oCatActive->id);
                 }
             } else {
                 return redirect()->to('/general-commissar/' . $lstCategory->get(0)->id);

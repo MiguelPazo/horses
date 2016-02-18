@@ -37,17 +37,23 @@ class AssistanceController extends Controller
 
         if ($oCategory->actual_stage == ConstDb::STAGE_ASSISTANCE) {
             $lstCompetitors = Competitor::category($oCategory->id)->orderBy('number')->get();
+            $catalogs = [];
 
             foreach ($lstCompetitors as $key => $value) {
-                $ids[] = $value->id;
+                $catalogs[] = $value->catalog;
                 $dCat['number'] = $value->catalog;
                 $dCat['present'] = ($value->status == ConstDb::COMPETITOR_PRESENT) ? true : false;
                 $totalPresent = ($value->status == ConstDb::COMPETITOR_PRESENT) ? $totalPresent + 1 : $totalPresent;
                 $catalog[] = $dCat;
             }
+
+            //ids animals
+            foreach ($lstCatalog as $key => $value) {
+                $ids[] = $value->animal_id;
+            }
         } else {
             foreach ($lstCatalog as $key => $value) {
-                if (!$value->catalog) {
+                if (!$value->number) {
                     $maxCatalog++;
                 }
 
