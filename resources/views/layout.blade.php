@@ -46,7 +46,6 @@
     </div>
 </div>
 <script src="{{ asset('/js/libs/jquery/dist/jquery.min.js') }}"></script>
-<script src="{{ asset('/js/libs/jquery-ui-touch-punch/jquery.ui.touch-punch.min.js') }}"></script>
 <script src="{{ asset('/js/libs/jquery-numeric/dist/jquery-numeric.js') }}"></script>
 <script src="{{ asset('/js/libs/bootstrap/dist/js/bootstrap.min.js') }}"></script>
 <script src="{{ asset('/js/app/main.js') }}"></script>
