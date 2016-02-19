@@ -32,19 +32,35 @@ class AssistanceController extends Controller
         $totalComp = $oCategory->num_begin + $oCategory->count_competitors;
         $maxCatalog = Catalog::tournament($this->oTournament->id)->max('number');
         $maxCatalog = ($maxCatalog) ? $maxCatalog : 0;
-        $lstCatalog = Catalog::tournament($oCategory->tournament_id)->category($oCategory->id)->orderBy('number')->get();
+        $lstCatalog = null;
         $ids = [];
+
+        if ($oCategory->mode == ConstDb::MODE_PERSONAL) {
+            $lstCatalog = Catalog::tournament($oCategory->tournament_id)->category($oCategory->id)->orderBy('number')->get();
+        } else {
+            $lstCatalog = Catalog::tournament($oCategory->tournament_id)->category($oCategory->id)->orderBy('group')
+                ->orderBy('number')->get();
+        }
 
         if ($oCategory->actual_stage == ConstDb::STAGE_ASSISTANCE) {
             $lstCompetitors = Competitor::category($oCategory->id)->orderBy('number')->get();
             $catalogs = [];
+            $pos = 1;
 
             foreach ($lstCompetitors as $key => $value) {
-                $catalogs[] = $value->catalog;
+                if ($oCategory->mode == ConstDb::MODE_PERSONAL) {
+                    $catalogs[] = $value->catalog;
+                } else {
+                    $catalogs = array_merge($catalogs, explode(',', $value->catalog));
+                }
+
                 $dCat['number'] = $value->catalog;
+                $dCat['group'] = $pos;
                 $dCat['present'] = ($value->status == ConstDb::COMPETITOR_PRESENT) ? true : false;
                 $totalPresent = ($value->status == ConstDb::COMPETITOR_PRESENT) ? $totalPresent + 1 : $totalPresent;
                 $catalog[] = $dCat;
+
+                $pos++;
             }
 
             //ids animals
@@ -52,15 +68,37 @@ class AssistanceController extends Controller
                 $ids[] = $value->animal_id;
             }
         } else {
-            foreach ($lstCatalog as $key => $value) {
-                if (!$value->number) {
-                    $maxCatalog++;
-                }
+            if ($oCategory->mode == ConstDb::MODE_PERSONAL) {
+                foreach ($lstCatalog as $key => $value) {
+                    if (!$value->number) {
+                        $maxCatalog++;
+                    }
 
-                $ids[] = $value->animal_id;
-                $dCat['number'] = ($value->number) ? $value->number : $maxCatalog;
-                $dCat['present'] = false;
-                $catalog[] = $dCat;
+                    $ids[] = $value->animal_id;
+                    $dCat['number'] = ($value->number) ? $value->number : $maxCatalog;
+                    $dCat['present'] = false;
+                    $catalog[] = $dCat;
+                }
+            } else {
+                $lstCatalogGroup = $lstCatalog->groupBy('group');
+
+                foreach ($lstCatalogGroup as $key => $value) {
+                    $strNumber = [];
+
+                    foreach ($value as $key2 => $value2) {
+                        if (!$value2->number) {
+                            $maxCatalog++;
+                        }
+
+                        $strNumber[] = ($value2->number) ? $value2->number : $maxCatalog;
+                        $ids[] = $value2->animal_id;
+                    }
+
+                    $dCat['number'] = implode(',', $strNumber);
+                    $dCat['group'] = $key;
+                    $dCat['present'] = false;
+                    $catalog[] = $dCat;
+                }
             }
         }
 
@@ -79,60 +117,145 @@ class AssistanceController extends Controller
         $oCategory = Category::status(ConstDb::STATUS_DELETED, false, true)->findorFail($id);
         $data = $this->request->all();
         $nCatalog = [];
+        $nGroupCatalog = [];
         $totalPresent = 0;
         $idsSelected = explode(',', $data['ids_selected']);
 
         foreach ($data as $key => $value) {
             if (strpos($key, ConstApp::PREFIX_COMPETITOR) !== false) {
-                $posCat = strpos($key, ConstApp::PREFIX_COMPETITOR) + strlen(ConstApp::PREFIX_COMPETITOR);
-                $valCatalog = intval(substr($key, $posCat));
+                if ($oCategory->mode == ConstDb::MODE_PERSONAL) {
+                    $posCat = strpos($key, ConstApp::PREFIX_COMPETITOR) + strlen(ConstApp::PREFIX_COMPETITOR);
+                    $valCatalog = intval(substr($key, $posCat));
 
-                if (!in_array($valCatalog, $nCatalog)) {
-                    $nCatalog[] = $valCatalog;
+                    if (!in_array($valCatalog, $nCatalog)) {
+                        $nCatalog[] = $valCatalog;
+                    }
+                } else {
+                    $posCat = strpos($key, ConstApp::PREFIX_COMPETITOR) + strlen(ConstApp::PREFIX_COMPETITOR);
+                    $valCatalog = substr($key, $posCat);
+                    $groupCat = explode(',', $valCatalog);
+                    $difCat = array_diff($groupCat, $nCatalog);
+                    $nGroupCatalog[] = $difCat;
+                    $nCatalog = array_merge($nCatalog, $difCat);
                 }
+
             }
         }
 
         $lstCatalog = Catalog::tournament($oCategory->tournament_id)->numberIn($nCatalog)->orderBy('number')->get();
-        $count = count($nCatalog);
+        $countCompetitors = count($nCatalog);
         $insertComp = [];
         $insertCatalog = [];
         $idsAnimalCatalogDelete = [];
 
-        for ($i = 0; $i < $count; $i++) {
-            $numCatalog = $nCatalog[$i];
-            $index = ConstApp::PREFIX_COMPETITOR . $numCatalog;
-            $present = false;
+        if ($oCategory->mode == ConstDb::MODE_PERSONAL) {
+            for ($i = 0; $i < $countCompetitors; $i++) {
+                $numCatalog = $nCatalog[$i];
+                $index = ConstApp::PREFIX_COMPETITOR . $numCatalog;
 
-            if (array_key_exists($index, $data) && is_numeric($data[$index]) && $data[$index] != '0') {
-                $present = true;
-                $totalPresent++;
-            }
+                $present = false;
 
-            $oCatalog = $lstCatalog->filter(function ($item) use ($numCatalog, $oCategory) {
-                return $item->number == $numCatalog && $item->category_id == $oCategory->id;
-            })->first();
+                if (array_key_exists($index, $data) && is_numeric($data[$index]) && $data[$index] != '0') {
+                    $present = true;
+                    $totalPresent++;
+                }
 
-            if (!$oCatalog) {
-                $idAnimal = $idsSelected[$i];
-                $idsAnimalCatalogDelete[] = $idAnimal;
+                $oCatalog = $lstCatalog->filter(function ($item) use ($numCatalog, $oCategory) {
+                    return $item->number == $numCatalog && $item->category_id == $oCategory->id;
+                })->first();
 
-                $insertCatalog[] = [
-                    'number' => $numCatalog,
+                if (!$oCatalog) {
+                    $idAnimal = $idsSelected[$i];
+                    $idsAnimalCatalogDelete[] = $idAnimal;
+
+                    $insertCatalog[] = [
+                        'number' => $numCatalog,
+                        'category_id' => $oCategory->id,
+                        'tournament_id' => $oCategory->tournament_id,
+                        'animal_id' => $idAnimal
+                    ];
+                }
+
+                $insertComp[] = [
+                    'number' => $i + 1,
                     'category_id' => $oCategory->id,
-                    'tournament_id' => $oCategory->tournament_id,
-                    'animal_id' => $idAnimal
+                    'position' => ($oCategory->type == ConstDb::TYPE_CATEGORY_WSELECTION) ? 1 : null,
+                    'catalog' => $numCatalog,
+                    'status' => ($present) ? ConstDb::COMPETITOR_PRESENT : ConstDb::COMPETITOR_MISSING
                 ];
             }
+        } else {
+            $lstCat = Catalog::category($oCategory->id)->orderBy('number')->get();
+            $maxGroup = $lstCat->max('group');
+            $posCompetitor = 1;
+            $postGroupId = 0;
+            $countCompetitors = count($nGroupCatalog);
 
-            $insertComp[] = [
-                'number' => $i + 1,
-                'category_id' => $oCategory->id,
-                'position' => ($oCategory->type == ConstDb::TYPE_CATEGORY_WSELECTION) ? 1 : null,
-                'catalog' => $numCatalog,
-                'status' => ($present) ? ConstDb::COMPETITOR_PRESENT : ConstDb::COMPETITOR_MISSING
-            ];
+            foreach ($nGroupCatalog as $key => $value) {
+                $present = false;
+                $index = ConstApp::PREFIX_COMPETITOR . implode(',', $value);
+
+                $lstTempCat = $lstCat->filter(function ($item) use ($value) {
+                    return in_array($item->number, $value);
+                });
+
+                if (array_key_exists($index, $data) && is_numeric($data[$index]) && $data[$index] != '0') {
+                    $present = true;
+                    $totalPresent++;
+                }
+
+                if ($lstTempCat->count() > 0) {
+
+                    foreach ($value as $key2 => $value2) {
+                        $oCat = $lstTempCat->filter(function ($item) use ($value2) {
+                            return $item->number == $value2;
+                        })->first();
+
+                        if (!$oCat) {
+                            $idAnimal = $idsSelected[$postGroupId];
+                            $idsAnimalCatalogDelete[] = $idAnimal;
+
+                            $insertCatalog[] = [
+                                'group' => $key + 1,
+                                'number' => $value2,
+                                'category_id' => $oCategory->id,
+                                'tournament_id' => $oCategory->tournament_id,
+                                'animal_id' => $idAnimal
+                            ];
+                        }
+
+                        $postGroupId++;
+                    }
+                } else {
+                    $maxGroup++;
+
+                    foreach ($value as $key2 => $value2) {
+                        $idAnimal = $idsSelected[$postGroupId];
+
+                        $insertCatalog[] = [
+                            'group' => $maxGroup,
+                            'number' => $value2,
+                            'category_id' => $oCategory->id,
+                            'tournament_id' => $oCategory->tournament_id,
+                            'animal_id' => $idAnimal
+                        ];
+
+                        $postGroupId++;
+                    }
+                }
+
+                $insertComp[] = [
+                    'number' => $posCompetitor,
+                    'category_id' => $oCategory->id,
+                    'position' => ($oCategory->type == ConstDb::TYPE_CATEGORY_WSELECTION) ? 1 : null,
+                    'catalog' => implode(',', $value),
+                    'status' => ($present) ? ConstDb::COMPETITOR_PRESENT : ConstDb::COMPETITOR_MISSING
+                ];
+
+                $posCompetitor++;
+            }
         }
+
 
         DB::beginTransaction();
 
@@ -154,7 +277,7 @@ class AssistanceController extends Controller
                 CategoryUser::category($oCategory->id)->update(['actual_stage' => ConstDb::STAGE_ASSISTANCE]);
             }
 
-            $oCategory->count_competitors = $count;
+            $oCategory->count_competitors = $countCompetitors;
             $oCategory->count_presents = $totalPresent;
             $oCategory->save();
 

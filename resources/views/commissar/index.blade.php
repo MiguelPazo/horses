@@ -13,6 +13,7 @@
                     <th>#</th>
                     <th>Categoria</th>
                     <th>Selección</th>
+                    <th>Modo</th>
                     <th>Etapa Actual</th>
                     <th>Comp. Inscritos</th>
                     <th>Comp. Presentes</th>
@@ -27,6 +28,7 @@
                         <th scope="row">{{ $count }}</th>
                         <td>{{ $category->description }}</td>
                         <td>{{ ($category->type == \Horses\Constants\ConstDb::TYPE_CATEGORY_SELECTION)? 'Sí': 'No' }}</td>
+                        <td>{{ ($category->mode == \Horses\Constants\ConstDb::MODE_PERSONAL)? 'Personal': 'Grupal' }}</td>
                         <td>
                             @if($category->status == \Horses\Constants\ConstDb::STATUS_INACTIVE &&
                                 $category->actual_stage == \Horses\Constants\ConstDb::STAGE_ASSISTANCE)

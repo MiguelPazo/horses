@@ -19,7 +19,8 @@ class CategoryController extends Controller
     private $rules = [
         'description' => 'required|max:200',
         'type' => 'required',
-        'num_begin' => 'required'
+        'num_begin' => 'required',
+        'mode' => 'required'
     ];
 
     public function getIndex($id)
@@ -67,6 +68,7 @@ class CategoryController extends Controller
 
             $oCategory->description = $request->get('description');
             $oCategory->type = ($request->get('type') == 0) ? ConstDb::TYPE_CATEGORY_WSELECTION : ConstDb::TYPE_CATEGORY_SELECTION;
+            $oCategory->mode = $request->get('mode');
             $oCategory->num_begin = $request->get('num_begin');
             $oCategory->tournament_id = $oTournament->id;
             $oCategory->save();
@@ -117,6 +119,7 @@ class CategoryController extends Controller
 
             $oCategory->description = $request->get('description');
             $oCategory->type = ($request->get('type') == 0) ? ConstDb::TYPE_CATEGORY_WSELECTION : ConstDb::TYPE_CATEGORY_SELECTION;
+            $oCategory->mode = $request->get('mode');
             $oCategory->num_begin = $request->get('num_begin');
             $oCategory->save();
 

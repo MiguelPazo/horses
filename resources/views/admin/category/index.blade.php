@@ -17,8 +17,9 @@
                 <thead>
                 <tr>
                     <th width="1%">#</th>
-                    <th width="52%">Categoria</th>
+                    <th width="42%">Categoria</th>
                     <th width="8%" class="center">Selección</th>
+                    <th width="10%" class="center">Modo</th>
                     <th width="14%" class="center">Etapa Actual</th>
                     <th width="17%" class="center">Cantidad de Competidores</th>
                     <th width="8%" class="center">Opciones</th>
@@ -32,6 +33,7 @@
                         <th scope="row">{{ $count }}</th>
                         <td>{{ $category->description }}</td>
                         <td class="center">{{ ($category->type == \Horses\Constants\ConstDb::TYPE_CATEGORY_SELECTION)? 'Sí': 'No' }}</td>
+                        <td class="center">{{ ($category->mode == \Horses\Constants\ConstDb::MODE_PERSONAL)? 'Personal': 'Grupal' }}</td>
                         <td class="center">
                             @if($category->status == \Horses\Constants\ConstDb::STATUS_INACTIVE &&
                                 $category->actual_stage == \Horses\Constants\ConstDb::STAGE_ASSISTANCE)

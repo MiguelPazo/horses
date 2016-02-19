@@ -25,6 +25,7 @@ abstract class Controller extends BaseController
             'date_begin' => 'Fecha de Inicio',
             'date_end' => 'Fecha de Cierre',
             'type' => 'Selección',
+            'mode' => 'Modo',
             'count_competitors' => 'Cantidad de Competidores',
             'names' => 'Nombres',
             'lastname' => 'Apellidos',

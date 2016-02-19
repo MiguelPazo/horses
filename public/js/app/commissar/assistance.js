@@ -4,6 +4,7 @@ $(document).ready(function () {
     var step = 1;
     var maxCatalog = $('#max_catalog').val();
     var idsSelected = ($('#ids_selected').val() == '') ? [] : $('#ids_selected').val().split(',');
+    var groupRel = 0;
 
     if (idsSelected.length > 0) {
         for (i = 0; i < idsSelected.length; i++) {
@@ -18,7 +19,7 @@ $(document).ready(function () {
         changeYear: true
     });
 
-    $('#content_competitors').on('click', '.btn_competitor', function () {
+    $('#content_competitors').on('click', '.btn_competitor', function (e) {
         if ($(this).hasClass('btn-success')) {
             totalSelected--;
             $(this).removeClass('btn-success');
@@ -38,17 +39,15 @@ $(document).ready(function () {
         prepareForm();
     });
 
+    $('#content_competitors').on('click', '.btn_plus_ingroup', function () {
+        groupRel = $(this).attr('rel');
+        operNewCompetitor();
+    });
+
+
     $('#btn_add').click(function () {
-        step = 1;
-        $('#step_1').show();
-        $('#step_2').hide();
-        $('.contextual_message').hide();
-        $('#num_catalog').val('');
-        $('#formAnimal').trigger("reset");
-        disableButtons(false);
-        disableForm(false);
-        $('#modal_new_animal').modal('show');
-        $('#name').focus();
+        groupRel = 0;
+        operNewCompetitor();
     });
 
     $('#formAnimal').submit(function (e) {
@@ -115,9 +114,15 @@ $(document).ready(function () {
                             $.post(url, data, function (response) {
                                 if (response.success) {
                                     $('#modal_new_animal').modal('hide');
-                                    idsSelected.push(response.id);
-                                    maxCatalog++;
-                                    addCompetitor(maxCatalog);
+
+                                    if (groupRel == 0) {
+                                        idsSelected.push(response.id);
+                                        maxCatalog++;
+                                        addCompetitor(maxCatalog);
+                                    } else {
+                                        addCompetitorToGroup(groupRel, response.id, 0);
+                                    }
+
                                 } else {
                                     showErrorMessage(response.message);
                                     disableButtons(false);
@@ -138,24 +143,68 @@ $(document).ready(function () {
         } else {
             if (idsSelected.indexOf(infoSelected.id) == -1) {
                 $('#modal_new_animal').modal('hide');
-                idsSelected.push(infoSelected.id);
-                var catalogPrint = 0;
-                console.log(infoSelected.number);
-                if (infoSelected.number != null && infoSelected.number != 0) {
-                    catalogPrint = infoSelected.number;
+
+                if (groupRel == 0) {
+                    idsSelected.push(infoSelected.id);
+                    var catalogPrint = 0;
+
+                    if (infoSelected.number != null && infoSelected.number != 0) {
+                        catalogPrint = infoSelected.number;
+                    } else {
+                        maxCatalog++;
+                        catalogPrint = maxCatalog;
+                    }
+
+                    addCompetitor(catalogPrint);
                 } else {
-                    maxCatalog++;
-                    catalogPrint = maxCatalog;
+                    addCompetitorToGroup(groupRel, infoSelected.id, infoSelected.number);
                 }
 
-                addCompetitor(catalogPrint);
+
             } else {
                 showErrorMessage('El animal ya se encuentra registrado en esta categoría.');
             }
         }
-
-        console.log(idsSelected);
     });
+
+    var addCompetitorToGroup = function (group, animal, catalog) {
+        var element = null;
+        var pos = 1;
+        var posId = 0;
+        var catalogPrint = catalog;
+
+        $('.cont_btns').each(function (i, e) {
+            if (pos <= group) {
+                var name = $(e).find('input').attr('name');
+                var lst = name.slice(name.indexOf('_') + 1);
+                var lstSplit = lst.split(',');
+                posId += lstSplit.length;
+            }
+
+            if (pos == group) {
+                element = $(e);
+            }
+            pos++;
+        });
+
+        var idsLeft = idsSelected.slice(0, posId);
+        var idsRight = idsSelected.slice(posId);
+
+        idsLeft.push(animal);
+        idsSelected = idsLeft.concat(idsRight);
+
+        if (catalog == null || catalog == 0) {
+            maxCatalog++;
+            catalogPrint = maxCatalog;
+        }
+
+        var addCat = ',' + catalogPrint;
+        var right = $.trim(element.find('.path_right').text());
+        var name = element.find('input').attr('name');
+
+        element.find('.path_right').text(right + addCat);
+        element.find('input').attr('name', name + addCat);
+    };
 
     $('#btn_next').click(function () {
         switch (step) {
@@ -192,14 +241,39 @@ $(document).ready(function () {
         }
     });
 
+    var operNewCompetitor = function () {
+        step = 1;
+        $('#step_1').show();
+        $('#step_2').hide();
+        $('.contextual_message').hide();
+        $('#num_catalog').val('');
+        $('#formAnimal').trigger("reset");
+        disableButtons(false);
+        disableForm(false);
+        $('#modal_new_animal').modal('show');
+        $('#name').focus();
+    };
+
     var addCompetitor = function (numberCatalog) {
         actualMax++;
+        var link = '';
 
-        var html = '<div class="btn_competitor btn btn-block btn-lg btn-primary btn-success">' +
+        if (group) {
+            var groups = $('.btn_plus_ingroup').length + 1;
+            link = '<a type="button" class="btn btn-default btn_plus_ingroup" rel="' + groups + '">' +
+                '<span class="glyphicon glyphicon-plus"></span>' +
+                '</a>';
+        }
+
+        var html = '<div class="cont_btns">' +
+            link +
+            '<div class="btn_competitor btn btn-block btn-lg btn-primary btn-success">' +
             '<div class="path_left"> N° Cancha: ' + actualMax + ' </div>' +
             '<div class="path_right"> N° Catálogo: ' + numberCatalog + ' </div>' +
             '</div>' +
-            '<input type="hidden" name="comp_' + numberCatalog + '" value="1"/>';
+            '<input type="hidden" name="comp_' + numberCatalog + '" value="1"/>' +
+            '</div>';
+
 
         $('#content_competitors').append(html);
         totalSelected++;

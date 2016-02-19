@@ -24,16 +24,24 @@
                         <p></p>
                         <?php $i = 0?>
                         @for($i; $i < count($catalog); $i++)
-                            <div class="btn_competitor btn btn-block btn-lg btn-primary {{ ($catalog[$i]['present'])? 'btn-success':'' }}">
-                                <div class="path_left">
-                                    N° Cancha: {{ str_pad($i + $oCategory->num_begin, $rpad, "0", STR_PAD_LEFT) }}
+                            <div class="cont_btns">
+                                @if($oCategory->mode == \Horses\Constants\ConstDb::MODE_GROUP)
+                                    <a type="button" class="btn btn-default btn_plus_ingroup"
+                                       rel="{{ $catalog[$i]['group'] }}">
+                                        <span class="glyphicon glyphicon-plus"></span>
+                                    </a>
+                                @endif
+                                <div class="btn_competitor btn btn-block btn-lg btn-primary {{ ($catalog[$i]['present'])? 'btn-success':'' }}">
+                                    <div class="path_left">
+                                        N° Cancha: {{ str_pad($i + $oCategory->num_begin, $rpad, "0", STR_PAD_LEFT) }}
+                                    </div>
+                                    <div class="path_right">
+                                        N° Catálogo: {{ $catalog[$i]['number'] }}
+                                    </div>
                                 </div>
-                                <div class="path_right">
-                                    N° Catálogo: {{ $catalog[$i]['number'] }}
-                                </div>
+                                <input type="hidden" name="comp_{{ $catalog[$i]['number']}}"
+                                       value="{{ ($catalog[$i]['present'])? 1:0 }}"/>
                             </div>
-                            <input type="hidden" name="comp_{{ $catalog[$i]['number']}}"
-                                   value="{{ ($catalog[$i]['present'])? 1:0 }}"/>
                         @endfor
                     </div>
                     <input type="hidden" id="max_catalog" value="{{ $maxCatalog }}"/>
@@ -69,6 +77,9 @@
     <script src="{{ asset('/js/libs/jquery-ui/jquery-ui.min.js') }}"></script>
     <script src="{{ asset('/js/libs/jquery-ui/ui/minified/i18n/datepicker-es.min.js') }}"></script>
     <script src="{{ asset('/js/libs/devbridge-autocomplete/dist/jquery.autocomplete.min.js') }}"></script>
+    <script>
+        var group = {{ ($oCategory->mode == \Horses\Constants\ConstDb::MODE_PERSONAL) ? 'false':'true'  }};
+    </script>
     <script src="{{ asset('/js/app/oper/animal/maintenance_common.js') }}"></script>
     <script src="{{ asset('/js/app/commissar/assistance.js') }}"></script>
 @endsection

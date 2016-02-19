@@ -197,6 +197,13 @@ form.formuppertext input {
     width: 200px;
 }
 
+.btn_plus_ingroup {
+    float: left;
+    margin-left: 6px;
+    margin-top: 5px;
+    position: absolute;
+}
+
 #space_verify ul {
     padding-bottom: 0px;
 }
