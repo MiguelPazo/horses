@@ -198,7 +198,7 @@ class CategoryService
         if ($catInProgress == 0) {
             $oCategory = Category::findorFail($id);
 
-            if ($oCategory->count_competitors > 0) {
+            if ($oCategory->count_presents > 0) {
                 if ($oCategory->juries->count() == 3) {
                     DB::beginTransaction();
 
@@ -228,7 +228,7 @@ class CategoryService
                     $jResponse['message'] = 'Falta asignar jueces a la categoría.';
                 }
             } else {
-                $jResponse['message'] = 'No puede activar una categoría con 0 competidores.';
+                $jResponse['message'] = 'No puede activar una categoría con ningún competidor presente.';
             }
 
         } else {
