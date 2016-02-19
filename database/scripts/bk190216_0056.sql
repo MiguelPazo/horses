@@ -302,7 +302,7 @@ DROP TABLE IF EXISTS `animal_tournament`;
  `name` varchar(60) ,
  `code` varchar(20) ,
  `birthdate` varchar(10) ,
- `OWNER` varchar(100) 
+ `owner` varchar(100) 
 )*/;
 
 /*Table structure for table `animal_tournament_short` */
@@ -337,7 +337,7 @@ DROP TABLE IF EXISTS `animal_tournament_short`;
 /*!50001 DROP TABLE IF EXISTS `animal_tournament` */;
 /*!50001 DROP VIEW IF EXISTS `animal_tournament` */;
 
-/*!50001 CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `animal_tournament` AS select `a`.`tournament_id` AS `tournament_id`,`a`.`animal_id` AS `animal_id`,`a`.`total_categories` AS `total_categories`,`d`.`prefix` AS `prefix`,`b`.`name` AS `name`,`b`.`code` AS `code`,date_format(`b`.`birthdate`,'%d-%m-%Y') AS `birthdate`,`d`.`names` AS `OWNER` from (((`animal_tournament_short` `a` join `animals` `b` on((`b`.`id` = `a`.`animal_id`))) left join `animal_agent` `c` on(((`c`.`animal_id` = `b`.`id`) and (`c`.`type` = 'breeder')))) left join `agents` `d` on((`d`.`id` = `c`.`agent_id`))) */;
+/*!50001 CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `animal_tournament` AS select `a`.`tournament_id` AS `tournament_id`,`a`.`animal_id` AS `animal_id`,`a`.`total_categories` AS `total_categories`,`d`.`prefix` AS `prefix`,`b`.`name` AS `name`,`b`.`code` AS `code`,date_format(`b`.`birthdate`,'%d-%m-%Y') AS `birthdate`,`d`.`names` AS `owner` from (((`animal_tournament_short` `a` join `animals` `b` on((`b`.`id` = `a`.`animal_id`))) left join `animal_agent` `c` on(((`c`.`animal_id` = `b`.`id`) and (`c`.`type` = 'breeder')))) left join `agents` `d` on((`d`.`id` = `c`.`agent_id`))) */;
 
 /*View structure for view animal_tournament_short */
 

@@ -25,7 +25,7 @@ FROM catalogs
 GROUP BY animal_id, tournament_id;
 
 CREATE VIEW animal_tournament AS
-SELECT a.*, d.prefix, b.name, b.code, DATE_FORMAT(b.birthdate, '%d-%m-%Y') AS birthdate, d.names AS OWNER
+SELECT a.*, d.prefix, b.name, b.code, DATE_FORMAT(b.birthdate, '%d-%m-%Y') AS birthdate, d.names AS 'owner'
 FROM animal_tournament_short a
 INNER JOIN animals b ON b.id = a.animal_id
 LEFT JOIN animal_agent c ON c.animal_id = b.id AND c.type = 'breeder'
