@@ -36,6 +36,18 @@ breeder VARCHAR(100),
 OWNER VARCHAR(100)
 );
 
+SELECT COUNT(*) FROM temp1
+
+SELECT * FROM temp1 WHERE dad_name LIKE '%?%'
+UPDATE temp1 SET NAME = REPLACE(NAME, '?', 'Ñ');
+UPDATE temp1 SET mom_name = REPLACE(mom_name, '?', 'Ñ');
+UPDATE temp1 SET dad_name = REPLACE(dad_name, '?', 'Ñ');
+UPDATE temp1 SET breeder = REPLACE(breeder, '?', 'Ñ');
+UPDATE temp1 SET OWNER = REPLACE(OWNER, '?', 'Ñ');
+
+SELECT * FROM temp1 WHERE NAME LIKE '%?%'
+
+
 /*INSERT AGENTS*/
 INSERT INTO agents (prefix, NAMES, created_at, updated_at)
 SELECT a.*, CURRENT_TIMESTAMP AS created_at, CURRENT_TIMESTAMP AS updated_at FROM (
@@ -172,13 +184,20 @@ CONCAT(animal_id, agent_id, TYPE) FROM animal_agent);
 
 /*INSERT CATALOGS*/
 INSERT INTO catalogs(number, category_id, tournament_id, animal_id)
-SELECT catalog AS number, category AS category_id, 1 AS tournament_id, b.id AS animal_id
+SELECT catalog AS number, category AS category_id, 2 AS tournament_id, b.id AS animal_id
 FROM temp1 a
-INNER JOIN animals b ON b.name = a.name AND b.prefix = a.prefix
+INNER JOIN animals b ON b.name = a.name AND b.prefix = a.prefix;
 
+/*UPDATE COUNT COMPETITORS*/
+UPDATE categories c SET count_competitors = (
+	SELECT COUNT(*) AS total 
+	FROM catalogs
+	WHERE category_id = c.id
+	GROUP BY category_id
+) WHERE tournament_id = 2;
 
-/*DROP PREFIX COLUMNN TO ANIMALS*/
-ALTER TABLE animals DROP prefix;
+/*DROP PREFIX COLUMNN TO ANIMALS
+ALTER TABLE animals DROP prefix;*/
 
 
 /*VERIFY AGENTS*/
