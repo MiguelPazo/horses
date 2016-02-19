@@ -11,7 +11,6 @@ var openPopup = function (title, message, type, okFunction) {
             $('#btn_ok').click(okFunction)
             break;
     }
-    ;
 };
 
 var validateForm = function (form) {
