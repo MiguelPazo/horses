@@ -20,4 +20,5 @@
 @section('scripts')
     <script src="{{ asset('/js/libs/jquery-ui/jquery-ui.min.js') }}"></script>
     <script src="{{ asset('/js/app/admin/category.js') }}"></script>
+    <script src="{{ asset('/js/libs/jquery-ui-touch-punch/jquery.ui.touch-punch.min.js') }}"></script>
 @endsection
