@@ -196,8 +196,8 @@ UPDATE categories c SET count_competitors = (
 	GROUP BY category_id
 ) WHERE tournament_id = 2;
 
-/*DROP PREFIX COLUMNN TO ANIMALS
-ALTER TABLE animals DROP prefix;*/
+/*DROP PREFIX COLUMNN TO ANIMALS*/
+ALTER TABLE animals DROP prefix;
 
 
 /*VERIFY AGENTS*/
