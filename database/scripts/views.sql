@@ -25,8 +25,23 @@ FROM catalogs
 GROUP BY animal_id, tournament_id;
 
 CREATE VIEW animal_tournament AS
-SELECT a.*, d.prefix, b.name, b.code, DATE_FORMAT(b.birthdate, '%d-%m-%Y') AS birthdate, d.names AS 'owner'
+SELECT a.*, d.prefix, b.name, b.code, DATE_FORMAT(b.birthdate, '%d-%m-%Y') AS birthdate, d.names AS 'breeder', f.names AS 'owner'
 FROM animal_tournament_short a
 INNER JOIN animals b ON b.id = a.animal_id
 LEFT JOIN animal_agent c ON c.animal_id = b.id AND c.type = 'breeder'
-LEFT JOIN agents d ON d.id = c.agent_id;
+LEFT JOIN agents d ON d.id = c.agent_id
+LEFT JOIN animal_agent e ON e.animal_id = b.id AND e.type = 'owner'
+LEFT JOIN agents f ON f.id = e.agent_id;
+
+SELECT * FROM agents WHERE NAMES LIKE '%ALFONSO%'
+
+ALFONSO VALMORE GARCIA GARCIA
+
+SELECT a.*, b.type, c.code FROM (SELECT * FROM (
+SELECT animal_id, COUNT(*) AS total FROM animal_agent
+WHERE animal_id IN (SELECT animal_id FROM catalogs WHERE tournament_id = 2)
+GROUP BY animal_id) a WHERE a.total = 1) a
+INNER JOIN animal_agent b ON b.animal_id = a.animal_id
+INNER JOIN animals c ON c.id = a.animal_id
+
+SELECT animal_id FROM catalogs WHERE tournament_id = 2

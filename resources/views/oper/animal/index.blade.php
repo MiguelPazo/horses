@@ -25,6 +25,7 @@
                     <th width="15%" class="center">Fecha de Nac.</th>
                     <th width="5%" class="center">Categorías</th>
                     <th width="24%" class="center">Criador</th>
+					<th width="24%" class="center">Propietario</th>
                     <th width="15%" class="center">Opciones</th>
                 </tr>
                 </thead>
@@ -38,7 +39,8 @@
                         <td class="center">{{ $animal->code }}</td>
                         <td class="center">{{ $animal->birthdate }}</td>
                         <td class="center">{{ $animal->total_categories }}</td>
-                        <td>{{ $animal->owner }}</td>
+                        <td>{{ $animal->breeder }}</td>
+						<td>{{ $animal->owner }}</td>						
                         <td class="center">
                             <a href="{{ route('oper.animal.edit', $animal->animal_id) }}" role="button"
                                class="btn">

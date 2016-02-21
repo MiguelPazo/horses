@@ -5,8 +5,8 @@ class ConstApp
 
     const STAGE_ASSISTANCE = 'Asistencia';
     const STAGE_SELECCTION = 'Selección';
-    const STAGE_CLASSIFY_1 = 'Primera Clasificación';
-    const STAGE_CLASSIFY_2 = 'Segunda Clasificación';
+    const STAGE_CLASSIFY_1 = 'Clasificación';
+    const STAGE_CLASSIFY_2 = 'Comprobación';
     const STAGE_RESULTS = 'Finalizada';
     const PREFIX_COMPETITOR = 'comp_';
     const PREFIX_JURY = 'jury_';

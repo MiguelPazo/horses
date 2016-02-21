@@ -39,6 +39,9 @@ form.formuppertext input {
 .btn_refresh {
     right: 153px;
 }
+.btn_results{
+	right: 153px;
+}
 
 .btn {
     text-transform: uppercase;

@@ -1,5 +1,5 @@
 $(document).ready(function () {
     setInterval(function () {
         location.reload();
-    }, 5000);
+    }, 15000);
 });

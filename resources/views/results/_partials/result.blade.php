@@ -94,11 +94,12 @@
                     <th rowspan="2">N° de Catálogo</th>
                     <th rowspan="2">Prefijo</th>
                     <th rowspan="2">Nombre</th>
+					<th rowspan="2">Propietario</th>
                     <th colspan="{{ $oCategory->juries->count() + 1 }}" class="center">
-                        Primera Clasificación
+						Clasificación
                     </th>
                     <th colspan="{{ $oCategory->juries->count() + 1 }}" class="center">
-                        Segunda Clasificación
+                        Comprobación
                     </th>
                 </tr>
                 <tr>

@@ -85,7 +85,9 @@ class AnimalController extends Controller
                     ->orWhere('name', 'like', "%$search%")
                     ->orWhere('code', 'like', "%$search%")
                     ->orWhere('owner', 'like', "%$search%");
-            })->paginate(10);
+            })
+			->orderBy('owner')
+			->paginate(10);
 
         return view('oper.animal.index')
             ->with('search', $search)

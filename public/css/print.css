@@ -5,3 +5,7 @@ a, button, .nav-pills{
 .label_category{
 	display: block;
 }
+
+body {
+	font-size:10px !important;
+}

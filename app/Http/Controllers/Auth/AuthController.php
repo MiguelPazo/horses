@@ -65,7 +65,7 @@ class AuthController extends Controller
                             $oTournament = Tournament::statusIn([ConstDb::STATUS_ACTIVE, ConstDb::STATUS_JOURNAL])->first();
 
                             if ($oTournament) {
-                                if ($oTournament->status == ConstDb::STATUS_ACTIVE) {
+                                if ($oTournament->status == ConstDb::STATUS_ACTIVE || true) {
                                     $request->session()->put('oTournament', $oTournament);
                                     $response['url'] = route('oper.animal.index');
                                 } else {

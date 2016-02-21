@@ -222,3 +222,66 @@ SELECT * FROM animal_agent WHERE animal_id IN (1856,1946)
 SELECT * FROM temp1 WHERE NAME IN ('II CALAMBUCO','MULATO')
 
 SELECT * FROM agents WHERE NAMES IN ('WILFREDO MONTALVO BERNILLA','CARLOS RAMIREZ CHUPICA')
+
+
+
+SELECT * FROM animal_tournament WHERE tournament_id = 2 AND prefix IS NULL
+
+INSERT INTO agents (NAMES, prefix, created_at, updated_at)
+SELECT a.*, b.prefix, CURRENT_TIMESTAMP AS created_at, CURRENT_TIMESTAMP AS updated_at
+FROM (SELECT NAMES FROM (
+SELECT breeder AS NAMES FROM temp1
+UNION ALL 
+SELECT OWNER AS NAMES FROM temp1) a
+WHERE NAMES NOT IN (
+SELECT NAMES FROM agents
+) GROUP BY NAMES) a
+INNER JOIN temp1 b ON b.breeder = a.names
+GROUP BY a.names;
+
+SELECT * FROM temp1 WHERE breeder='CARLOS CORNO YORI'
+
+DELETE FROM animal_agent
+WHERE animal_id IN (
+SELECT animal_id FROM temp2)
+
+INSERT INTO animal_agent (animal_id, agent_id, TYPE)
+SELECT a.animal_id, b.id, 'owner' AS TYPE FROM (
+SELECT a.animal_id, b.owner FROM (
+SELECT * 
+FROM animal_tournament 
+WHERE tournament_id = 2 AND prefix IS NULL
+AND NAME IN (
+SELECT NAME FROM temp1
+)) a
+INNER JOIN temp1 b ON b.code = a.code
+GROUP BY a.name) a
+INNER JOIN agents b WHERE b.names = a.owner;
+
+UPDATE users SET login = 0
+
+INSERT INTO animal_agent (animal_id, agent_id, TYPE)
+SELECT a.animal_id, b.id, 'breeder' AS TYPE FROM (
+SELECT a.animal_id, b.breeder FROM (
+SELECT * 
+FROM animal_tournament 
+WHERE tournament_id = 2 AND prefix IS NULL
+AND NAME IN (
+SELECT NAME FROM temp1
+)) a
+INNER JOIN temp1 b ON b.code = a.code
+GROUP BY a.name) a
+INNER JOIN agents b WHERE b.names = a.breeder;
+
+SELECT * FROM animal_tournament WHERE tournament_id = 2
+
+SELECT * FROM catalogs WHERE tournament_id = 2 AND number = 183
+SELECT * FROM animal_agent WHERE animal_id = 4150
+SELECT * FROM agents WHERE NAMES LIKE '%CORNO%'
+
+SELECT * FROM temp1 WHERE breeder = 'CARLOS CORNO YORI'
+
+
+SELECT * FROM categories WHERE id = 102
+
+SELECT * FROM competitors WHERE category_id=112
