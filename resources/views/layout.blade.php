@@ -34,7 +34,7 @@
                 </a>
                 <a href="{{ route('admin.dashboard') }}" role="button" class="btn btn-default btn_exit btn_home">
                     <span class="glyphicon glyphicon-home"></span>
-                </a>				
+                </a>
                 <a href="{{ Request::url() }}" role="button" class="btn btn-default btn_exit btn_refresh">
                     <span class="glyphicon glyphicon-refresh"></span>
                 </a>
@@ -51,5 +51,6 @@
 <script src="{{ asset('/js/app/main.js') }}"></script>
 @yield('scripts')
 <script src="{{ asset('/js/libs/jquery-ui-touch-punch/jquery.ui.touch-punch.min.js') }}"></script>
+<script src="{{ asset('/js/app/analytics.js') }}"></script>
 </body>
 </html>
