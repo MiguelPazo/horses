@@ -51,6 +51,8 @@
 <script src="{{ asset('/js/app/main.js') }}"></script>
 @yield('scripts')
 <script src="{{ asset('/js/libs/jquery-ui-touch-punch/jquery.ui.touch-punch.min.js') }}"></script>
-<script src="{{ asset('/js/app/analytics.js') }}"></script>
+@if(!env('APP_DEBUG'))
+    <script src="{{ asset('/js/app/analytics.js') }}"></script>
+@endif
 </body>
 </html>
