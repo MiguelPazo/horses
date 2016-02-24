@@ -8,6 +8,11 @@ class Category extends Model
     protected $guarded = ['id'];
     public $timestamps = false;
 
+    public function setDescriptionAttribute($value)
+    {
+        $this->attributes['description'] = strtoupper($value);
+    }
+
     public function scopeTournament($query, $tournament)
     {
         return $query->where('tournament_id', $tournament);

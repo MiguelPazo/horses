@@ -34,6 +34,7 @@ class AnimalController extends Controller
         $gender = $this->request->get('gender');
         $query = strtoupper($this->request->get('query'));
         $wPrefix = $this->request->get('prefix', true);
+        $wPrefix = ($wPrefix == 'true' || $wPrefix === true) ? true : false;
 
         $lstAnimal = Animal::with('breeder')
             ->where(function ($query) use ($gender) {
@@ -47,9 +48,10 @@ class AnimalController extends Controller
 
         $data = [];
         foreach ($lstAnimal as $key => $animal) {
-            $prefix = ($animal->breeder->count() == 1 && $wPrefix === true) ? "({$animal->breeder->get(0)->prefix}) " : '';
+            $prefix = ($animal->breeder->count() == 1 && $wPrefix == true) ? "({$animal->breeder->get(0)->prefix}) " : '';
             $anData['value'] = $prefix . $animal->name;
             $anData['data'] = $animal->id;
+            $anData['show'] = $animal->name;
 
             $data[] = $anData;
         }
@@ -86,8 +88,8 @@ class AnimalController extends Controller
                     ->orWhere('code', 'like', "%$search%")
                     ->orWhere('owner', 'like', "%$search%");
             })
-			->orderBy('owner')
-			->paginate(10);
+            ->orderBy('owner')
+            ->paginate(10);
 
         return view('oper.animal.index')
             ->with('search', $search)
@@ -278,11 +280,18 @@ class AnimalController extends Controller
     {
         $lstAnimal = null;
 
-        $lstAnimal = DB::table('animal_report')
-            ->where('prefix', $prefix)
-            ->where('name', $name)
-            ->orWhere('code', $code)
-            ->get();
+        if ($code != '') {
+            $lstAnimal = DB::table('animal_report')
+                ->where('prefix', $prefix)
+                ->where('name', $name)
+                ->orWhere('code', $code)
+                ->get();
+        } else {
+            $lstAnimal = DB::table('animal_report')
+                ->where('prefix', $prefix)
+                ->where('name', $name)
+                ->get();
+        }
 
         return $lstAnimal;
     }

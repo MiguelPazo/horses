@@ -18,4 +18,5 @@ class ConstApp
     const MAX_HONORABLE = 6;
     const PASS_DEFAULT = '123';
     const MIN_JURY_MATCH = 2;
+    const MAX_CATEGORIES_ACTIVE = 3;
 }

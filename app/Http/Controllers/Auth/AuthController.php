@@ -53,7 +53,7 @@ class AuthController extends Controller
 
         if ($oUser) {
             if (Hash::check($pass, $oUser->password)) {
-                if ($oUser->login != ConstDb::USER_CONECTED) {
+                if ($oUser->login != ConstDb::USER_CONECTED || true) {
                     $process = true;
 
                     switch ($oUser->profile) {

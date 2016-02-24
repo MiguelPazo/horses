@@ -71,10 +71,9 @@ $(document).ready(function () {
     $('#name').devbridgeAutocomplete({
         serviceUrl: BASE_URL + 'oper/animal/list-parents',
         minChars: 3,
-        params: {
-            prefix: false
-        },
         onSelect: function (suggestion) {
+            $('#name').val(suggestion.show);
+
             $.get(BASE_URL + 'oper/animal/info-animal/' + suggestion.data, null, function (response) {
                 if (response.success) {
                     infoSelected = response;

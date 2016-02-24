@@ -167,6 +167,41 @@ $(document).ready(function () {
         }
     });
 
+    $('#btn_next').click(function () {
+        switch (step) {
+            case 1:
+                var numCatalog = $('#num_catalog').val();
+                if (numCatalog != '') {
+                    var tournament = $('#tournament').val();
+
+                    $.get(BASE_URL + 'admin/catalog/info/' + tournament + '/catalog/' + numCatalog, null, function (response) {
+                        if (response.success) {
+                            infoSelected = response;
+                            fillAnimalInfo(response, true, true);
+                        }
+
+                        step++;
+                        $('#step_1').hide();
+                        $('#step_2').show();
+                    });
+                } else {
+                    step++;
+                    $('#step_1').hide();
+                    $('#step_2').show();
+                }
+                break;
+            case 2:
+                $('#formAnimal').submit();
+                break;
+        }
+    });
+
+    $('#num_catalog').keypress(function (e) {
+        if (e.which == 13) {
+            $('#btn_next').click();
+        }
+    });
+
     var addCompetitorToGroup = function (group, animal, catalog) {
         var element = null;
         var pos = 1;
@@ -204,42 +239,11 @@ $(document).ready(function () {
 
         element.find('.path_right').text(right + addCat);
         element.find('input').attr('name', name + addCat);
+
+        totalSelected++;
+        $('#count_sel').html(totalSelected);
+        $('#total_comp').text($('#total_comp').text() + 1);
     };
-
-    $('#btn_next').click(function () {
-        switch (step) {
-            case 1:
-                var numCatalog = $('#num_catalog').val();
-                if (numCatalog != '') {
-                    var tournament = $('#tournament').val();
-
-                    $.get(BASE_URL + 'admin/catalog/info/' + tournament + '/catalog/' + numCatalog, null, function (response) {
-                        if (response.success) {
-                            infoSelected = response;
-                            fillAnimalInfo(response, true, true);
-                        }
-
-                        step++;
-                        $('#step_1').hide();
-                        $('#step_2').show();
-                    });
-                } else {
-                    step++;
-                    $('#step_1').hide();
-                    $('#step_2').show();
-                }
-                break;
-            case 2:
-                $('#formAnimal').submit();
-                break;
-        }
-    });
-
-    $('#num_catalog').keypress(function (e) {
-        if (e.which == 13) {
-            $('#btn_next').click();
-        }
-    });
 
     var operNewCompetitor = function () {
         step = 1;
@@ -278,6 +282,7 @@ $(document).ready(function () {
         $('#content_competitors').append(html);
         totalSelected++;
         $('#count_sel').html(totalSelected);
+        $('#total_comp').text(parseInt($('#total_comp').text()) + 1);
     };
 
     var prepareForm = function () {

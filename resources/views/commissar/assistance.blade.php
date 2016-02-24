@@ -12,7 +12,7 @@
     <p><b>Categoria: </b> {{ $oCategory->description }}</p>
 
     <div class="panel-body">
-        <h3>Concursantes de la Categoría: {{ $oCategory->count_competitors }} </h3>
+        <h3>Concursantes de la Categoría: <span id="total_comp">{{ $oCategory->count_competitors }}</span></h3>
 
         {!! Form::open(['url' => route('commissar.assistance.save', $oCategory->id), 'id' => 'form']) !!}
         <div class="tabbable">
@@ -66,7 +66,7 @@
         {!! Form::close() !!}
 
         <div class="count_selected" id="count_sel">
-            0
+            {{ $totalPresent }}
         </div>
     </div>
 

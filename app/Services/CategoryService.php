@@ -193,9 +193,9 @@ class CategoryService
             'object' => null
         ];
 
-        $catInProgress = Category::status(ConstDb::STATUS_ACTIVE)->count();
+        $catActives = Category::status(ConstDb::STATUS_ACTIVE)->count();
 
-        if ($catInProgress == 0) {
+        if ($catActives < ConstApp::MAX_CATEGORIES_ACTIVE) {
             $oCategory = Category::findorFail($id);
 
             if ($oCategory->count_presents > 0) {
@@ -203,8 +203,6 @@ class CategoryService
                     DB::beginTransaction();
 
                     try {
-                        Category::status(ConstDb::STATUS_ACTIVE)->tournament($oCategory->tournament_id)->update(['status' => ConstDb::STATUS_INACTIVE]);
-
                         if ($oCategory->type == ConstDb::TYPE_CATEGORY_WSELECTION) {
                             $oCategory->actual_stage = ConstDb::STAGE_SELECTION;
                             CategoryUser::category($oCategory->id)->update(['actual_stage' => ConstDb::STAGE_SELECTION]);
@@ -232,7 +230,7 @@ class CategoryService
             }
 
         } else {
-            $jResponse['message'] = 'Existe otra categoría en proceso, espere a que termine. Sólo puede estar activa una categoría a la vez.';
+            $jResponse['message'] = 'Sólo pueden activarse un máximo de 3 categorías a la vez.';
         }
 
         return $jResponse;

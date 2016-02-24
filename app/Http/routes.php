@@ -143,7 +143,7 @@ Route::group([
         'roles' => ['admin', 'commissar']
     ], function () {
         Route::get('/catalog/info/{idTournament}/catalog/{numCatalog}', 'CatalogController@infoCatalog');
-        Route::get('/catalog/add-animal/{idAnimal}/catalog/{idCategory}', 'CatalogController@addAnimal');
+//        Route::get('/catalog/add-animal/{idAnimal}/catalog/{idCategory}', 'CatalogController@addAnimal');
     });
 
     Route::resource('/catalog', 'CatalogController');

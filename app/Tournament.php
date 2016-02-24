@@ -32,6 +32,11 @@ class Tournament extends Model
         return $this->belongsToMany('Horses\Animal', 'catalogs');
     }
 
+    public function setDescriptionAttribute($value)
+    {
+        $this->attributes['description'] = strtoupper($value);
+    }
+
     public function setDateBeginAttribute($value)
     {
         $dateBegin = date('Y-m-d', strtotime($value));

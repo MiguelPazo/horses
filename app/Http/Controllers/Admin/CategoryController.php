@@ -65,11 +65,14 @@ class CategoryController extends Controller
         if ($validator === true) {
             $oCategory = new Category();
             $oTournament = Tournament::findorFail($id);
+            $maxOrder = Category::tournament($oTournament->id)->max('order');
+            $maxOrder = ($maxOrder) ? $maxOrder : 0;
 
             $oCategory->description = $request->get('description');
             $oCategory->type = ($request->get('type') == 0) ? ConstDb::TYPE_CATEGORY_WSELECTION : ConstDb::TYPE_CATEGORY_SELECTION;
             $oCategory->mode = $request->get('mode');
             $oCategory->num_begin = $request->get('num_begin');
+            $oCategory->order = $maxOrder + 1;
             $oCategory->tournament_id = $oTournament->id;
             $oCategory->save();
 
