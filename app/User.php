@@ -32,6 +32,11 @@ class User extends Model implements AuthenticatableContract
         return $query->where('status', $status);
     }
 
+    public function categories()
+    {
+        return $this->belongsToMany('Horses\Category', 'category_users')->withPivot(['dirimente', 'actual_stage']);
+    }
+
     public function stages()
     {
         return $this->hasMany('Horses\Stage');

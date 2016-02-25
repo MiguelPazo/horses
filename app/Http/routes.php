@@ -155,6 +155,16 @@ Route::group([
     'roles' => 'jury',
     'after' => 'nocache'
 ], function () {
+    Route::get('/categories_available/', [
+        'as' => 'tournament.change.category',
+        'uses' => 'TournamentController@categoriesAvailable'
+    ]);
+
+    Route::get('/change_category/{category}', [
+        'as' => 'tournament.change.category',
+        'uses' => 'TournamentController@changeCategory'
+    ]);
+
     Route::get('/selection', [
         'as' => 'tournament.selection',
         'uses' => 'TournamentController@selection'

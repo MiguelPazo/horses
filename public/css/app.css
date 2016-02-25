@@ -39,8 +39,9 @@ form.formuppertext input {
 .btn_refresh {
     right: 153px;
 }
-.btn_results{
-	right: 153px;
+
+.btn_results {
+    right: 153px;
 }
 
 .btn {
@@ -209,4 +210,9 @@ form.formuppertext input {
 
 #space_verify ul {
     padding-bottom: 0px;
+}
+
+#modal_change_category .modal-body a {
+    display: block;
+    margin-bottom: 10px;
 }

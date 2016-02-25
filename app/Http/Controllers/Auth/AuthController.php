@@ -103,14 +103,16 @@ class AuthController extends Controller
 
                         case ConstDb::PROFILE_JURY:
                             $process = false;
-                            $categoryActive = $this->isCategoryActive();
-                            $oCategory = $categoryActive['category'];
-                            $oTournament = $categoryActive['tournament'];
+                            $oTournament = Tournament::status(ConstDb::STATUS_JOURNAL)->first();
+                            $oJury = User::with(['categories' => function ($item) {
+                                return $item->status(ConstDb::STATUS_ACTIVE);
+                            }])->findorFail($oUser->id);
 
-                            if ($oCategory) {
-                                $oCategoryJury = CategoryUser::jury($oUser->id)->category($oCategory->id)->first();
+                            if ($oTournament) {
+                                if ($oJury->categories->count() > 0) {
+                                    $oCategory = $oJury->categories->get(0);
+                                    $oCategoryJury = $oCategory->pivot;
 
-                                if ($oCategoryJury) {
                                     switch ($oCategoryJury->actual_stage) {
                                         case ConstDb::STAGE_ASSISTANCE:
                                             $process = true;
@@ -136,13 +138,13 @@ class AuthController extends Controller
                                         $request->session()->put('oCategory', $oCategory);
                                         $request->session()->put('oTournament', $oTournament);
                                     }
-
                                 } else {
-                                    $response['message'] = 'Usted no ha sido asignado como jurado a la categoría activa.';
+                                    $response['message'] = 'Aún no se ha activado ninguna categoría, en la que usted participe como jurado.';
                                 }
                             } else {
-                                $response['message'] = $categoryActive['message'];
+                                $response['message'] = ConstMessages::LOGIN_TOURNAMENT_INACTIVE;
                             }
+
                             break;
                         default:
                             $process = false;
@@ -174,29 +176,6 @@ class AuthController extends Controller
 
         return response()->json($response);
     }
-
-    public function isCategoryActive()
-    {
-        $category = ['category' => null, 'tournament' => null, 'message' => ''];
-
-        $oTournament = Tournament::status(ConstDb::STATUS_JOURNAL)->first();
-
-        if ($oTournament) {
-            $oCategory = Category::tournament($oTournament->id)->status(ConstDb::STATUS_ACTIVE)->first();
-
-            if ($oCategory) {
-                $category['category'] = $oCategory;
-                $category['tournament'] = $oTournament;
-            } else {
-                $category['message'] = 'Aún no se ha activado ninguna categoría, espere un momento por favor.';
-            }
-        } else {
-            $category['message'] = ConstMessages::LOGIN_TOURNAMENT_INACTIVE;
-        }
-
-        return $category;
-    }
-
 
     public function redirectPath()
     {

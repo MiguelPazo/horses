@@ -45,9 +45,11 @@ $(document).ready(function () {
                         location.href = response.url;
                     } else {
                         openPopup('Información', 'Información guardada satisfactoriamente!', 1, null);
+                        disableButtons(false);
                     }
                 } else {
                     openPopup('Error', response.message, 1, null);
+                    disableButtons(false);
                 }
             },
             error: function (response) {

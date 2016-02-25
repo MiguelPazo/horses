@@ -34,6 +34,53 @@ class TournamentController extends Controller
         }
     }
 
+    public function categoriesAvailable(Guard $guard)
+    {
+        $jResponse = [
+            'success' => false,
+            'message' => '',
+            'data' => null
+        ];
+
+        $oJury = User::with(['categories' => function ($item) {
+            return $item->status(ConstDb::STATUS_ACTIVE);
+        }])->findorFail($guard->getUser()->id);
+
+        if ($oJury->categories->count() > 1) {
+            foreach ($oJury->categories as $key => $oCategory) {
+                $jResponse['data'][] = [
+                    'id' => $oCategory->id,
+                    'description' => $oCategory->description
+                ];
+            }
+
+            $jResponse['success'] = true;
+        } else {
+            $jResponse['message'] = 'Aún no se ha activado otra categoría, en la que usted participe como jurado.';
+        }
+
+        return response()->json($jResponse);
+    }
+
+    public function changeCategory(Guard $guard, $category)
+    {
+        $oJury = User::with(['categories' => function ($item) {
+            return $item->status(ConstDb::STATUS_ACTIVE);
+        }])->findorFail($guard->getUser()->id);
+
+        $oCategoryChange = $oJury->categories->filter(function ($item) use ($category) {
+            return $item->id == $category;
+        })->first();
+
+        if ($oCategoryChange) {
+            $this->request->session()->put('oCategory', $oCategoryChange);
+        } else {
+            $this->request->session()->put('oCategory', $oJury->categories->get(0));
+        }
+
+        return redirect()->route('tournament.selection');
+    }
+
     public function selection()
     {
         $lstCompetitor = Competitor::category($this->category->id)
@@ -94,6 +141,21 @@ class TournamentController extends Controller
         if ($stageStatus->valid) {
             $this->calculateFinal($this->category->id, $stageStatus);
         }
+
+        $oJury = User::with(['categories' => function ($item) {
+            return $item->status(ConstDb::STATUS_ACTIVE);
+        }])->findorFail($guard->getUser()->id);
+
+        if ($oJury->categories->count() > 1) {
+            $actualCategory = $this->category->id;
+            $oCategoryNext = $oJury->categories->filter(function ($item) use ($actualCategory) {
+                return $item->id != $actualCategory;
+            })->first();
+
+            $this->request->session()->put('oCategory', $oCategoryNext);
+            $response['url'] = route('tournament.selection');
+        }
+
 
         return response()->json($response);
     }
