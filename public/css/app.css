@@ -208,6 +208,15 @@ form.formuppertext input {
     position: absolute;
 }
 
+.loading span {
+    font-size: 20px;
+}
+
+.loading img {
+    margin-left: 95px;
+    width: 100px;
+}
+
 #space_verify ul {
     padding-bottom: 0px;
 }

@@ -33,15 +33,12 @@ LEFT JOIN agents d ON d.id = c.agent_id
 LEFT JOIN animal_agent e ON e.animal_id = b.id AND e.type = 'owner'
 LEFT JOIN agents f ON f.id = e.agent_id;
 
-SELECT * FROM agents WHERE NAMES LIKE '%ALFONSO%'
-
-ALFONSO VALMORE GARCIA GARCIA
-
-SELECT a.*, b.type, c.code FROM (SELECT * FROM (
-SELECT animal_id, COUNT(*) AS total FROM animal_agent
-WHERE animal_id IN (SELECT animal_id FROM catalogs WHERE tournament_id = 2)
-GROUP BY animal_id) a WHERE a.total = 1) a
-INNER JOIN animal_agent b ON b.animal_id = a.animal_id
-INNER JOIN animals c ON c.id = a.animal_id
-
-SELECT animal_id FROM catalogs WHERE tournament_id = 2
+CREATE VIEW catalog_report AS
+SELECT c.tournament_id AS tournament_id, c.id AS category_id, c.order, c.description AS description, ca.number, ca.animal_id, 
+ar.prefix, ar.name, ar.code, ar.birthdate, ar.dad_prefix, ar.dad_name, ar.mom_prefix, ar.mom_name, ar.breeder, ar.owner
+FROM categories c
+INNER JOIN catalogs ca ON ca.category_id = c.id
+INNER JOIN animals a ON a.id = ca.animal_id
+INNER JOIN animal_report ar ON ar.id = ca.animal_id
+WHERE c.status <> 'deleted'
+ORDER BY c.order, birthdate DESC;

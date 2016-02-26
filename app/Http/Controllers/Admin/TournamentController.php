@@ -20,12 +20,20 @@ class TournamentController extends Controller
 
     public function beginJournal($idTournament, $begin)
     {
+        $jResponse = [
+            'success' => false,
+            'message' => null,
+            'url' => route('admin.tournament.index')
+        ];
+
         $oTournament = Tournament::findorFail($idTournament);
 
         $oTournament->status = ($begin == 1) ? ConstDb::STATUS_JOURNAL : ConstDb::STATUS_FINAL;
         $oTournament->save();
 
-        return redirect()->route('admin.tournament.index');
+        $jResponse['success'] = true;
+
+        return response()->json($jResponse);
     }
 
     public function enable($id)
@@ -125,7 +133,7 @@ class TournamentController extends Controller
         $oTournament = Tournament::findorFail($id);
         $formHeader = ['route' => ['admin.tournament.update', $oTournament->id], 'method' => 'PUT', 'class' =>
             'formValid formuppertext'];
-        
+
         return view('admin.tournament.maintenance')
             ->with('oTournament', $oTournament)
             ->with('title', 'Editar Concurso')
@@ -163,7 +171,7 @@ class TournamentController extends Controller
     {
         $jResponse = [
             'success' => false,
-            'message' => '',
+            'message' => null,
             'url' => ''
         ];
 

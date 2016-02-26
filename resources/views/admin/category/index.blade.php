@@ -60,7 +60,8 @@
                                     </a>
 
                                     <a href="{{ url('/admin/category/destroy', $category->id) }}"
-                                       role="button" class="btn" data-method="delete">
+                                       rel="¿Esta seguro de eliminar la categoría {{ $category->description }} ?"
+                                       role="button" class="btn btn_link_prevent">
                                         <span class=" glyphicon glyphicon-trash"></span>
                                     </a>
                                 @endif

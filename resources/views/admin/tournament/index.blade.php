@@ -62,22 +62,23 @@
                             </a>
 
                             @if( $tournament->status == \Horses\Constants\ConstDb::STATUS_ACTIVE)
-                                <a href="#" role="button"
-                                   class="btn">
+                                <a role="button" class="btn btn_catalog" rel="{{ $tournament->id }}">
                                     <span class="glyphicon glyphicon-check"></span>
                                 </a>
                             @endif
 
                             @if( $tournament->status == \Horses\Constants\ConstDb::STATUS_ACTIVE)
                                 <a href="{{ route('tournament.change.journal', ['idTournament' =>  $tournament->id, 'status' => 1]) }}"
-                                   role="button" class="btn">
+                                   rel="Una vez inicie la jornada de un concurso no podrá detenerlo, ¿esta seguro?"
+                                   role="button" class="btn btn_link_prevent">
                                     <span class="glyphicon glyphicon-play"></span>
                                 </a>
                             @endif
 
                             @if( $tournament->status == \Horses\Constants\ConstDb::STATUS_JOURNAL)
                                 <a href="{{ route('tournament.change.journal', ['idTournament' =>  $tournament->id, 'status' => 0]) }}"
-                                   role="button" class="btn">
+                                   rel="Una vez finalice la jornada de un concurso no podrá iniciarlo, ¿esta seguro?"
+                                   role="button" class="btn btn_link_prevent">
                                     <span class="glyphicon glyphicon-stop"></span>
                                 </a>
                             @endif
@@ -89,6 +90,7 @@
                                 </a>
 
                                 <a href="{{ route('admin.tournament.destroy', $tournament->id) }}" role="button"
+                                   rel="¿Esta seguro que desea eliminar el concurso {{ $tournament->description }}?"
                                    class="btn btn_link_prevent" data-method="delete">
                                     <span class=" glyphicon glyphicon-trash"></span>
                                 </a>
@@ -101,4 +103,11 @@
             </table>
         </div>
     </div>
+    @include('admin.tournament._partials.popup')
+@endsection
+
+@section('scripts')
+    <script src="{{ asset('/js/libs/jquery-ui/jquery-ui.min.js') }}"></script>
+    <script src="{{ asset('/js/libs/jquery-ui/ui/minified/i18n/datepicker-es.min.js') }}"></script>
+    <script src="{{ asset('/js/app/admin/tournament.js') }}"></script>
 @endsection

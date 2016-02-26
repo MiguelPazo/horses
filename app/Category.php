@@ -58,4 +58,9 @@ class Category extends Model
     {
         return $this->belongsToMany('Horses\User', 'category_users');
     }
+
+    public function animals()
+    {
+        return $this->belongsToMany('Horses\Animal', 'catalogs');
+    }
 }

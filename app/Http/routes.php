@@ -143,10 +143,15 @@ Route::group([
         'roles' => ['admin', 'commissar']
     ], function () {
         Route::get('/catalog/info/{idTournament}/catalog/{numCatalog}', 'CatalogController@infoCatalog');
-//        Route::get('/catalog/add-animal/{idAnimal}/catalog/{idCategory}', 'CatalogController@addAnimal');
     });
 
-    Route::resource('/catalog', 'CatalogController');
+    Route::group([
+        'prefix' => '/catalog'
+    ], function () {
+        Route::get('/assign/{tournament}', 'CatalogController@assignCatalog');
+        Route::get('/verify/{tournament}', 'CatalogController@verify');
+        Route::get('/report/{tournament}', 'CatalogController@report');
+    });
 });
 
 Route::group([
@@ -159,12 +164,10 @@ Route::group([
         'as' => 'tournament.change.category',
         'uses' => 'TournamentController@categoriesAvailable'
     ]);
-
     Route::get('/change_category/{category}', [
         'as' => 'tournament.change.category',
         'uses' => 'TournamentController@changeCategory'
     ]);
-
     Route::get('/selection', [
         'as' => 'tournament.selection',
         'uses' => 'TournamentController@selection'
@@ -177,7 +180,6 @@ Route::group([
         'as' => 'tournament.classify_2',
         'uses' => 'TournamentController@classifySecond'
     ]);
-
     Route::get('/save_selection', [
         'as' => 'tournament.save.selection',
         'uses' => 'TournamentController@saveSelection'

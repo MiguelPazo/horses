@@ -137,11 +137,20 @@ class CategoryController extends Controller
 
     public function getDestroy($id)
     {
+        $jResponse = [
+            'success' => false,
+            'message' => null,
+            'url' => null
+        ];
+
         $oCategory = Category::findorFail($id);
         $oCategory->status = ConstDb::STATUS_DELETED;
         $oCategory->save();
 
-        return redirect()->route('admin.tournament.category', $oCategory->tournament_id);
+        $jResponse['success'] = true;
+        $jResponse['url'] = route('admin.tournament.category', $oCategory->tournament_id);
+
+        return response()->json($jResponse);
     }
 
     public function listJuries($idCategory = null)

@@ -3,13 +3,51 @@
 use Horses\Animal;
 use Horses\Catalog;
 use Horses\Category;
+use Horses\Constants\ConstDb;
 use Horses\Http\Controllers\Controller;
 use Horses\Services\Facades\AnimalFac;
+use Horses\Tournament;
 use Illuminate\Support\Facades\DB;
 use League\Flysystem\Exception;
 
 class CatalogController extends Controller
 {
+
+    public function report($idTournament)
+    {
+        $oTournament = Tournament::findorFail($idTournament);
+
+        $lstCatalogReport = DB::table('catalog_report')
+            ->where('tournament_id', $oTournament->id)
+            ->orderBy('order')
+            ->orderBy('number')
+            ->get();
+
+        $lstCatalogGroup = [];
+        $posCat = -1;
+        $desPass = null;
+
+        foreach ($lstCatalogReport as $key => $value) {
+            if ($desPass != $value->description) {
+                $posCat++;
+                $desPass = $value->description;
+            }
+
+            $lstCatalogGroup[$posCat][] = $value;
+        }
+
+        return view('admin.tournament.catalog')
+            ->with('oTournament', $oTournament)
+            ->with('lstCatalogGroup', $lstCatalogGroup);
+    }
+
+    public function verify($idTournament)
+    {
+        $max = Catalog::tournament($idTournament)->max('number');
+        $catGen = ($max) ? (($max > 0) ? true : false) : false;
+
+        return response()->json($catGen);
+    }
 
     public function infoCatalog($idTournament, $numCatalog)
     {
@@ -27,143 +65,52 @@ class CatalogController extends Controller
         return response()->json($jResponse);
     }
 
-    public function addAnimal($idAnimal, $idCategory)
+    public function assignCatalog($idTournament)
     {
         $jResponse = [
-            'success' => false,
-            'message' => '',
-            'number' => 0
+            'success' => false
         ];
 
-        $oCategory = Category::findorFail($idCategory);
-        $lstCatalog = Catalog::tournament($oCategory->tournament_id)->animal($idAnimal)->get();
+        $lstCategory = Category::with(['animals' => function ($query) {
+            return $query->orderBy('birthdate', 'DESC');
+        }])->tournament($idTournament)->status(ConstDb::STATUS_DELETED, false, true)
+            ->orderBy('order')
+            ->get();
 
-        if ($lstCatalog->count() > 0) {
-            $catalogExist = $lstCatalog->filter(function ($item) use ($oCategory) {
-                return $item->category_id == $oCategory->id;
-            })->first();
+        $dataUpdate = [];
+        $catNumber = 1;
 
-            if (!$catalogExist) {
-                $number = $this->saveAnimalCatalog($oCategory, $idAnimal, $lstCatalog->get(0)->number);
+        foreach ($lstCategory as $key => $oCategory) {
+            foreach ($oCategory->animals as $key2 => $oAnimal) {
+                $ids = array_column($dataUpdate, 'animal_id');
 
-                if ($number != 0) {
-                    $jResponse['success'] = true;
-                    $jResponse['number'] = $number;
+                if (!in_array($oAnimal->id, $ids)) {
+                    $dataUpdate[] = [
+                        'animal_id' => $oAnimal->id,
+                        'number' => $catNumber
+                    ];
+                    $catNumber++;
                 }
-            } else {
-                $jResponse['message'] = 'El animal ya se encuentra registrado en esta categoría.';
             }
-        } else {
-            $number = Catalog::tournament($this->oTournament->id)->max('number');
+        }
+        DB::beginTransaction();
+
+        try {
+            Catalog::tournament($idTournament)->update(['number' => null]);
+
+            foreach ($dataUpdate as $key => $value) {
+                Catalog::tournament($idTournament)->animal($value['animal_id'])
+                    ->update(['number' => $value['number']]);
+            }
+
+
+            DB::commit();
 
             $jResponse['success'] = true;
-            $jResponse['number'] = $number;
+        } catch (Exception $ex) {
+            DB::rollback();
         }
 
         return response()->json($jResponse);
     }
-
-    public function saveAnimalCatalog($oCategory, $idAnimal, $currNumber = null)
-    {
-        $number = 0;
-
-        DB::beginTransaction();
-
-        try {
-            $newNumber = ($currNumber) ? $currNumber : Catalog::tournament($oCategory->tournament_id)->max('number') + 1;
-
-            $newCatalog = Catalog::create([
-                'number' => $newNumber,
-                'category_id' => $oCategory->id,
-                'tournament_id' => $oCategory->tournament_id,
-                'animal_id' => $idAnimal
-            ]);
-
-            $oCategory->count_competitors = $oCategory->count_competitors + 1;
-            $oCategory->save();
-
-            DB::commit();
-            $number = $newCatalog->number;
-        } catch (Exception $ex) {
-            DB::rollback();
-            throw $ex;
-        }
-
-        return $number;
-    }
-
-    /**
-     * Display a listing of the resource.
-     *
-     * @return Response
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @return Response
-     */
-    public function store()
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int $id
-     * @return Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int $id
-     * @return Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  int $id
-     * @return Response
-     */
-    public function update($id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int $id
-     * @return Response
-     */
-    public function destroy($id)
-    {
-        //
-    }
-
 }

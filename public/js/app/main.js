@@ -1,4 +1,5 @@
 var openPopup = function (title, message, type, okFunction) {
+    $('.modal').modal('hide');
     $('.modal_title').html(title);
     $('.modal_message').html(message);
 
@@ -86,7 +87,22 @@ $(document).ready(function () {
 
         var url = $(this).attr('href');
         var method = ($(this).attr('data-method') == undefined) ? 'GET' : $(this).attr('data-method');
+        var message = $(this).attr('rel');
 
+        if (message != undefined && message != '') {
+            openPopup('Advertencia', message, 2, function () {
+                sendLinkAjax(url, method);
+            });
+        } else {
+            sendLinkAjax(url, method);
+        }
+    });
+
+    $('.btn_print').click(function () {
+        print();
+    });
+
+    var sendLinkAjax = function (url, method) {
         $.ajax({
             url: url,
             method: method,
@@ -102,14 +118,7 @@ $(document).ready(function () {
                 generalError();
             }
         });
-
-    });
-
-    $('.btn_print').click(function () {
-        print();
-    });
-
-
+    }
 });
 
 $(document).ajaxError(function (event, xhr, settings, thrownError) {
