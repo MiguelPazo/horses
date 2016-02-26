@@ -12,9 +12,9 @@
     <div class="panel-body">
         {!! Form::open($formHeader) !!}
 
-        {!! Form::submit('Guardar', ['class' => 'btn btn-success']) !!}
+        {!! Form::submit('Guardar', ['class' => 'btn btn-success btn_disable']) !!}
         <a href="{{ route('admin.tournament.index') }}"
-           class="btn btn-danger">Cancelar</a>
+           class="btn btn-danger btn_disable">Cancelar</a>
 
         <p></p>
         @include('admin.tournament._partials.fields')

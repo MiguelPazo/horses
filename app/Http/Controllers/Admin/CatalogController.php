@@ -19,8 +19,6 @@ class CatalogController extends Controller
 
         $lstCatalogReport = DB::table('catalog_report')
             ->where('tournament_id', $oTournament->id)
-            ->orderBy('order')
-            ->orderBy('number')
             ->get();
 
         $lstCatalogGroup = [];
@@ -72,7 +70,7 @@ class CatalogController extends Controller
         ];
 
         $lstCategory = Category::with(['animals' => function ($query) {
-            return $query->orderBy('birthdate', 'DESC');
+            return $query->orderBy('birthdate');
         }])->tournament($idTournament)->status(ConstDb::STATUS_DELETED, false, true)
             ->orderBy('order')
             ->get();

@@ -16,13 +16,21 @@ $(document).ready(function () {
             disableButtons(false);
 
             if (response) {
-                var link = BASE_URL + 'admin/catalog/report/' + tournament;
+                var link = BASE_URL + 'catalog/report/' + tournament;
                 $('#btn_view_catalog').attr('href', link);
                 $('#modal_catalog_generated').modal('show');
             } else {
                 generatingCatalog(tournament);
             }
         });
+    });
+
+    $('#btn_view_catalog').click(function (e) {
+        e.preventDefault();
+        $('.modal').modal('hide');
+
+        var win = window.open($(this).attr('href'), '_blank');
+        win.focus();
     });
 
     $('#btn_gen_catalog').click(function () {
@@ -36,7 +44,7 @@ $(document).ready(function () {
 
         disableButtons(true);
 
-        $.get(BASE_URL + '/admin/catalog/assign/' + tournament, null, function (response) {
+        $.get(BASE_URL + 'admin/catalog/assign/' + tournament, null, function (response) {
             disableButtons(false);
             $('.modal').modal('hide');
 

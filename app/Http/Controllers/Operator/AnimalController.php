@@ -314,6 +314,7 @@ class AnimalController extends Controller
 
         if ($oAnimal) {
             $oAnimal->delete();
+            Catalog::animal($oAnimal->id)->delete();
         }
 
         $jResponse['success'] = true;

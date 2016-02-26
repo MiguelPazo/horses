@@ -150,7 +150,6 @@ Route::group([
     ], function () {
         Route::get('/assign/{tournament}', 'CatalogController@assignCatalog');
         Route::get('/verify/{tournament}', 'CatalogController@verify');
-        Route::get('/report/{tournament}', 'CatalogController@report');
     });
 });
 
@@ -207,3 +206,5 @@ Route::group([
         'uses' => 'ResultsController@category'
     ]);
 });
+
+Route::get('/catalog/report/{tournament}', 'Admin\CatalogController@report');

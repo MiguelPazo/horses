@@ -12,23 +12,36 @@
                 <table class="table table-striped table-hover">
                     <thead>
                     <tr>
-                        <th>N° de Cancha</th>
-                        <th>N° de Catálogo</th>
-                        <th>Prefijo</th>
-                        <th>Nombre</th>
-                        <th>Código</th>
-                        <th>Fec/Nac</th>
-                        <th>Prefijo Padre</th>
-                        <th>Nombre Padre</th>
-                        <th>Prefijo Madre</th>
-                        <th>Nombre Madre</th>
-                        <th>Criador</th>
-                        <th>Propietario</th>
+                        <th width="1%">N° de Cancha</th>
+                        <th width="1%">N° de Catálogo</th>
+                        <th width="1%">Prefijo</th>
+                        <th width="5%">Nombre</th>
+                        <th width="1%">Código</th>
+                        <th width="1%">Fec/Nac</th>
+                        <th width="1%">Pref. Padre</th>
+                        <th width="5%">Nom. Padre</th>
+                        <th width="1%">Pref. Madre</th>
+                        <th width="5%">Nom. Madre</th>
+                        <th width="10%">Criador</th>
+                        <th width="10%">Propietario</th>
                     </tr>
                     </thead>
                     <tbody>
-                    <?php $pos = 1 ?>
+                    <?php
+                    $pos = 0;
+                    $actualGroup = null;
+                    ?>
                     @foreach($group as $category)
+                        <?php
+                        if ($category->mode == \Horses\Constants\ConstDb::MODE_GROUP) {
+                            if ($category->group != $actualGroup) {
+                                $actualGroup = $category->group;
+                                $pos++;
+                            }
+                        } else {
+                            $pos++;
+                        }
+                        ?>
                         <tr>
                             <td>{{ $pos }}</td>
                             <td>{{ $category->number }}</td>
@@ -43,7 +56,6 @@
                             <td>{{ $category->breeder }}</td>
                             <td>{{ $category->owner }}</td>
                         </tr>
-                        <?php $pos++ ?>
                     @endforeach
                     </tbody>
                 </table>

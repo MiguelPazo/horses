@@ -31,14 +31,15 @@ INNER JOIN animals b ON b.id = a.animal_id
 LEFT JOIN animal_agent c ON c.animal_id = b.id AND c.type = 'breeder'
 LEFT JOIN agents d ON d.id = c.agent_id
 LEFT JOIN animal_agent e ON e.animal_id = b.id AND e.type = 'owner'
-LEFT JOIN agents f ON f.id = e.agent_id;
+LEFT JOIN agents f ON f.id = e.agent_id
+WHERE b.deleted_at IS NULL;
 
 CREATE VIEW catalog_report AS
-SELECT c.tournament_id AS tournament_id, c.id AS category_id, c.order, c.description AS description, ca.number, ca.animal_id, 
-ar.prefix, ar.name, ar.code, ar.birthdate, ar.dad_prefix, ar.dad_name, ar.mom_prefix, ar.mom_name, ar.breeder, ar.owner
+SELECT c.tournament_id AS tournament_id, c.id AS category_id, c.mode, c.order, c.description AS description, ca.group, ca.number, ca.animal_id, 
+ar.prefix, ar.name, ar.code, DATE_FORMAT(a.birthdate, '%d-%m-%Y') AS birthdate, ar.dad_prefix, ar.dad_name, ar.mom_prefix, ar.mom_name, ar.breeder, ar.owner
 FROM categories c
 INNER JOIN catalogs ca ON ca.category_id = c.id
 INNER JOIN animals a ON a.id = ca.animal_id
 INNER JOIN animal_report ar ON ar.id = ca.animal_id
-WHERE c.status <> 'deleted'
-ORDER BY c.order, birthdate DESC;
+WHERE c.status <> 'deleted' AND ca.outsider = 0
+ORDER BY c.tournament_id, c.order, ca.group, a.birthdate;

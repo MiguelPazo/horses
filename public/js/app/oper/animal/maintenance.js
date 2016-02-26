@@ -80,7 +80,7 @@ $(document).ready(function () {
                             });
                         } else {
                             $.ajax({
-                                url: BASE_URL + '/oper/animal/' + idSelected,
+                                url: BASE_URL + 'oper/animal/' + idSelected,
                                 method: 'PUT',
                                 dataType: 'json',
                                 data: data,

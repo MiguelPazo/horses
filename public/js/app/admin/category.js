@@ -63,6 +63,8 @@ $(document).ready(function () {
         }
 
         if (validateForm(form)) {
+            disableButtons(true);
+
             $.ajax({
                 url: form.attr('action'),
                 method: method,
@@ -72,6 +74,7 @@ $(document).ready(function () {
                     if (response.success) {
                         location.href = response.url;
                     } else {
+                        disableButtons(false);
                         openPopup('Error', response.message, 1, null);
                     }
                 },

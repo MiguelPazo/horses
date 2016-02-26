@@ -172,7 +172,8 @@ class AssistanceController extends Controller
                         'number' => $numCatalog,
                         'category_id' => $oCategory->id,
                         'tournament_id' => $oCategory->tournament_id,
-                        'animal_id' => $idAnimal
+                        'animal_id' => $idAnimal,
+                        'outsider' => 1
                     ];
                 }
 
@@ -220,7 +221,8 @@ class AssistanceController extends Controller
                                 'number' => $value2,
                                 'category_id' => $oCategory->id,
                                 'tournament_id' => $oCategory->tournament_id,
-                                'animal_id' => $idAnimal
+                                'animal_id' => $idAnimal,
+                                'outsider' => 1
                             ];
                         }
 
@@ -237,7 +239,8 @@ class AssistanceController extends Controller
                             'number' => $value2,
                             'category_id' => $oCategory->id,
                             'tournament_id' => $oCategory->tournament_id,
-                            'animal_id' => $idAnimal
+                            'animal_id' => $idAnimal,
+                            'outsider' => 1
                         ];
 
                         $postGroupId++;

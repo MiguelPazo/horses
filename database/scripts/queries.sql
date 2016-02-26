@@ -7,6 +7,7 @@ DELETE FROM animals;
 DELETE FROM category_users WHERE category_id IN (SELECT id FROM categories WHERE tournament_id = 3);
 DELETE FROM stages WHERE category_id IN (SELECT id FROM categories WHERE tournament_id = 3);
 DELETE FROM competitors WHERE category_id IN (SELECT id FROM categories WHERE tournament_id = 3);
+DELETE FROM catalogs WHERE tournament_id = 3;
 DELETE FROM categories WHERE tournament_id = 3;
 DELETE FROM tournaments WHERE id = 3;
 SET FOREIGN_KEY_CHECKS = 1;

@@ -113,9 +113,6 @@ $(document).ready(function () {
                 } else {
                     openPopup('Error', response.message, 1, null);
                 }
-            },
-            error: function (response) {
-                generalError();
             }
         });
     }

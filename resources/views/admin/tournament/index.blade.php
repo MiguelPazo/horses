@@ -65,6 +65,10 @@
                                 <a role="button" class="btn btn_catalog" rel="{{ $tournament->id }}">
                                     <span class="glyphicon glyphicon-check"></span>
                                 </a>
+                            @else
+                                <a href="{{ url('/catalog/report/' . $tournament->id) }}" class="btn" target="_blank">
+                                    <span class="glyphicon glyphicon-check"></span>
+                                </a>
                             @endif
 
                             @if( $tournament->status == \Horses\Constants\ConstDb::STATUS_ACTIVE)

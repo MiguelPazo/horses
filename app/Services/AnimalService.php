@@ -36,11 +36,11 @@ class AnimalService
             $oDadBreeder = null;
 
             $oOwner = $oAnimal->agents->filter(function ($item) {
-                return $item->pivot->type = ConstDb::AGENT_OWNER;
+                return $item->pivot->type == ConstDb::AGENT_OWNER;
             })->first();
 
             $oBreeder = $oAnimal->agents->filter(function ($item) {
-                return $item->pivot->type = ConstDb::AGENT_BREEDER;
+                return $item->pivot->type == ConstDb::AGENT_BREEDER;
             })->first();
 
             if ($oAnimal->mom) {
