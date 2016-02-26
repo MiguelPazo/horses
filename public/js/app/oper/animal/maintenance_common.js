@@ -2,10 +2,10 @@ var idSelected = 0;
 var valSelected = '';
 var infoSelected = null;
 var wDisable = true;
+var prefix = '';
 
 $(document).ready(function () {
     var fillPrefix = true;
-    var prefix = '';
 
     wDisable = ($('#name').attr('rel') == 'disable') ? true : false;
 

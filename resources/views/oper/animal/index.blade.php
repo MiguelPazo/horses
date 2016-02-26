@@ -19,14 +19,14 @@
                 <thead>
                 <tr>
                     <th width="1%">#</th>
-                    <th width="10%">Prefijo</th>
+                    <th width="5%">Prefijo</th>
                     <th width="20%">Nombre</th>
                     <th width="10%" class="center">Código</th>
-                    <th width="15%" class="center">Fecha de Nac.</th>
+                    <th width="10%" class="center">Fecha de Nac.</th>
                     <th width="5%" class="center">Categorías</th>
-                    <th width="24%" class="center">Criador</th>
-                    <th width="24%" class="center">Propietario</th>
-                    <th width="15%" class="center">Opciones</th>
+                    <th width="20%" class="center">Criador</th>
+                    <th width="20%" class="center">Propietario</th>
+                    <th width="20%" class="center">Opciones</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -48,7 +48,7 @@
                             </a>
 
                             <a href="{{ route('oper.animal.destroy', $animal->animal_id) }}" role="button"
-                               rel="¿Esta seguro que desea eliminar a {{ $animal->name }}?"
+                               rel="¿Esta seguro que desea eliminar a {{ (($animal->prefix)? '(' . $animal->prefix . ') ': ''). $animal->name }}?"
                                class="btn btn_link_prevent" data-method="delete">
                                 <span class=" glyphicon glyphicon-trash"></span>
                             </a>

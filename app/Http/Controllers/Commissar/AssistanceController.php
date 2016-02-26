@@ -10,6 +10,7 @@ use Horses\Http\Requests;
 use Horses\Http\Controllers\Controller;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use League\Flysystem\Exception;
 
@@ -36,10 +37,19 @@ class AssistanceController extends Controller
         $ids = [];
 
         if ($oCategory->mode == ConstDb::MODE_PERSONAL) {
-            $lstCatalog = Catalog::tournament($oCategory->tournament_id)->category($oCategory->id)->orderBy('number')->get();
+            $lstCatalog = Catalog::with('animals')->tournament($oCategory->tournament_id)->category($oCategory->id)->get();
         } else {
-            $lstCatalog = Catalog::tournament($oCategory->tournament_id)->category($oCategory->id)->orderBy('group')
-                ->orderBy('number')->get();
+            $lstCatalog = Catalog::with('animals')->tournament($oCategory->tournament_id)->category($oCategory->id)->get();
+
+        }
+
+        if ($lstCatalog->count() > 0) {
+            $lstCatalog = $lstCatalog->sortBy(function ($item) {
+                $birth = $item->animals->birthdate;
+                $birthDate = ($birth != null && $birth != '') ? \DateTime::createFromFormat('d-m-Y', $birth) : null;
+
+                return $birthDate;
+            });
         }
 
         if ($oCategory->actual_stage == ConstDb::STAGE_ASSISTANCE) {
@@ -80,7 +90,18 @@ class AssistanceController extends Controller
                     $catalog[] = $dCat;
                 }
             } else {
-                $lstCatalogGroup = $lstCatalog->groupBy('group');
+                $lstTempGroup = $lstCatalog->groupBy('group');
+                $lstCatalogGroup = new Collection();
+                $index = [];
+
+                foreach ($lstTempGroup as $key => $value) {
+                    $index[] = $key;
+                }
+                sort($index);
+
+                foreach ($index as $key => $value) {
+                    $lstCatalogGroup->put($value, $lstTempGroup->get($value));
+                }
 
                 foreach ($lstCatalogGroup as $key => $value) {
                     $strNumber = [];

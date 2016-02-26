@@ -27,7 +27,7 @@
 </div>
 <div class="form-group">
     {!! Form::label('breeder_name', 'Criador:') !!}
-    {!! Form::text('breeder_name', (isset($oBreeder) && $oBreeder != null) ? $oBreeder->names . ', ' . $oBreeder->lastnames : null, ['class'
+    {!! Form::text('breeder_name', (isset($oBreeder) && $oBreeder != null) ? $oBreeder->names : null, ['class'
     =>'form-control namewlast complete_agents', 'maxlength' => 50]) !!}
 </div>
 <div class="form-group">

@@ -42,7 +42,7 @@ class Role
                     return redirect()->to('/general-commissar');
                     break;
                 case ConstDb::PROFILE_OPERATOR:
-                    return redirect()->route('oper.catalog.index');
+                    return redirect()->to('/oper/animal');
                     break;
             }
         }

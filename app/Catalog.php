@@ -9,7 +9,7 @@ class Catalog extends Model
 
     public function animals()
     {
-        return $this->belongsTo('Horses\Animal');
+        return $this->belongsTo('Horses\Animal', 'animal_id');
     }
 
     public function scopeTournament($query, $id)
