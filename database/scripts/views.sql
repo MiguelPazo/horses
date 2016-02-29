@@ -41,4 +41,4 @@ INNER JOIN catalogs ca ON ca.category_id = c.id
 INNER JOIN animals a ON a.id = ca.animal_id
 INNER JOIN animal_report ar ON ar.id = ca.animal_id
 WHERE c.status <> 'deleted' AND ca.outsider = 0
-ORDER BY c.tournament_id, c.order, ca.group, a.birthdate;
+ORDER BY c.tournament_id, c.order, ca.group, a.birthdate DESC;
