@@ -12,6 +12,43 @@ use Illuminate\Database\Eloquent\Collection;
 
 class CategoryService
 {
+
+    public function listPresents($oCategory)
+    {
+        $jResponse = [
+            'lenCompNum' => null,
+            'lstCompetitorWinners' => null,
+            'lstCompetitorLimp' => null
+        ];
+
+        $lstCompetitorWinners = Competitor::category($oCategory->id)->status(ConstDb::COMPETITOR_PRESENT)->get();
+        $lstCompetitorLimp = Competitor::category($oCategory->id)->status(ConstDb::COMPETITOR_LIMP)->get();
+        $lenCompNum = strlen($lstCompetitorWinners->max('number'));
+
+        $lstCompetitorWinners = $this->getAnimalsDetails($lstCompetitorWinners, $oCategory);
+        $lstCompetitorLimp = $this->getAnimalsDetails($lstCompetitorLimp, $oCategory);
+
+        $jResponse['lenCompNum'] = $lenCompNum;
+        $jResponse['lstCompetitorWinners'] = $lstCompetitorWinners;
+        $jResponse['lstCompetitorLimp'] = $lstCompetitorLimp;
+
+        return $jResponse;
+    }
+
+    public function listToResults($idTournament, $general = false)
+    {
+        $lstCategory = Category::tournament($idTournament)->statusDiff(ConstDb::STATUS_DELETED)->showable(ConstDb::TYPE_CATEGORY_SELECTION, $general)->get();
+        $lstCategoryWSelect = Category::tournament($idTournament)->statusDiff(ConstDb::STATUS_DELETED)->showable(ConstDb::TYPE_CATEGORY_WSELECTION, $general)->get();
+
+        $lstCombine = $lstCategory->merge($lstCategoryWSelect);
+
+        $lstCombine->sortByDesc(function ($item) {
+            return $item->order;
+        });
+
+        return $lstCombine;
+    }
+
     public function results($oCategory)
     {
         $jResponse = [
@@ -21,6 +58,7 @@ class CategoryService
             'juryDiriment' => null,
             'lstCompetitorWinners' => null,
             'lstCompetitorHonorable' => null,
+            'lstCompetitorLimp' => null
         ];
 
         $lenCompNum = strlen(Competitor::category($oCategory->id)->max('number'));
@@ -29,6 +67,7 @@ class CategoryService
         $juryDiriment = null;
         $lstCompetitorWinners = new Collection();
         $lstCompetitorHonorable = new Collection();
+        $lstCompetitorLimp = new Collection();
 
         if ($oCategory->actual_stage == ConstDb::STAGE_SELECTION) {
             $selection = true;
@@ -58,7 +97,7 @@ class CategoryService
         } else {
             $showSecond = ($oCategory->actual_stage == ConstDb::STAGE_CLASSIFY_2) ? true : false;
             $juryDiriment = CategoryUser::category($oCategory->id)->diriment(ConstDb::JURY_DIRIMENT)->first();
-            $lstCompetitor = Competitor::category($oCategory->id)->classified()->with('stages.jury')->orderBy('position')->get();
+            $lstCompetitor = Competitor::category($oCategory->id)->status(ConstDb::COMPETITOR_PRESENT)->classified()->with('stages.jury')->orderBy('position')->get();
             $lstCompetitor = $this->getAnimalsDetails($lstCompetitor, $oCategory);
             $count = $lstCompetitor->count();
 
@@ -92,12 +131,16 @@ class CategoryService
             }
         }
 
+        $lstCompetitorLimp = Competitor::category($oCategory->id)->status(ConstDb::COMPETITOR_LIMP)->get();
+        $lstCompetitorLimp = $this->getAnimalsDetails($lstCompetitorLimp, $oCategory);
+
         $jResponse['selection'] = $selection;
         $jResponse['lenCompNum'] = $lenCompNum;
         $jResponse['showSecond'] = $showSecond;
         $jResponse['juryDiriment'] = $juryDiriment;
         $jResponse['lstCompetitorWinners'] = $lstCompetitorWinners;
         $jResponse['lstCompetitorHonorable'] = $lstCompetitorHonorable;
+        $jResponse['lstCompetitorLimp'] = $lstCompetitorLimp;
 
         return $jResponse;
     }

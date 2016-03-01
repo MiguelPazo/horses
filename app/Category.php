@@ -40,17 +40,21 @@ class Category extends Model
         return $query->whereIn('id', $ids);
     }
 
-    public function scopeShowable($query, $type)
+    public function scopeShowable($query, $type, $general = false)
     {
-        if ($type == ConstDb::TYPE_CATEGORY_SELECTION) {
-            return $query->where('type', ConstDb::TYPE_CATEGORY_SELECTION)
-                ->where('actual_stage', '<>', '')
-                ->where('actual_stage', '<>', ConstDb::STAGE_ASSISTANCE);
+        if (!$general) {
+            if ($type == ConstDb::TYPE_CATEGORY_SELECTION) {
+                return $query->where('type', ConstDb::TYPE_CATEGORY_SELECTION)
+                    ->where('actual_stage', '<>', '')
+                    ->where('actual_stage', '<>', ConstDb::STAGE_ASSISTANCE);
+            } else {
+                return $query->where('type', ConstDb::TYPE_CATEGORY_WSELECTION)
+                    ->where('actual_stage', '<>', '')
+                    ->where('actual_stage', '<>', ConstDb::STAGE_ASSISTANCE)
+                    ->where('actual_stage', '<>', ConstDb::STAGE_SELECTION);
+            }
         } else {
-            return $query->where('type', ConstDb::TYPE_CATEGORY_WSELECTION)
-                ->where('actual_stage', '<>', '')
-                ->where('actual_stage', '<>', ConstDb::STAGE_ASSISTANCE)
-                ->where('actual_stage', '<>', ConstDb::STAGE_SELECTION);
+            return $query->where('actual_stage', '<>', '');
         }
     }
 

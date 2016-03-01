@@ -22,6 +22,7 @@ class ConstDb
 
     const COMPETITOR_PRESENT = 'present';
     const COMPETITOR_MISSING = 'missing';
+    const COMPETITOR_LIMP = 'limp';
 
     const STATUS_DELETED = 'deleted';
     const STATUS_INACTIVE = 'inactive';

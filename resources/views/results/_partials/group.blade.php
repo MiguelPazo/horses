@@ -4,13 +4,24 @@
     @foreach($lstCompetitor as $competitor)
         <tr>
             @if($print)
-                <td rowspan="{{ $lstCompetitor->count() }}" scope="row">{{ $position }}</td>
-                <td rowspan="{{ $lstCompetitor->count() }}">{{ str_pad($competitor->number, $lenCompNum, "0", STR_PAD_LEFT) }}</td>
+                @if($limp)
+                    <td scope="row">
+                        <a href="{{ url('/general-commissar/category/' . $competitor->category_id . '/limp/' . $competitor->id) }}"
+                           class="btn_link_prevent"
+                           rel="¿Esta seguro que desea claudicar al competiro con número {{ $competitor->number }}?">
+                            <span class="glyphicon glyphicon-remove"></span>
+                        </a>
+                    </td>
+                @endif
+                <td rowspan="{{ ($complete) ? $lstCompetitor->count() : '' }}" scope="row">{{ $position }}</td>
+                <td rowspan="{{ ($complete) ? $lstCompetitor->count() : '' }}">{{ str_pad($competitor->number, $lenCompNum, "0", STR_PAD_LEFT) }}</td>
             @endif
-            <td scope="row">{{ $competitor->catalog }}</td>
-            <td scope="row">{{ isset($competitor->animal_details)? $competitor->animal_details->prefix:'' }}</td>
-            <td scope="row">{{ isset($competitor->animal_details)? $competitor->animal_details->name:'' }} </td>
-			<td scope="row">{{ isset($competitor->animal_details)? $competitor->animal_details->owner:'' }}</td>
+            @if($complete)
+                <td scope="row">{{ $competitor->catalog }}</td>
+                <td scope="row">{{ isset($competitor->animal_details)? $competitor->animal_details->prefix:'' }}</td>
+                <td scope="row">{{ isset($competitor->animal_details)? $competitor->animal_details->name:'' }} </td>
+                <td scope="row">{{ isset($competitor->animal_details)? $competitor->animal_details->owner:'' }}</td>
+            @endif
             <?php $acum = 0 ?>
             @foreach($competitor->stages as $stage)
                 @if($stage->stage == \Horses\Constants\ConstDb::STAGE_CLASSIFY_1)
@@ -31,7 +42,12 @@
                 <td class="center success">{{ $acum }}</td>
             @endif
         </tr>
-        <?php $print = false; ?>
+        <?php
+        $print = false;
+        if (!$complete) {
+            break;
+        }
+        ?>
     @endforeach
     <?php $position++; ?>
 @endforeach
@@ -42,13 +58,18 @@
     @foreach($lstCompetitor as $competitor)
         <tr>
             @if($print)
-                <td rowspan="{{ $lstCompetitor->count() }}" scope="row">{{ $position }}</td>
-                <td rowspan="{{ $lstCompetitor->count() }}">{{ str_pad($competitor->number, $lenCompNum, "0", STR_PAD_LEFT) }}</td>
+                @if($limp)
+                    <td></td>
+                @endif
+                <td rowspan="{{ ($complete) ? $lstCompetitor->count() : '' }}" scope="row">{{ $position }}</td>
+                <td rowspan="{{ ($complete) ? $lstCompetitor->count() : '' }}">{{ str_pad($competitor->number, $lenCompNum, "0", STR_PAD_LEFT) }}</td>
             @endif
-            <td scope="row">{{ $competitor->catalog }}</td>
-            <td scope="row">{{ isset($competitor->animal_details)? $competitor->animal_details->prefix:'' }}</td>
-            <td scope="row">{{ isset($competitor->animal_details)? $competitor->animal_details->name:'' }}</td>
-			<td scope="row">{{ isset($competitor->animal_details)? $competitor->animal_details->owner:'' }}</td>
+            @if($complete)
+                <td scope="row">{{ $competitor->catalog }}</td>
+                <td scope="row">{{ isset($competitor->animal_details)? $competitor->animal_details->prefix:'' }}</td>
+                <td scope="row">{{ isset($competitor->animal_details)? $competitor->animal_details->name:'' }}</td>
+                <td scope="row">{{ isset($competitor->animal_details)? $competitor->animal_details->owner:'' }}</td>
+            @endif
             <?php $acum = 0 ?>
             @foreach($competitor->stages as $stage)
                 @if($stage->stage == \Horses\Constants\ConstDb::STAGE_CLASSIFY_1)

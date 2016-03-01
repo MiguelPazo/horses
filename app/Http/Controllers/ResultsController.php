@@ -21,10 +21,10 @@ class ResultsController extends Controller
         $oTournament = Tournament::findOrfail($tournament);
 
         if ($oTournament && $oTournament->status != ConstDb::STATUS_DELETED) {
-            $lstCategory = $this->getCategories($oTournament->id);
-
+            $lstCategory = CategoryFac::listToResults($oTournament->id);
 
             return view('results.index')
+                ->with('complete', true)
                 ->with('oTournament', $oTournament)
                 ->with('lstCategory', $lstCategory);
         }
@@ -42,7 +42,7 @@ class ResultsController extends Controller
                 || $oCategory->status == ConstDb::STATUS_FINAL
             ) {
                 $oTournament = Tournament::find($tournament);
-                $lstCategory = $this->getCategories($oTournament->id);
+                $lstCategory = CategoryFac::listToResults($oTournament->id);
 
                 $data = CategoryFac::results($oCategory);
                 $selection = $data['selection'];
@@ -51,8 +51,12 @@ class ResultsController extends Controller
                 $juryDiriment = $data['juryDiriment'];
                 $lstCompetitorWinners = $data['lstCompetitorWinners'];
                 $lstCompetitorHonorable = $data['lstCompetitorHonorable'];
+                $lstCompetitorLimp = $data['lstCompetitorLimp'];
 
                 return view('results.category')
+                    ->with('limp', false)
+                    ->with('assistance', false)
+                    ->with('complete', true)
                     ->with('lstCategory', $lstCategory)
                     ->with('oTournament', $oTournament)
                     ->with('oCategory', $oCategory)
@@ -61,26 +65,13 @@ class ResultsController extends Controller
                     ->with('showSecond', $showSecond)
                     ->with('juryDiriment', $juryDiriment)
                     ->with('lstCompetitorWinners', $lstCompetitorWinners)
-                    ->with('lstCompetitorHonorable', $lstCompetitorHonorable);
+                    ->with('lstCompetitorHonorable', $lstCompetitorHonorable)
+                    ->with('lstCompetitorLimp', $lstCompetitorLimp);
             } else {
                 return redirect()->route('tournament.results', $tournament);
             }
         } else {
             return redirect()->route('tournament.results', $tournament);
         }
-    }
-
-    public function getCategories($idTournament)
-    {
-        $lstCategory = Category::tournament($idTournament)->statusDiff(ConstDb::STATUS_DELETED)->showable(ConstDb::TYPE_CATEGORY_SELECTION)->get();
-        $lstCategoryWSelect = Category::tournament($idTournament)->statusDiff(ConstDb::STATUS_DELETED)->showable(ConstDb::TYPE_CATEGORY_WSELECTION)->get();
-
-        $lstCombine = $lstCategory->merge($lstCategoryWSelect);
-
-        $lstCombine->sortByDesc(function ($item) {
-            return $item->order;
-        });
-
-        return $lstCombine;
     }
 }

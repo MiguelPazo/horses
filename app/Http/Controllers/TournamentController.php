@@ -102,7 +102,7 @@ class TournamentController extends Controller
         $stageStatus = $this->verifyStageClosed($this->category, ConstDb::STAGE_SELECTION);
 
         if ($stageStatus->valid) {
-            $lstCompetitor = Competitor::category($this->category->id)->selected()->orderBy('number')->get();
+            $lstCompetitor = Competitor::category($this->category->id)->status(ConstDb::COMPETITOR_PRESENT)->selected()->orderBy('number')->get();
         }
 
         return view('tournament.classify')
@@ -120,7 +120,7 @@ class TournamentController extends Controller
         $stageStatus = $this->verifyStageClosed($this->category, ConstDb::STAGE_CLASSIFY_1);
 
         if ($stageStatus->valid) {
-            $lstCompetitor = Competitor::category($this->category->id)->classified()->orderBy('position')->limit(ConstApp::MAX_WINNERS)->get();
+            $lstCompetitor = Competitor::category($this->category->id)->status(ConstDb::COMPETITOR_PRESENT)->classified()->orderBy('position')->limit(ConstApp::MAX_WINNERS)->get();
         }
 
         return view('tournament.classify')

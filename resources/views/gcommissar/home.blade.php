@@ -18,8 +18,3 @@
         @endif
     @endif
 @endsection
-
-
-@section('scripts')
-    <script src="{{ asset('/js/app/results.js') }}"></script>
-@endsection

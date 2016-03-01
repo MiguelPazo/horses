@@ -26,7 +26,9 @@ Route::group([
     'namespace' => 'GeneralCommissar',
     'roles' => 'general_commissar'
 ], function () {
-    Route::get('/{id?}', 'HomeController@index');
+    Route::get('/', 'HomeController@index');
+    Route::get('/category/{id}', 'HomeController@category');
+    Route::get('/category/{idCategory}/limp/{idCompetitor}', 'HomeController@limpCompetitor');
 });
 
 Route::group([

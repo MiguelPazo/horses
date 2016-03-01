@@ -1,11 +1,15 @@
 <?php namespace Horses\Http\Controllers\GeneralCommissar;
 
 use Horses\Category;
+use Horses\Competitor;
+use Horses\Constants\ConstApp;
 use Horses\Constants\ConstDb;
 use Horses\Http\Controllers\Controller;
 use Horses\Http\Requests;
 use Horses\Services\Facades\CategoryFac;
+use Horses\Tournament;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 
 class HomeController extends Controller
 {
@@ -15,84 +19,105 @@ class HomeController extends Controller
         parent::__construct($request);
     }
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @return Response
-     */
-    public function index($category = null)
+    public function index()
     {
-        $lstCategory = Category::with('juries')->tournament($this->oTournament->id)->statusIn([ConstDb::STATUS_ACTIVE, ConstDb::STATUS_FINAL])
-            ->orderBy('order', 'DESC')->limit(2)->get();
-        $count = $lstCategory->count();
+        $lstCategory = CategoryFac::listToResults($this->oTournament->id, true);
 
-        $oCategory = null;
-        $data = null;
-        $show = false;
-        $suggest = 0;
-        $wData = false;
-        $selection = null;
-        $lenCompNum = null;
-        $showSecond = null;
-        $juryDiriment = null;
-        $lstCompetitorWinners = null;
-        $lstCompetitorHonorable = null;
-
-
-        if ($count > 0) {
-            if ($category) {
-                $oCategory = $lstCategory->filter(function ($item) use ($category) {
-                    return $item->id == $category;
-                })->first();
-
-                $oCatActive = $lstCategory->filter(function ($item) {
-                    return $item->status == ConstDb::STATUS_ACTIVE;
-                })->first();
-
-                $oCatActive = ($oCatActive) ? $oCatActive : $lstCategory->get(0);
-
-                if ($oCategory) {
-                    $data = CategoryFac::results($oCategory);
-
-                    if ($oCategory->status == ConstDb::STATUS_FINAL) {
-                        if ($lstCategory->count() > 1) {
-                            if ($oCatActive && $oCatActive->id != $oCategory->id) {
-                                $suggest = $oCatActive->id;
-                            }
-                        }
-                    }
-                } else {
-                    return redirect()->to('/general-commissar/' . $oCatActive->id);
-                }
-            } else {
-                return redirect()->to('/general-commissar/' . $lstCategory->get(0)->id);
-            }
-        }
-
-
-        if ($data) {
-            $wData = true;
-            $show = (count($data['lstCompetitorWinners']) > 0) ? true : false;
-            $selection = $data['selection'];
-            $lenCompNum = $data['lenCompNum'];
-            $showSecond = $data['showSecond'];
-            $juryDiriment = $data['juryDiriment'];
-            $lstCompetitorWinners = $data['lstCompetitorWinners'];
-            $lstCompetitorHonorable = $data['lstCompetitorHonorable'];
-        }
-
-
-        return view('gcommissar.home')
+        return view('results.index')
+            ->with('complete', false)
             ->with('oTournament', $this->oTournament)
-            ->with('wData', $wData)
-            ->with('show', $show)
-            ->with('suggest', $suggest)
-            ->with('oCategory', $oCategory)
-            ->with('selection', $selection)
-            ->with('lenCompNum', $lenCompNum)
-            ->with('showSecond', $showSecond)
-            ->with('juryDiriment', $juryDiriment)
-            ->with('lstCompetitorWinners', $lstCompetitorWinners)
-            ->with('lstCompetitorHonorable', $lstCompetitorHonorable);
+            ->with('lstCategory', $lstCategory);
+
+    }
+
+    public function category($idCategory)
+    {
+        $oCategory = Category::with(['juries' => function ($query) {
+            $query->orderBy('id');
+        }])->findorFail($idCategory);
+
+        if ($oCategory->status != ConstDb::STATUS_DELETED) {
+            if ($oCategory->actual_stage <> '') {
+                $oTournament = Tournament::find($this->oTournament->id);
+                $lstCategory = CategoryFac::listToResults($oTournament->id, true);
+
+                $data = null;
+                $assistance = false;
+                $selection = true;
+                $lenCompNum = null;
+                $showSecond = false;
+                $juryDiriment = null;
+                $lstCompetitorWinners = new Collection();
+                $lstCompetitorHonorable = new Collection();
+                $lstCompetitorLimp = new Collection();
+                $limp = ($oCategory->status == ConstDb::STATUS_FINAL) ? false : true;
+
+                if ($oCategory->actual_stage == ConstDb::STAGE_ASSISTANCE) {
+                    $assistance = true;
+                    $data = CategoryFac::listPresents($oCategory);
+
+                    $lenCompNum = $data['lenCompNum'];
+                    $lstCompetitorWinners = $data['lstCompetitorWinners'];
+                    $lstCompetitorLimp = $data['lstCompetitorLimp'];
+                } else {
+                    $data = CategoryFac::results($oCategory);
+                    $selection = $data['selection'];
+                    $lenCompNum = $data['lenCompNum'];
+                    $showSecond = $data['showSecond'];
+                    $juryDiriment = $data['juryDiriment'];
+                    $lstCompetitorWinners = $data['lstCompetitorWinners'];
+                    $lstCompetitorHonorable = $data['lstCompetitorHonorable'];
+                    $lstCompetitorLimp = $data['lstCompetitorLimp'];
+                }
+
+                return view('results.category')
+                    ->with('limp', $limp)
+                    ->with('assistance', $assistance)
+                    ->with('complete', false)
+                    ->with('lstCategory', $lstCategory)
+                    ->with('oTournament', $oTournament)
+                    ->with('oCategory', $oCategory)
+                    ->with('selection', $selection)
+                    ->with('lenCompNum', $lenCompNum)
+                    ->with('showSecond', $showSecond)
+                    ->with('juryDiriment', $juryDiriment)
+                    ->with('lstCompetitorWinners', $lstCompetitorWinners)
+                    ->with('lstCompetitorHonorable', $lstCompetitorHonorable)
+                    ->with('lstCompetitorLimp', $lstCompetitorLimp);
+            } else {
+                abort(404);
+            }
+        } else {
+            abort(404);
+        }
+    }
+
+    public function limpCompetitor($idCategory, $idCompetitor)
+    {
+        $jResponse = [
+            'success' => true,
+            'message' => null,
+            'url' => null
+        ];
+
+        $oCategory = Category::findorFail($idCategory);
+        $oCompetitor = Competitor::category($oCategory->id)->findorFail($idCompetitor);
+
+        if ($oCategory->status != ConstDb::STATUS_FINAL) {
+            if ($oCompetitor->position === null || ($oCompetitor->position >= 0 && $oCompetitor->position <= ConstApp::MAX_WINNERS)) {
+                $oCompetitor->status = ConstDb::COMPETITOR_LIMP;
+                $oCompetitor->save();
+            } else {
+                $jResponse['success'] = false;
+                $jResponse['success'] = 'No puede claudicar a este ejemplar.';
+            }
+        } else {
+            $jResponse['success'] = false;
+            $jResponse['message'] = 'La evaluación de la categoría ya ha finalizado, por favor actualice la página.';
+        }
+
+        $jResponse['url'] = url('general-commissar/category/' . $oCompetitor->category_id);
+
+        return response()->json($jResponse);
     }
 }
