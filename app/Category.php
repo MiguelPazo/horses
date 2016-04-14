@@ -54,7 +54,7 @@ class Category extends Model
                     ->where('actual_stage', '<>', ConstDb::STAGE_SELECTION);
             }
         } else {
-            return $query->where('actual_stage', '<>', '');
+            return $query->whereIn('status', [ConstDb::STATUS_ACTIVE, ConstDb::STATUS_FINAL]);
         }
     }
 

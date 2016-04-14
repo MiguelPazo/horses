@@ -183,7 +183,7 @@ class AnimalService
 
             if ($oAnimal) {
                 $oAnimal->agents()->detach();
-                $oAnimal->catalogs()->delete();
+                $oAnimal->catalogs()->tournament($idTournament)->delete();
 
                 $oAnimal->code = $code;
                 $oAnimal->name = $name;

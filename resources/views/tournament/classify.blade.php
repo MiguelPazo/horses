@@ -72,7 +72,7 @@
             </div>
         </div>
     </div>
-
+    @include('tournament._partials.popup')
 @endsection
 
 @section('scripts')

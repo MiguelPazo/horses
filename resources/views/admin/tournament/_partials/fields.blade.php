@@ -5,7 +5,7 @@
 </div>
 <div class="form-group">
     <div class="form-group">
-        {!! Form::label('type', '¿Con juez de turno?:') !!}
+        {!! Form::label('type', '¿Puntaje por promedio?:') !!}
         {!! Form::select('type', ['jury' => 'Sí', 'wjury' => 'No'], (isset($oTournament)) ? (($oTournament->type ==
         \Horses\Constants\ConstDb::TYPE_TOURNAMENT_JURY)? 'jury': 'wjury') : null ,['class' =>'form-control required'])
         !!}

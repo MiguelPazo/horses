@@ -201,7 +201,7 @@ class AssistanceController extends Controller
                 $insertComp[] = [
                     'number' => $i + 1,
                     'category_id' => $oCategory->id,
-                    'position' => ($oCategory->type == ConstDb::TYPE_CATEGORY_WSELECTION) ? 1 : null,
+                    'position' => ($oCategory->type == ConstDb::TYPE_CATEGORY_WSELECTION) ? 0 : null,
                     'catalog' => $numCatalog,
                     'status' => ($present) ? ConstDb::COMPETITOR_PRESENT : ConstDb::COMPETITOR_MISSING
                 ];
@@ -271,7 +271,7 @@ class AssistanceController extends Controller
                 $insertComp[] = [
                     'number' => $posCompetitor,
                     'category_id' => $oCategory->id,
-                    'position' => ($oCategory->type == ConstDb::TYPE_CATEGORY_WSELECTION) ? 1 : null,
+                    'position' => ($oCategory->type == ConstDb::TYPE_CATEGORY_WSELECTION) ? 0 : null,
                     'catalog' => implode(',', $value),
                     'status' => ($present) ? ConstDb::COMPETITOR_PRESENT : ConstDb::COMPETITOR_MISSING
                 ];

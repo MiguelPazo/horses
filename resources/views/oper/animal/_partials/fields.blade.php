@@ -4,14 +4,14 @@
     'maxlength' => 45]) !!}
 </div>
 <div class="form-group">
-    {!! Form::label('birthdate', 'Fecha de Nacimiento:') !!}
-    {!! Form::text('birthdate', (isset($oAnimal)) ? $oAnimal->birthdate : null, ['class' => 'datepicker
-    form-control']) !!}
-</div>
-<div class="form-group">
     {!! Form::label('code', 'Código:') !!}
     {!! Form::text('code', (isset($oAnimal)) ? $oAnimal->code : null, ['class' => 'form-control', 'maxlength' =>
     20]) !!}
+</div>
+<div class="form-group">
+    {!! Form::label('birthdate', 'Fecha de Nacimiento:') !!}
+    {!! Form::text('birthdate', (isset($oAnimal)) ? $oAnimal->birthdate : null, ['class' => 'datepicker
+    form-control']) !!}
 </div>
 <div class="form-group">
     {!! Form::label('categories_name', 'Categorías:', ['class' => 'block_label']) !!}

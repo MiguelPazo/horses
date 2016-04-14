@@ -70,7 +70,7 @@ class CatalogController extends Controller
         ];
 
         $lstCategory = Category::with(['animals' => function ($query) {
-            return $query->orderBy('birthdate');
+            return $query->orderBy('birthdate', 'DESC');
         }])->tournament($idTournament)->status(ConstDb::STATUS_DELETED, false, true)
             ->orderBy('order')
             ->get();
@@ -100,7 +100,6 @@ class CatalogController extends Controller
                 Catalog::tournament($idTournament)->animal($value['animal_id'])
                     ->update(['number' => $value['number']]);
             }
-
 
             DB::commit();
 

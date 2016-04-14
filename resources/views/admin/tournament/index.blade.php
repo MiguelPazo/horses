@@ -13,7 +13,7 @@
                 <tr>
                     <th>#</th>
                     <th>Concurso</th>
-                    <th>¿Juez de Turno?</th>
+                    <th>¿Puntaje por promedio?</th>
                     <th>Fecha de Inicio</th>
                     <th>Fecha de Cierre</th>
                     <th>Activo</th>
@@ -27,7 +27,7 @@
                                 $tournament->status == \Horses\Constants\ConstDb::STATUS_JOURNAL )? 'info' : '' }}">
                         <th scope="row">{{ $count }}</th>
                         <td>{{ $tournament->description }}</td>
-                        <td>
+                        <td class="text-center">
                             @if($tournament->type == \Horses\Constants\ConstDb::TYPE_TOURNAMENT_JURY)
                                 Sí
                             @else
