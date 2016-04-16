@@ -2,7 +2,7 @@ CREATE OR REPLACE VIEW animal_report_short AS
 SELECT a.id, a.name, c.prefix, c.names
 FROM animals a
 LEFT JOIN animal_agent b ON b.animal_id = a.id AND b.type = 'breeder'
-LEFT JOIN agents c ON c.id = b.agent_id
+INNER JOIN agents c ON c.id = b.agent_id
 WHERE a.deleted_at IS NULL;
 
 CREATE OR REPLACE VIEW animal_report AS
@@ -35,10 +35,24 @@ WHERE b.deleted_at IS NULL;
 
 CREATE OR REPLACE VIEW catalog_report AS
 SELECT c.tournament_id AS tournament_id, c.id AS category_id, c.mode, c.order, c.description AS description, ca.group, ca.number, ca.animal_id, 
-ar.prefix, ar.name, ar.code, DATE_FORMAT(a.birthdate, '%d-%m-%Y') AS birthdate, ar.dad_prefix, ar.dad_name, ar.mom_prefix, ar.mom_name, ar.breeder, ar.owner
+ar.prefix, ar.name, ar.code, ar.birthdate, ar.dad_prefix, ar.dad_name, ar.mom_prefix, ar.mom_name, ar.breeder, ar.owner
 FROM categories c
-INNER JOIN catalogs ca ON ca.category_id = c.id
-INNER JOIN animals a ON a.id = ca.animal_id
-INNER JOIN animal_report ar ON ar.id = ca.animal_id
-WHERE c.status <> 'deleted' AND ca.outsider = 0
-ORDER BY c.tournament_id, c.order, ca.group, a.birthdate DESC;
+LEFT JOIN catalogs ca ON ca.category_id = c.id
+LEFT JOIN animal_report ar ON ar.id = ca.animal_id
+WHERE c.status <> 'deleted' AND (ca.outsider = 0 OR ca.outsider IS NULL)
+AND c.tournament_id = 3
+ORDER BY c.tournament_id, c.order, ca.group, ar.birthdate DESC;
+
+
+
+SELECT c.tournament_id AS tournament_id, c.id AS category_id, c.mode, c.order, c.description AS description, ca.group, ca.number, ca.animal_id
+FROM categories c
+LEFT JOIN catalogs ca ON ca.category_id = c.id
+LEFT JOIN animal_report ar ON ar.id = ca.animal_id
+WHERE c.status <> 'deleted' AND (ca.outsider = 0 OR ca.outsider IS NULL) AND c.tournament_id = 3
+ORDER BY c.order
+
+SELECT id, COUNT(*) FROM animal_report
+GROUP BY id
+
+

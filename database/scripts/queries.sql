@@ -23,8 +23,8 @@ DROP TABLE temp1;
 
 CREATE TABLE temp1 (
 category VARCHAR(5),
-number VARCHAR(5),
 catalog VARCHAR(5),
+number VARCHAR(5),
 prefix VARCHAR(20),
 NAME VARCHAR(45),
 CODE VARCHAR(20),
@@ -39,14 +39,22 @@ OWNER VARCHAR(100)
 
 SELECT COUNT(*) FROM temp1
 
-SELECT * FROM temp1 WHERE dad_name LIKE '%?%'
-UPDATE temp1 SET NAME = REPLACE(NAME, '?', 'Ñ');
-UPDATE temp1 SET mom_name = REPLACE(mom_name, '?', 'Ñ');
-UPDATE temp1 SET dad_name = REPLACE(dad_name, '?', 'Ñ');
-UPDATE temp1 SET breeder = REPLACE(breeder, '?', 'Ñ');
-UPDATE temp1 SET OWNER = REPLACE(OWNER, '?', 'Ñ');
-
-SELECT * FROM temp1 WHERE NAME LIKE '%?%'
+/*ONLY FOR TOURNAMENT 3*/
+UPDATE agents SET NAMES = 'HACIENDA HUAMANI' WHERE NAMES = 'SALVADOR GUTIERREZ BENAVIDES';
+UPDATE temp1 SET breeder = 'CRIADERO JOSE ANTONIO ONRUBIA ROMERO S.A.' WHERE breeder = 'CRIADERO JOSE ANTONIO ONRUBIA ROMERO S.A';
+UPDATE temp1 SET OWNER = 'CRIADERO JOSE ANTONIO ONRUBIA ROMERO S.A.' WHERE OWNER = 'CRIADERO JOSE ANTONIO ONRUBIA ROMERO S.A';
+UPDATE temp1 SET breeder = 'LUIS JOSE SAENZ RAEZ' WHERE breeder = 'LUIS JOSE  SAENZ RAEZ';
+UPDATE temp1 SET OWNER = 'LUIS JOSE SAENZ RAEZ' WHERE OWNER = 'LUIS JOSE  SAENZ RAEZ';
+UPDATE temp1 SET breeder = 'EDUARDO EDGARDO CHAMAN COMMOTTO' WHERE breeder = 'EDUARDO EDGARDO CHAMAN COMOTTO';
+UPDATE temp1 SET OWNER = 'EDUARDO EDGARDO CHAMAN COMMOTTO' WHERE OWNER = 'EDUARDO EDGARDO CHAMAN COMOTTO';
+UPDATE temp1 SET breeder = 'JUAN LUIS KRUGER CARRION' WHERE breeder = 'JUAN LUIS KRUGER';
+UPDATE temp1 SET OWNER = 'JUAN LUIS KRUGER CARRION' WHERE OWNER = 'JUAN LUIS KRUGER';
+UPDATE temp1 SET OWNER = 'MANUEL ANTONIO MANRIQUE FIGUEROA' WHERE OWNER = 'MANUEL MANRIQUE FIGUEROA';
+UPDATE temp1 SET breeder = 'MANUEL ANTONIO MANRIQUE FIGUEROA' WHERE breeder = 'MANUEL MANRIQUE FIGUEROA';
+UPDATE temp1 SET OWNER = 'CARLOS CORNEJO BUSTILLO' WHERE OWNER = 'CARLOS CORNEJO BUSTILLO.';
+UPDATE temp1 SET breeder = 'CARLOS CORNEJO BUSTILLO' WHERE breeder = 'CARLOS CORNEJO BUSTILLO.';
+UPDATE agents SET NAMES = 'CARLOS CORNEJO BUSTILLO' WHERE NAMES = 'CARLOS CORNEJO BUSTILLO.';
+/**********************************/
 
 
 /*INSERT AGENTS*/
@@ -64,11 +72,43 @@ FROM temp1
 WHERE prefix <> ''
 GROUP BY breeder) b ON b.breeder = a.name) a
 WHERE a.name NOT IN(
-    SELECT TRIM(CONCAT(NAMES, ' ' , lastnames)) FROM agents
+    SELECT TRIM(NAMES) FROM agents
 );
+
+/*UPDATE AGENTS WITHOUT NAMES*/
+UPDATE agents a SET NAMES = (
+	SELECT b.breeder 
+	FROM temp1 b
+	WHERE b.prefix = a.prefix AND b.breeder IS NOT NULL
+	GROUP BY prefix
+) WHERE a.prefix = a.names;
+
+/*UPDATE AGENTS WITHOUT PREFIX*/
+UPDATE agents a SET prefix = (
+	SELECT b.prefix
+	FROM temp1 b
+	WHERE b.breeder = a.names
+	GROUP BY prefix
+) WHERE prefix IS NULL;
+
 
 /*ADD PREFIX COLUMNN TO ANIMALS*/
 ALTER TABLE animals ADD prefix VARCHAR(20);
+
+/*ADD PREFIX TO ANIMAL TABLE*/
+CREATE TABLE temp2 AS
+SELECT a.id, a.code, a.name, c.prefix, c.names
+FROM animals a
+INNER JOIN animal_agent b ON b.animal_id = a.id AND b.type='breeder'
+INNER JOIN agents c ON c.id = b.agent_id;
+
+UPDATE animals a SET prefix = (
+	SELECT prefix
+	FROM temp2 b
+	WHERE b.id = a.id
+);
+
+DROP TABLE temp2;
 
 /*INSERT ANIMALS*/
 INSERT INTO animals(prefix, CODE, NAME, birthdate, created_at, updated_at)
@@ -83,7 +123,7 @@ FROM temp1
 UNION ALL
 SELECT mom_prefix, NULL AS CODE, mom_name, NULL AS birthdate
 FROM temp1) a
-WHERE a.name <> '' AND CONCAT(prefix, NAME) NOT IN (SELECT CONCAT(prefix, NAME) FROM animals)
+WHERE a.name <> '' AND CONCAT(prefix, NAME) NOT IN (SELECT CONCAT(prefix, NAME) FROM animals WHERE prefix IS NOT NULL)
 GROUP BY a.name, a.prefix;
 
 /*UPDATE MOM AND DAD*/
@@ -145,6 +185,19 @@ UPDATE animals a SET a.gender = (
 	WHERE b.id = a.id
 );
 
+/*VALIDATE BREEDER WITH DIFF NAME IN TEMP1*/
+SELECT a.* FROM (
+SELECT * FROM (
+SELECT b.id AS animal_id, c.id AS agent_id, 'breeder' AS TYPE
+FROM temp1 a
+INNER JOIN animals b ON b.name = a.name AND b.prefix = a.prefix
+INNER JOIN agents c ON c.names = a.breeder AND c.prefix = a.prefix
+GROUP BY b.id
+) c WHERE CONCAT(animal_id, agent_id, TYPE) NOT IN (SELECT 
+CONCAT(animal_id, agent_id, TYPE) FROM animal_agent)
+) a
+WHERE animal_id IN (SELECT animal_id FROM animal_agent WHERE `type`='breeder');
+
 /*INSERT BREEDERS*/
 INSERT INTO animal_agent(animal_id, agent_id, TYPE)
 SELECT * FROM (
@@ -157,6 +210,50 @@ GROUP BY b.id
 CONCAT(animal_id, agent_id, TYPE) FROM animal_agent);
 
 
+/*VALIDATE BREEDER WITH DIFF NAME IN TEMP1*/
+SELECT a.* FROM (
+SELECT * FROM (
+SELECT b.id AS animal_id, c.id AS agent_id, 'owner' AS TYPE
+FROM temp1 a
+INNER JOIN animals b ON b.name = a.name AND b.prefix = a.prefix
+INNER JOIN agents c ON c.names = a.owner
+GROUP BY b.id
+) c WHERE CONCAT(animal_id, agent_id, TYPE) NOT IN (SELECT 
+CONCAT(animal_id, agent_id, TYPE) FROM animal_agent)
+) a
+WHERE animal_id IN (SELECT animal_id FROM animal_agent WHERE `type`='owner');
+
+/*HARDCODE - NO TOCAR HASTA ANALIZAR*/
+3991-1728, 4208-2188, 4286-1989, 4208-2187
+
+DELETE FROM animal_agent WHERE animal_id IN (3991, 4208, 4286, 4208) AND TYPE = 'owner';
+INSERT INTO animal_agent (animal_id, agent_id, TYPE) VALUES (3991, 1728, 'owner');
+INSERT INTO animal_agent (animal_id, agent_id, TYPE) VALUES (4208, 2188, 'owner');
+INSERT INTO animal_agent (animal_id, agent_id, TYPE) VALUES (4286, 1989, 'owner');
+INSERT INTO animal_agent (animal_id, agent_id, TYPE) VALUES (4208, 2187, 'owner');
+
+
+SELECT * FROM animal_report WHERE id = 4208
+SELECT * FROM temp1 WHERE NAME='CINEASTA - TE'
+
+SELECT * FROM agents WHERE NAMES='FLAVIO ALBERTO CARRILLO NARANJO'
+
+
+
+KVC CONTRATISTAS S.A.C.
+FLAVIO ALBERTO CARRILLO NARANJO
+
+/*********************/
+
+/*PENDIENTE ANALZIZAR  - CAMBIO DE OWNER*/
+SELECT a.prefix, a.name, a.owner, b.id, b.name, c.names, c.prefix
+FROM temp1 a
+LEFT JOIN animals b ON b.name = a.name AND b.prefix = a.prefix
+LEFT JOIN agents c ON c.names = a.owner
+WHERE a.owner <> c.names
+GROUP BY b.id;
+/*****************/
+
 /*INSERT OWNERS*/
 INSERT INTO animal_agent(animal_id, agent_id, TYPE)
 SELECT * FROM (
@@ -167,6 +264,28 @@ INNER JOIN agents c ON c.names = a.owner
 GROUP BY b.id
 ) c WHERE CONCAT(animal_id, agent_id, TYPE) NOT IN (SELECT 
 CONCAT(animal_id, agent_id, TYPE) FROM animal_agent);
+
+
+/*VALIDATE BREEDERS OF PARENTS*/
+SELECT a.* FROM (
+SELECT * FROM (
+SELECT a.id AS animal_id, b.id AS agent_id, 'breeder' AS TYPE
+FROM (
+SELECT a.id, a.prefix 
+FROM animals a
+WHERE id IN (
+	SELECT DISTINCT(mom) FROM animals
+	UNION ALL
+	SELECT DISTINCT(dad) FROM animals
+)) a INNER JOIN agents b ON b.prefix = a.prefix
+) c WHERE CONCAT(animal_id, TYPE) NOT IN (SELECT 
+CONCAT(animal_id, TYPE) FROM animal_agent)
+GROUP BY animal_id
+) a
+WHERE animal_id IN (SELECT animal_id FROM animal_agent WHERE TYPE='breeder')
+
+
+
 
 /*INSERT BREEDERS OF PARENTS*/
 INSERT INTO animal_agent(animal_id, agent_id, TYPE)
@@ -180,12 +299,13 @@ WHERE id IN (
 	UNION ALL
 	SELECT DISTINCT(dad) FROM animals
 )) a INNER JOIN agents b ON b.prefix = a.prefix
-) c WHERE CONCAT(animal_id, agent_id, TYPE) NOT IN (SELECT 
-CONCAT(animal_id, agent_id, TYPE) FROM animal_agent);
+) c WHERE CONCAT(animal_id, TYPE) NOT IN (SELECT 
+CONCAT(animal_id, TYPE) FROM animal_agent)
+GROUP BY animal_id;
 
 /*INSERT CATALOGS*/
 INSERT INTO catalogs(number, category_id, tournament_id, animal_id)
-SELECT catalog AS number, category AS category_id, 2 AS tournament_id, b.id AS animal_id
+SELECT catalog AS number, category AS category_id, 3 AS tournament_id, b.id AS animal_id
 FROM temp1 a
 INNER JOIN animals b ON b.name = a.name AND b.prefix = a.prefix;
 
@@ -195,7 +315,7 @@ UPDATE categories c SET count_competitors = (
 	FROM catalogs
 	WHERE category_id = c.id
 	GROUP BY category_id
-) WHERE tournament_id = 2;
+) WHERE tournament_id = 3;
 
 /*DROP PREFIX COLUMNN TO ANIMALS*/
 ALTER TABLE animals DROP prefix;
