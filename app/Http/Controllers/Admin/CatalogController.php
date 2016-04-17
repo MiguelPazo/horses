@@ -63,6 +63,9 @@ class CatalogController extends Controller
         return response()->json($jResponse);
     }
 
+    /*
+     * ANALIZAR PARA AGREGAR GROUP
+     */
     public function assignCatalog($idTournament)
     {
         $jResponse = [

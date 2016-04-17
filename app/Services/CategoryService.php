@@ -249,6 +249,7 @@ class CategoryService
                         if ($oCategory->type == ConstDb::TYPE_CATEGORY_WSELECTION) {
                             $oCategory->actual_stage = ConstDb::STAGE_SELECTION;
                             CategoryUser::category($oCategory->id)->update(['actual_stage' => ConstDb::STAGE_SELECTION]);
+                            Competitor::category($oCategory->id)->update(['position' => 0]);
                         } else {
                             $oCategory->actual_stage = ConstDb::STAGE_ASSISTANCE;
                             CategoryUser::category($oCategory->id)->update(['actual_stage' => ConstDb::STAGE_ASSISTANCE]);

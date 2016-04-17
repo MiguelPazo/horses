@@ -25,7 +25,7 @@
                 <?php $acum += $stage->position ?>
             @endif
         @endforeach
-        <td class="center success">{{ $acum }}</td>
+        <td class="center result-final">{{ $acum }}</td>
 
         @if($showSecond)
             <?php $acum = 0 ?>
@@ -35,7 +35,7 @@
                     <?php $acum += $stage->position ?>
                 @endif
             @endforeach
-            <td class="center success">{{ $acum }}</td>
+            <td class="center result-final">{{ $acum }}</td>
         @endif
     </tr>
     <?php $position++; ?>
@@ -62,7 +62,7 @@
                 <?php $acum += $stage->position ?>
             @endif
         @endforeach
-        <td class="center success">{{ $acum }}</td>
+        <td class="center result-final">{{ $acum }}</td>
     </tr>
     <?php $position++; ?>
 @endforeach

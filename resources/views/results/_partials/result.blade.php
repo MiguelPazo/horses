@@ -153,12 +153,12 @@
                     @foreach($oCategory->juries as $jury)
                         <th class="center {{ ($jury->id == $juryDiriment->user_id)? 'active':'' }}">{{ $jury->names .' '. substr($jury->lastname,0,1) . '.' }}</th>
                     @endforeach
-                    <th class="center success">Total</th>
+                    <th class="center result-final">Total</th>
 
                     @foreach($oCategory->juries as $jury)
                         <th class="center {{ ($jury->id == $juryDiriment->user_id)? 'active':'' }}">{{ $jury->names .' '. substr($jury->lastname,0,1) . '.' }}</th>
                     @endforeach
-                    <th class="center success">Total</th>
+                    <th class="center result-final">Total</th>
                 </tr>
                 </thead>
                 <tbody>

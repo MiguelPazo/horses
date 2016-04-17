@@ -39,9 +39,10 @@ ar.prefix, ar.name, ar.code, ar.birthdate, ar.dad_prefix, ar.dad_name, ar.mom_pr
 FROM categories c
 LEFT JOIN catalogs ca ON ca.category_id = c.id
 LEFT JOIN animal_report ar ON ar.id = ca.animal_id
+LEFT JOIN animals a ON a.id = ca.animal_id
 WHERE c.status <> 'deleted' AND (ca.outsider = 0 OR ca.outsider IS NULL)
 AND c.tournament_id = 3
-ORDER BY c.tournament_id, c.order, ca.group, ar.birthdate DESC;
+ORDER BY c.tournament_id, c.order, ca.group, a.birthdate DESC
 
 
 

@@ -201,7 +201,6 @@ class AssistanceController extends Controller
                 $insertComp[] = [
                     'number' => $i + 1,
                     'category_id' => $oCategory->id,
-                    'position' => ($oCategory->type == ConstDb::TYPE_CATEGORY_WSELECTION) ? 0 : null,
                     'catalog' => $numCatalog,
                     'status' => ($present) ? ConstDb::COMPETITOR_PRESENT : ConstDb::COMPETITOR_MISSING
                 ];
@@ -271,7 +270,6 @@ class AssistanceController extends Controller
                 $insertComp[] = [
                     'number' => $posCompetitor,
                     'category_id' => $oCategory->id,
-                    'position' => ($oCategory->type == ConstDb::TYPE_CATEGORY_WSELECTION) ? 0 : null,
                     'catalog' => implode(',', $value),
                     'status' => ($present) ? ConstDb::COMPETITOR_PRESENT : ConstDb::COMPETITOR_MISSING
                 ];
@@ -293,13 +291,8 @@ class AssistanceController extends Controller
 
             Competitor::insert($insertComp);
 
-            if ($oCategory->type == ConstDb::TYPE_CATEGORY_WSELECTION) {
-                $oCategory->actual_stage = ConstDb::STAGE_SELECTION;
-                CategoryUser::category($oCategory->id)->update(['actual_stage' => ConstDb::STAGE_SELECTION]);
-            } else {
-                $oCategory->actual_stage = ConstDb::STAGE_ASSISTANCE;
-                CategoryUser::category($oCategory->id)->update(['actual_stage' => ConstDb::STAGE_ASSISTANCE]);
-            }
+            $oCategory->actual_stage = ConstDb::STAGE_ASSISTANCE;
+            CategoryUser::category($oCategory->id)->update(['actual_stage' => ConstDb::STAGE_ASSISTANCE]);
 
             $oCategory->count_competitors = $countCompetitors;
             $oCategory->count_presents = $totalPresent;

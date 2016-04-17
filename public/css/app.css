@@ -217,6 +217,12 @@ form.formuppertext input {
     width: 100px;
 }
 
+.result-final {
+    background: #3f6e09;
+    color: #FFFFFF;
+    font-weight: bold;
+}
+
 #space_verify ul {
     padding-bottom: 0px;
 }

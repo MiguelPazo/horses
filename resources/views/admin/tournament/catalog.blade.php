@@ -6,8 +6,8 @@
     </h3>
 
     <div class="panel-body">
-        <div class="table-responsive">
-            @foreach($lstCatalogGroup as $group)
+        @foreach($lstCatalogGroup as $group)
+            <div class="table-responsive">
                 <h5><b>{{ $group[0]->description }}</b></h5>
                 <table class="table table-striped table-hover">
                     <thead>
@@ -27,39 +27,31 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <?php
-                    $pos = 0;
-                    $actualGroup = null;
-                    ?>
                     @foreach($group as $category)
-                        <?php
-                        if ($category->mode == \Horses\Constants\ConstDb::MODE_GROUP) {
-                            if ($category->group != $actualGroup) {
-                                $actualGroup = $category->group;
-                                $pos++;
-                            }
-                        } else {
-                            $pos++;
-                        }
-                        ?>
-                        <tr>
-                            <td>{{ $pos }}</td>
-                            <td>{{ $category->number }}</td>
-                            <td>{{ $category->prefix }}</td>
-                            <td>{{ $category->name }}</td>
-                            <td>{{ $category->code }}</td>
-                            <td>{{ $category->birthdate }}</td>
-                            <td>{{ $category->dad_prefix }}</td>
-                            <td>{{ $category->dad_name }}</td>
-                            <td>{{ $category->mom_prefix }}</td>
-                            <td>{{ $category->mom_name }}</td>
-                            <td>{{ $category->breeder }}</td>
-                            <td>{{ $category->owner }}</td>
-                        </tr>
+                        @if($category->animal_id != null)
+                            <tr>
+                                <td>{{ $category->group }}</td>
+                                <td>{{ $category->number }}</td>
+                                <td>{{ $category->prefix }}</td>
+                                <td>{{ $category->name }}</td>
+                                <td>{{ $category->code }}</td>
+                                <td>{{ $category->birthdate }}</td>
+                                <td>{{ $category->dad_prefix }}</td>
+                                <td>{{ $category->dad_name }}</td>
+                                <td>{{ $category->mom_prefix }}</td>
+                                <td>{{ $category->mom_name }}</td>
+                                <td>{{ $category->breeder }}</td>
+                                <td>{{ $category->owner }}</td>
+                            </tr>
+                        @else
+                            <tr>
+                                <td colspan="12">&nbsp;</td>
+                            </tr>
+                        @endif
                     @endforeach
                     </tbody>
                 </table>
-            @endforeach
-        </div>
+            </div>
+        @endforeach
     </div>
 @endsection

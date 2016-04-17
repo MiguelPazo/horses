@@ -89,7 +89,7 @@ UPDATE agents a SET prefix = (
 	FROM temp1 b
 	WHERE b.breeder = a.names
 	GROUP BY prefix
-) WHERE prefix IS NULL;
+) WHERE prefix IS NULL OR prefix = '';
 
 
 /*ADD PREFIX COLUMNN TO ANIMALS*/
@@ -226,17 +226,21 @@ WHERE animal_id IN (SELECT animal_id FROM animal_agent WHERE `type`='owner');
 /*HARDCODE - NO TOCAR HASTA ANALIZAR*/
 3991-1728, 4208-2188, 4286-1989, 4208-2187
 
-DELETE FROM animal_agent WHERE animal_id IN (3991, 4208, 4286, 4208) AND TYPE = 'owner';
+DELETE FROM animal_agent WHERE animal_id IN (3991, 4208, 4286) AND TYPE = 'owner';
 INSERT INTO animal_agent (animal_id, agent_id, TYPE) VALUES (3991, 1728, 'owner');
 INSERT INTO animal_agent (animal_id, agent_id, TYPE) VALUES (4208, 2188, 'owner');
 INSERT INTO animal_agent (animal_id, agent_id, TYPE) VALUES (4286, 1989, 'owner');
-INSERT INTO animal_agent (animal_id, agent_id, TYPE) VALUES (4208, 2187, 'owner');
 
 
+SELECT * FROM animal_agent WHERE animal_id = 4208
 SELECT * FROM animal_report WHERE id = 4208
 SELECT * FROM temp1 WHERE NAME='CINEASTA - TE'
 
 SELECT * FROM agents WHERE NAMES='FLAVIO ALBERTO CARRILLO NARANJO'
+
+2193
+
+FLAVIO ALBERTO CARRILLO NARANJO
 
 
 
@@ -282,9 +286,7 @@ WHERE id IN (
 CONCAT(animal_id, TYPE) FROM animal_agent)
 GROUP BY animal_id
 ) a
-WHERE animal_id IN (SELECT animal_id FROM animal_agent WHERE TYPE='breeder')
-
-
+WHERE animal_id IN (SELECT animal_id FROM animal_agent WHERE TYPE='breeder');
 
 
 /*INSERT BREEDERS OF PARENTS*/
@@ -304,8 +306,8 @@ CONCAT(animal_id, TYPE) FROM animal_agent)
 GROUP BY animal_id;
 
 /*INSERT CATALOGS*/
-INSERT INTO catalogs(number, category_id, tournament_id, animal_id)
-SELECT catalog AS number, category AS category_id, 3 AS tournament_id, b.id AS animal_id
+INSERT INTO catalogs(`group`, number, category_id, tournament_id, animal_id)
+SELECT number AS 'group', catalog AS number, category AS category_id, 3 AS tournament_id, b.id AS animal_id
 FROM temp1 a
 INNER JOIN animals b ON b.name = a.name AND b.prefix = a.prefix;
 
@@ -316,6 +318,7 @@ UPDATE categories c SET count_competitors = (
 	WHERE category_id = c.id
 	GROUP BY category_id
 ) WHERE tournament_id = 3;
+
 
 /*DROP PREFIX COLUMNN TO ANIMALS*/
 ALTER TABLE animals DROP prefix;
