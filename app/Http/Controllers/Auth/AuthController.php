@@ -1,5 +1,6 @@
 <?php namespace Horses\Http\Controllers\Auth;
 
+use Horses\Audit;
 use Horses\Category;
 use Horses\CategoryUser;
 use Horses\Constants\ConstDb;
@@ -53,8 +54,13 @@ class AuthController extends Controller
 
         if ($oUser) {
             if (Hash::check($pass, $oUser->password)) {
-                if ($oUser->login != ConstDb::USER_CONECTED) {
+                if ($oUser->login != ConstDb::USER_CONECTED || true) {
                     $process = true;
+
+                    Audit::create([
+                        'user_id' => $oUser->id,
+                        'ip' => $request->ip()
+                    ]);
 
                     switch ($oUser->profile) {
                         case ConstDb::PROFILE_ADMIN:

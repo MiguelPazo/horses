@@ -42,18 +42,11 @@ LEFT JOIN animal_report ar ON ar.id = ca.animal_id
 LEFT JOIN animals a ON a.id = ca.animal_id
 WHERE c.status <> 'deleted' AND (ca.outsider = 0 OR ca.outsider IS NULL)
 AND c.tournament_id = 3
-ORDER BY c.tournament_id, c.order, ca.group, a.birthdate DESC
+ORDER BY c.tournament_id, c.order, ca.group, a.birthdate DESC;
 
-
-
-SELECT c.tournament_id AS tournament_id, c.id AS category_id, c.mode, c.order, c.description AS description, ca.group, ca.number, ca.animal_id
-FROM categories c
-LEFT JOIN catalogs ca ON ca.category_id = c.id
-LEFT JOIN animal_report ar ON ar.id = ca.animal_id
-WHERE c.status <> 'deleted' AND (ca.outsider = 0 OR ca.outsider IS NULL) AND c.tournament_id = 3
-ORDER BY c.order
-
-SELECT id, COUNT(*) FROM animal_report
-GROUP BY id
-
-
+CREATE OR REPLACE VIEW audit_user AS
+SELECT b.id, b.user, b.names, b.lastname, a.ip, MAX(created_at) AS created_at
+FROM audits a
+INNER JOIN users b ON b.id = a.user_id
+GROUP BY ip, user_id
+ORDER BY a.user_id;

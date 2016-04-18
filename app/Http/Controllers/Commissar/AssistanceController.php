@@ -44,12 +44,18 @@ class AssistanceController extends Controller
         }
 
         if ($lstCatalog->count() > 0) {
-            $lstCatalog = $lstCatalog->sortByDesc(function ($item) {
-                $birth = $item->animals->birthdate;
-                $birthDate = ($birth != null && $birth != '') ? \DateTime::createFromFormat('d-m-Y', $birth) : null;
+            if ($oCategory->mode == ConstDb::MODE_PERSONAL) {
+                $lstCatalog = $lstCatalog->sortBy(function ($item) {
+                    return $item->group;
+                });
+            } else {
+                $lstCatalog = $lstCatalog->sortByDesc(function ($item) {
+                    $birth = $item->animals->birthdate;
+                    $birthDate = ($birth != null && $birth != '') ? \DateTime::createFromFormat('d-m-Y', $birth) : null;
 
-                return $birthDate;
-            });
+                    return $birthDate;
+                });
+            }
         }
 
         if ($oCategory->actual_stage == ConstDb::STAGE_ASSISTANCE) {
