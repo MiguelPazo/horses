@@ -8,6 +8,7 @@
     <div class="panel-body">
         <div class="table-responsive">
             <a href="{{ route('admin.user.create') }}" class="btn btn-primary">Nuevo</a>
+            <a href="{{ route('admin.user.audit') }}" class="btn btn-default" target="_blank">Auditoría</a>
             <table class="table table-striped table-hover">
                 <thead>
                 <tr>

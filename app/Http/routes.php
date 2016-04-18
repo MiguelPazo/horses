@@ -125,8 +125,14 @@ Route::group([
     ]);
 
     Route::controller('/category', 'CategoryController');
+    Route::get('/user/audit', [
+        'as' => 'admin.user.audit',
+        'uses' => 'UserController@audit'
+    ]);
 
     Route::resource('/user', 'UserController');
+
+
     Route::get('/user/unlock/{user}', [
         'as' => 'admin.user.unlock',
         'uses' => 'UserController@unlock'
@@ -135,6 +141,7 @@ Route::group([
         'as' => 'admin.user.destroy',
         'uses' => 'UserController@destroy'
     ]);
+
 
     Route::get('/journal/{idTournament}/{status}', [
         'as' => 'tournament.change.journal',

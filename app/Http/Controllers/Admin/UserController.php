@@ -1,5 +1,6 @@
 <?php namespace Horses\Http\Controllers\Admin;
 
+use Horses\Audit;
 use Horses\Constants\ConstDb;
 use Horses\Constants\ConstMessages;
 use Horses\Http\Requests;
@@ -7,6 +8,7 @@ use Horses\Http\Controllers\Controller;
 
 use Horses\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
@@ -20,6 +22,13 @@ class UserController extends Controller
         'profile' => 'required',
     ];
 
+    public function audit()
+    {
+        $lstAudit = DB::table('audit_user')
+            ->get();
+
+        return view('admin.user.audit')->with('lstAudit', $lstAudit);
+    }
 
     public function unlock($id)
     {
