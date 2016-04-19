@@ -1,3 +1,7 @@
+body{
+	background-color: #fcfcfc;
+}
+
 table .center {
     text-align: center;
 }
@@ -221,6 +225,13 @@ form.formuppertext input {
     background: #3f6e09;
     color: #FFFFFF;
     font-weight: bold;
+}
+.content-bold tr td{
+	font-weight: bold;
+    font-size: 13px;
+}
+.active-diriment{
+	background: #ccc !important;
 }
 
 #space_verify ul {

@@ -3,7 +3,7 @@
         <div class="table-responsive">
             <b>Competidores {{ ($assistance)? 'Presentes':'Seleccionados' }} ({{ $lstCompetitorWinners->count() }})</b>
             <table class="table table-striped">
-                <thead>
+                <thead class="{{ ($complete)? 'content-bold-red':''}}">
                 <tr>
                     @if($limp)
                         <th rowspan="2" width="5%">Claudicar</th>
@@ -17,7 +17,7 @@
                     @endif
                 </tr>
                 </thead>
-                <tbody>
+                <tbody class="{{ ($complete)? 'content-bold':''}}">
                 @if($oCategory->mode == \Horses\Constants\ConstDb::MODE_PERSONAL)
                     @foreach($lstCompetitorWinners as $competitor)
                         <tr>
@@ -77,7 +77,7 @@
             <div class="table-responsive">
                 <b>Competidores No Seleccionados ({{ $lstCompetitorHonorable->count() }})</b>
                 <table class="table table-striped">
-                    <thead>
+                    <thead class="{{ ($complete)? 'content-bold-red':''}}">
                     <tr>
                         <th width="15%">N° de Cancha</th>
                         @if($complete)
@@ -88,7 +88,7 @@
                         @endif
                     </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="{{ ($complete)? 'content-bold':''}}">
                     @if($oCategory->mode == \Horses\Constants\ConstDb::MODE_PERSONAL)
                         @foreach($lstCompetitorHonorable as $competitor)
                             <tr>
@@ -129,7 +129,7 @@
     <div class="tab-pane">
         <div class="table-responsive">
             <table class="table table-striped">
-                <thead>
+                <thead class="{{ ($complete)? 'content-bold-red':''}}">
                 <tr>
                     @if($limp)
                         <th rowspan="2">Claudicar</th>
@@ -151,17 +151,17 @@
                 </tr>
                 <tr>
                     @foreach($oCategory->juries as $jury)
-                        <th class="center {{ ($jury->id == $juryDiriment->user_id)? 'active':'' }}">{{ $jury->names .' '. substr($jury->lastname,0,1) . '.' }}</th>
+                        <th class="center {{ ($jury->id == $juryDiriment->user_id)? 'active active-diriment':'' }}">{{ $jury->names .' '. substr($jury->lastname,0,1) . '.' }}</th>
                     @endforeach
                     <th class="center result-final">Total</th>
 
                     @foreach($oCategory->juries as $jury)
-                        <th class="center {{ ($jury->id == $juryDiriment->user_id)? 'active':'' }}">{{ $jury->names .' '. substr($jury->lastname,0,1) . '.' }}</th>
+                        <th class="center {{ ($jury->id == $juryDiriment->user_id)? 'active active-diriment':'' }}">{{ $jury->names .' '. substr($jury->lastname,0,1) . '.' }}</th>
                     @endforeach
                     <th class="center result-final">Total</th>
                 </tr>
                 </thead>
-                <tbody>
+                <tbody  class="{{ ($complete)? 'content-bold':''}}">
                 @if($oCategory->mode == \Horses\Constants\ConstDb::MODE_PERSONAL)
                     @include('results._partials.personal')
                 @else
@@ -178,7 +178,7 @@
         <div class="table-responsive">
             <b>Competidores Claudicados ({{ $lstCompetitorLimp->count() }})</b>
             <table class="table table-striped">
-                <thead>
+                <thead class="{{ ($complete)? 'content-bold-red':''}}">
                 <tr>
                     <th width="10%">N° de Cancha</th>
                     @if($complete)

@@ -50,3 +50,4 @@ FROM audits a
 INNER JOIN users b ON b.id = a.user_id
 GROUP BY ip, user_id
 ORDER BY a.user_id;
+

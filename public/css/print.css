@@ -9,3 +9,8 @@ a, button, .nav-pills{
 body {
 	font-size:10px !important;
 }
+
+.content-bold tr td{
+	font-weight: bold;
+    font-size: 10px;
+}

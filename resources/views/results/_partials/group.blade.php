@@ -25,7 +25,7 @@
             <?php $acum = 0 ?>
             @foreach($competitor->stages as $stage)
                 @if($stage->stage == \Horses\Constants\ConstDb::STAGE_CLASSIFY_1)
-                    <td class="center {{ ($stage->jury->id == $juryDiriment->user_id) ? 'active':'' }}">{{ $stage->position }}</td>
+                    <td class="center {{ ($stage->jury->id == $juryDiriment->user_id) ? 'active active-diriment':'' }}">{{ $stage->position }}</td>
                     <?php $acum += $stage->position ?>
                 @endif
             @endforeach
@@ -35,7 +35,7 @@
                 <?php $acum = 0 ?>
                 @foreach($competitor->stages as $stage)
                     @if($stage->stage == \Horses\Constants\ConstDb::STAGE_CLASSIFY_2)
-                        <td class="center {{ ($stage->jury->id == $juryDiriment->user_id) ? 'active':'' }}">{{ $stage->position }}</td>
+                        <td class="center {{ ($stage->jury->id == $juryDiriment->user_id) ? 'active active-diriment':'' }}">{{ $stage->position }}</td>
                         <?php $acum += $stage->position ?>
                     @endif
                 @endforeach
@@ -73,7 +73,7 @@
             <?php $acum = 0 ?>
             @foreach($competitor->stages as $stage)
                 @if($stage->stage == \Horses\Constants\ConstDb::STAGE_CLASSIFY_1)
-                    <td class="center {{ ($stage->jury->id == $juryDiriment->user_id) ? 'active':'' }}">{{ $stage->position }}</td>
+                    <td class="center {{ ($stage->jury->id == $juryDiriment->user_id) ? 'active active-diriment':'' }}">{{ $stage->position }}</td>
                     <?php $acum += $stage->position ?>
                 @endif
             @endforeach
