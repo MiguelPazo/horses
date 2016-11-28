@@ -1,6 +1,6 @@
 /*
-SQLyog Ultimate v9.63 
-MySQL - 5.6.16 : Database - horses
+SQLyog Community v12.09 (64 bit)
+MySQL - 10.1.13-MariaDB : Database - horses
 *********************************************************************
 */
 
@@ -395,7 +395,7 @@ DROP TABLE IF EXISTS `catalog_report`;
 /*!50001 DROP TABLE IF EXISTS `catalog_report` */;
 /*!50001 DROP VIEW IF EXISTS `catalog_report` */;
 
-/*!50001 CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `catalog_report` AS select `c`.`tournament_id` AS `tournament_id`,`c`.`id` AS `category_id`,`c`.`mode` AS `mode`,`c`.`order` AS `order`,`c`.`description` AS `description`,`ca`.`group` AS `group`,`ca`.`number` AS `number`,`ca`.`animal_id` AS `animal_id`,`ar`.`prefix` AS `prefix`,`ar`.`name` AS `name`,`ar`.`code` AS `code`,`ar`.`birthdate` AS `birthdate`,`ar`.`dad_prefix` AS `dad_prefix`,`ar`.`dad_name` AS `dad_name`,`ar`.`mom_prefix` AS `mom_prefix`,`ar`.`mom_name` AS `mom_name`,`ar`.`breeder` AS `breeder`,`ar`.`owner` AS `owner` from (((`categories` `c` left join `catalogs` `ca` on((`ca`.`category_id` = `c`.`id`))) left join `animal_report` `ar` on((`ar`.`id` = `ca`.`animal_id`))) left join `animals` `a` on((`a`.`id` = `ca`.`animal_id`))) where ((`c`.`status` <> 'deleted') and ((`ca`.`outsider` = 0) or isnull(`ca`.`outsider`)) and (`c`.`tournament_id` = 3)) order by `c`.`tournament_id`,`c`.`order`,`ca`.`group`,`a`.`birthdate` desc */;
+/*!50001 CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `catalog_report` AS select `c`.`tournament_id` AS `tournament_id`,`c`.`id` AS `category_id`,`c`.`mode` AS `mode`,`c`.`order` AS `order`,`c`.`description` AS `description`,`ca`.`group` AS `group`,`ca`.`number` AS `number`,`ca`.`animal_id` AS `animal_id`,`ar`.`prefix` AS `prefix`,`ar`.`name` AS `name`,`ar`.`code` AS `code`,`ar`.`birthdate` AS `birthdate`,`ar`.`dad_prefix` AS `dad_prefix`,`ar`.`dad_name` AS `dad_name`,`ar`.`mom_prefix` AS `mom_prefix`,`ar`.`mom_name` AS `mom_name`,`ar`.`breeder` AS `breeder`,`ar`.`owner` AS `owner` from (((`categories` `c` left join `catalogs` `ca` on((`ca`.`category_id` = `c`.`id`))) left join `animal_report` `ar` on((`ar`.`id` = `ca`.`animal_id`))) left join `animals` `a` on((`a`.`id` = `ca`.`animal_id`))) where ((`c`.`status` <> 'deleted') and ((`ca`.`outsider` = 0) or isnull(`ca`.`outsider`))) order by `c`.`tournament_id`,`c`.`order`,`ca`.`group`,`a`.`birthdate` desc */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
