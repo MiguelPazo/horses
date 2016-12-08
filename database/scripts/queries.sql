@@ -35,25 +35,27 @@ mom_prefix VARCHAR(20),
 mom_name VARCHAR(45),
 breeder VARCHAR(100),
 OWNER VARCHAR(100)
-);
+) CHARACTER SET UTF8 COLLATE utf8_general_ci;
 
 SELECT COUNT(*) FROM temp1
 
-/*ONLY FOR TOURNAMENT 3*/
-UPDATE agents SET NAMES = 'HACIENDA HUAMANI' WHERE NAMES = 'SALVADOR GUTIERREZ BENAVIDES';
+/*UPDATE AGENTS NAMES AS TOURNAMENT EXCEL*/
+UPDATE temp1 SET NAME = REPLACE(NAME, '?', 'Ñ'), mom_name = REPLACE(mom_name, '?', 'Ñ'), dad_name = REPLACE(dad_name, '?', 'Ñ'),
+breeder = REPLACE(breeder, '?', 'Ñ'), OWNER = REPLACE(OWNER, '?', 'Ñ');
+
+UPDATE agents SET NAMES = 'JUAN FRANCISCO RAFFO NOVELLI' WHERE NAMES = 'JUAN FRANCISCO RAFFO NOVELLI / CRIADERO ALTO PRADO';
+UPDATE agents SET NAMES = 'HACIENDA EL CORTIJO S.A.C.' WHERE NAMES = 'HACIENDA EL CORTIJO S.A.C';
+UPDATE agents SET NAMES = 'RENZO CAROZZI MORALES' WHERE NAMES = 'RENZO CAROZZI MORALES/CRIADERO EL CRIOLLO';
+UPDATE agents SET NAMES = 'JUAN FRANCISCO RAFFO NOVELLI' WHERE NAMES = 'JUAN FRANCISCO RAFFO NOVELLI / CRIADERO ALTO PRADO';
+
 UPDATE temp1 SET breeder = 'CRIADERO JOSE ANTONIO ONRUBIA ROMERO S.A.' WHERE breeder = 'CRIADERO JOSE ANTONIO ONRUBIA ROMERO S.A';
 UPDATE temp1 SET OWNER = 'CRIADERO JOSE ANTONIO ONRUBIA ROMERO S.A.' WHERE OWNER = 'CRIADERO JOSE ANTONIO ONRUBIA ROMERO S.A';
 UPDATE temp1 SET breeder = 'LUIS JOSE SAENZ RAEZ' WHERE breeder = 'LUIS JOSE  SAENZ RAEZ';
 UPDATE temp1 SET OWNER = 'LUIS JOSE SAENZ RAEZ' WHERE OWNER = 'LUIS JOSE  SAENZ RAEZ';
-UPDATE temp1 SET breeder = 'EDUARDO EDGARDO CHAMAN COMMOTTO' WHERE breeder = 'EDUARDO EDGARDO CHAMAN COMOTTO';
-UPDATE temp1 SET OWNER = 'EDUARDO EDGARDO CHAMAN COMMOTTO' WHERE OWNER = 'EDUARDO EDGARDO CHAMAN COMOTTO';
 UPDATE temp1 SET breeder = 'JUAN LUIS KRUGER CARRION' WHERE breeder = 'JUAN LUIS KRUGER';
 UPDATE temp1 SET OWNER = 'JUAN LUIS KRUGER CARRION' WHERE OWNER = 'JUAN LUIS KRUGER';
-UPDATE temp1 SET OWNER = 'MANUEL ANTONIO MANRIQUE FIGUEROA' WHERE OWNER = 'MANUEL MANRIQUE FIGUEROA';
-UPDATE temp1 SET breeder = 'MANUEL ANTONIO MANRIQUE FIGUEROA' WHERE breeder = 'MANUEL MANRIQUE FIGUEROA';
-UPDATE temp1 SET OWNER = 'CARLOS CORNEJO BUSTILLO' WHERE OWNER = 'CARLOS CORNEJO BUSTILLO.';
-UPDATE temp1 SET breeder = 'CARLOS CORNEJO BUSTILLO' WHERE breeder = 'CARLOS CORNEJO BUSTILLO.';
-UPDATE agents SET NAMES = 'CARLOS CORNEJO BUSTILLO' WHERE NAMES = 'CARLOS CORNEJO BUSTILLO.';
+UPDATE temp1 SET breeder = 'MANUEL ANTONIO MANRIQUE FIGUEROA' WHERE breeder = 'MANUEL MANRIQUE';
+UPDATE temp1 SET OWNER = 'MANUEL ANTONIO MANRIQUE FIGUEROA' WHERE OWNER = 'MANUEL MANRIQUE';
 /**********************************/
 
 
@@ -90,7 +92,6 @@ UPDATE agents a SET prefix = (
 	WHERE b.breeder = a.names
 	GROUP BY prefix
 ) WHERE prefix IS NULL OR prefix = '';
-
 
 /*ADD PREFIX COLUMNN TO ANIMALS*/
 ALTER TABLE animals ADD prefix VARCHAR(20);
@@ -209,55 +210,6 @@ GROUP BY b.id
 ) c WHERE CONCAT(animal_id, agent_id, TYPE) NOT IN (SELECT 
 CONCAT(animal_id, agent_id, TYPE) FROM animal_agent);
 
-
-/*VALIDATE BREEDER WITH DIFF NAME IN TEMP1*/
-SELECT a.* FROM (
-SELECT * FROM (
-SELECT b.id AS animal_id, c.id AS agent_id, 'owner' AS TYPE
-FROM temp1 a
-INNER JOIN animals b ON b.name = a.name AND b.prefix = a.prefix
-INNER JOIN agents c ON c.names = a.owner
-GROUP BY b.id
-) c WHERE CONCAT(animal_id, agent_id, TYPE) NOT IN (SELECT 
-CONCAT(animal_id, agent_id, TYPE) FROM animal_agent)
-) a
-WHERE animal_id IN (SELECT animal_id FROM animal_agent WHERE `type`='owner');
-
-/*HARDCODE - NO TOCAR HASTA ANALIZAR*/
-3991-1728, 4208-2188, 4286-1989, 4208-2187
-
-DELETE FROM animal_agent WHERE animal_id IN (3991, 4208, 4286) AND TYPE = 'owner';
-INSERT INTO animal_agent (animal_id, agent_id, TYPE) VALUES (3991, 1728, 'owner');
-INSERT INTO animal_agent (animal_id, agent_id, TYPE) VALUES (4208, 2188, 'owner');
-INSERT INTO animal_agent (animal_id, agent_id, TYPE) VALUES (4286, 1989, 'owner');
-
-
-SELECT * FROM animal_agent WHERE animal_id = 4208
-SELECT * FROM animal_report WHERE id = 4208
-SELECT * FROM temp1 WHERE NAME='CINEASTA - TE'
-
-SELECT * FROM agents WHERE NAMES='FLAVIO ALBERTO CARRILLO NARANJO'
-
-2193
-
-FLAVIO ALBERTO CARRILLO NARANJO
-
-
-
-KVC CONTRATISTAS S.A.C.
-FLAVIO ALBERTO CARRILLO NARANJO
-
-/*********************/
-
-/*PENDIENTE ANALZIZAR  - CAMBIO DE OWNER*/
-SELECT a.prefix, a.name, a.owner, b.id, b.name, c.names, c.prefix
-FROM temp1 a
-LEFT JOIN animals b ON b.name = a.name AND b.prefix = a.prefix
-LEFT JOIN agents c ON c.names = a.owner
-WHERE a.owner <> c.names
-GROUP BY b.id;
-/*****************/
-
 /*INSERT OWNERS*/
 INSERT INTO animal_agent(animal_id, agent_id, TYPE)
 SELECT * FROM (
@@ -305,9 +257,26 @@ WHERE id IN (
 CONCAT(animal_id, TYPE) FROM animal_agent)
 GROUP BY animal_id;
 
+/*ANIMALS WITH MULTIPLES BREEDERS AND OWNERS*/
+SELECT a.id, a.animal_id, c.code, c.name, a.type, a.agent_id, b.prefix, b.names
+FROM animal_agent a
+INNER JOIN agents b ON b.id = a.agent_id
+INNER JOIN animals c ON c.id = a.animal_id
+WHERE a.animal_id IN (
+	SELECT animal_id
+	FROM animal_agent
+	WHERE TYPE = 'owner'
+	GROUP BY animal_id
+	HAVING COUNT(*) > 1
+) AND TYPE = 'owner'
+ORDER BY animal_id, TYPE;
+
+/*DELETE OLD OWNERS RELATIONSHIP*/
+DELETE FROM animal_agent WHERE id IN (3543,4095,5079,5113,5126,5256,5283,5339,5469);
+
 /*INSERT CATALOGS*/
 INSERT INTO catalogs(`group`, number, category_id, tournament_id, animal_id)
-SELECT number AS 'group', catalog AS number, category AS category_id, 3 AS tournament_id, b.id AS animal_id
+SELECT number AS 'group', catalog AS number, category AS category_id, 4 AS tournament_id, b.id AS animal_id
 FROM temp1 a
 INNER JOIN animals b ON b.name = a.name AND b.prefix = a.prefix;
 
@@ -317,12 +286,11 @@ UPDATE categories c SET count_competitors = (
 	FROM catalogs
 	WHERE category_id = c.id
 	GROUP BY category_id
-) WHERE tournament_id = 3;
+) WHERE tournament_id = 4;
 
 
 /*DROP PREFIX COLUMNN TO ANIMALS*/
 ALTER TABLE animals DROP prefix;
-
 
 /*VERIFY AGENTS*/
 SELECT * FROM (
@@ -339,73 +307,11 @@ INNER JOIN agents c ON c.names = a.breeder AND c.prefix = a.prefix
 GROUP BY b.id
 )
 
-SELECT * FROM animals WHERE id IN (1856,1946)
-
-SELECT * FROM animal_agent WHERE animal_id IN (1856,1946)
-
-SELECT * FROM temp1 WHERE NAME IN ('II CALAMBUCO','MULATO')
-
-SELECT * FROM agents WHERE NAMES IN ('WILFREDO MONTALVO BERNILLA','CARLOS RAMIREZ CHUPICA')
 
 
+/*INSERT MENORES*/
+INSERT INTO animals(NAME) VALUES ('EMILIA MARIA BACA-ALVAREZ TOMATIS');
+INSERT INTO animals(NAME) VALUES ('LUCIANA DRAGHI CRESPO');
 
-SELECT * FROM animal_tournament WHERE tournament_id = 2 AND prefix IS NULL
-
-INSERT INTO agents (NAMES, prefix, created_at, updated_at)
-SELECT a.*, b.prefix, CURRENT_TIMESTAMP AS created_at, CURRENT_TIMESTAMP AS updated_at
-FROM (SELECT NAMES FROM (
-SELECT breeder AS NAMES FROM temp1
-UNION ALL 
-SELECT OWNER AS NAMES FROM temp1) a
-WHERE NAMES NOT IN (
-SELECT NAMES FROM agents
-) GROUP BY NAMES) a
-INNER JOIN temp1 b ON b.breeder = a.names
-GROUP BY a.names;
-
-SELECT * FROM temp1 WHERE breeder='CARLOS CORNO YORI'
-
-DELETE FROM animal_agent
-WHERE animal_id IN (
-SELECT animal_id FROM temp2)
-
-INSERT INTO animal_agent (animal_id, agent_id, TYPE)
-SELECT a.animal_id, b.id, 'owner' AS TYPE FROM (
-SELECT a.animal_id, b.owner FROM (
-SELECT * 
-FROM animal_tournament 
-WHERE tournament_id = 2 AND prefix IS NULL
-AND NAME IN (
-SELECT NAME FROM temp1
-)) a
-INNER JOIN temp1 b ON b.code = a.code
-GROUP BY a.name) a
-INNER JOIN agents b WHERE b.names = a.owner;
-
-UPDATE users SET login = 0
-
-INSERT INTO animal_agent (animal_id, agent_id, TYPE)
-SELECT a.animal_id, b.id, 'breeder' AS TYPE FROM (
-SELECT a.animal_id, b.breeder FROM (
-SELECT * 
-FROM animal_tournament 
-WHERE tournament_id = 2 AND prefix IS NULL
-AND NAME IN (
-SELECT NAME FROM temp1
-)) a
-INNER JOIN temp1 b ON b.code = a.code
-GROUP BY a.name) a
-INNER JOIN agents b WHERE b.names = a.breeder;
-
-SELECT * FROM animal_tournament WHERE tournament_id = 2
-
-SELECT * FROM catalogs WHERE tournament_id = 2 AND number = 183
-SELECT * FROM animal_agent WHERE animal_id = 4150
-SELECT * FROM agents WHERE NAMES LIKE '%CORNO%'
-
-SELECT * FROM temp1 WHERE breeder = 'CARLOS CORNO YORI'
-
-
-SELECT * FROM categories WHERE id = 102
-
-SELECT * FROM competitors WHERE category_id=112
+INSERT INTO catalogs (`group`, category_id, tournament_id, animal_id)
+VALUES (1,182,4,5686),(1,182,4,5687)
