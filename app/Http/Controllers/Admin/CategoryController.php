@@ -2,6 +2,7 @@
 
 use Horses\Category;
 use Horses\CategoryUser;
+use Horses\Competitor;
 use Horses\Constants\ConstApp;
 use Horses\Constants\ConstDb;
 use Horses\Constants\ConstMessages;
@@ -9,10 +10,12 @@ use Horses\Http\Requests;
 use Horses\Http\Controllers\Controller;
 
 use Horses\Services\Facades\CategoryFac;
+use Horses\Stage;
 use Horses\Tournament;
 use Horses\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class CategoryController extends Controller
 {
@@ -130,6 +133,40 @@ class CategoryController extends Controller
             $jResponse['url'] = route('admin.tournament.category', $oCategory->tournament_id);
         } else {
             $jResponse['message'] = ConstMessages::FORM_INCORRECT;
+        }
+
+        return response()->json($jResponse);
+    }
+
+    public function getRestart($id)
+    {
+        $jResponse = [
+            'success' => false,
+            'message' => ConstMessages::GENERAL_ERRROR,
+            'url' => null
+        ];
+
+        $oCategory = Category::find($id);
+
+        if ($oCategory) {
+            DB::beginTransaction();
+
+            try {
+                $oCategory->status = ConstDb::STATUS_INACTIVE;
+                $oCategory->actual_stage = null;
+                $oCategory->count_presents = 0;
+                $oCategory->save();
+
+                Stage::category($oCategory->id)->delete();
+                CategoryUser::category($oCategory->id)->update(['actual_stage' => null]);
+                Competitor::category($oCategory->id)->delete();
+                DB::commit();
+
+                $jResponse['success'] = true;
+                $jResponse['url'] = route('admin.tournament.category', $oCategory->tournament_id);
+            } catch (\Exception $ex) {
+                DB::rollback();
+            }
         }
 
         return response()->json($jResponse);
