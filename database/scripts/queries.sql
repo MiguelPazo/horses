@@ -43,19 +43,11 @@ SELECT COUNT(*) FROM temp1
 UPDATE temp1 SET NAME = REPLACE(NAME, '?', 'Ñ'), mom_name = REPLACE(mom_name, '?', 'Ñ'), dad_name = REPLACE(dad_name, '?', 'Ñ'),
 breeder = REPLACE(breeder, '?', 'Ñ'), OWNER = REPLACE(OWNER, '?', 'Ñ');
 
-UPDATE agents SET NAMES = 'JUAN FRANCISCO RAFFO NOVELLI' WHERE NAMES = 'JUAN FRANCISCO RAFFO NOVELLI / CRIADERO ALTO PRADO';
-UPDATE agents SET NAMES = 'HACIENDA EL CORTIJO S.A.C.' WHERE NAMES = 'HACIENDA EL CORTIJO S.A.C';
-UPDATE agents SET NAMES = 'RENZO CAROZZI MORALES' WHERE NAMES = 'RENZO CAROZZI MORALES/CRIADERO EL CRIOLLO';
-UPDATE agents SET NAMES = 'JUAN FRANCISCO RAFFO NOVELLI' WHERE NAMES = 'JUAN FRANCISCO RAFFO NOVELLI / CRIADERO ALTO PRADO';
+UPDATE agents SET NAMES = 'JUAN MANUEL RIZO PATRON BARUA' WHERE NAMES = 'JUAN MANUEL RIZO PATRON B. E HIJAS';
+UPDATE agents SET NAMES = 'EDUARDO EDGARDO CHAMAN COMOTTO' WHERE NAMES = 'EDUARDO EDGARDO CHAMAN COMMOTTO';
 
 UPDATE temp1 SET breeder = 'CRIADERO JOSE ANTONIO ONRUBIA ROMERO S.A.' WHERE breeder = 'CRIADERO JOSE ANTONIO ONRUBIA ROMERO S.A';
 UPDATE temp1 SET OWNER = 'CRIADERO JOSE ANTONIO ONRUBIA ROMERO S.A.' WHERE OWNER = 'CRIADERO JOSE ANTONIO ONRUBIA ROMERO S.A';
-UPDATE temp1 SET breeder = 'LUIS JOSE SAENZ RAEZ' WHERE breeder = 'LUIS JOSE  SAENZ RAEZ';
-UPDATE temp1 SET OWNER = 'LUIS JOSE SAENZ RAEZ' WHERE OWNER = 'LUIS JOSE  SAENZ RAEZ';
-UPDATE temp1 SET breeder = 'JUAN LUIS KRUGER CARRION' WHERE breeder = 'JUAN LUIS KRUGER';
-UPDATE temp1 SET OWNER = 'JUAN LUIS KRUGER CARRION' WHERE OWNER = 'JUAN LUIS KRUGER';
-UPDATE temp1 SET breeder = 'MANUEL ANTONIO MANRIQUE FIGUEROA' WHERE breeder = 'MANUEL MANRIQUE';
-UPDATE temp1 SET OWNER = 'MANUEL ANTONIO MANRIQUE FIGUEROA' WHERE OWNER = 'MANUEL MANRIQUE';
 /**********************************/
 
 
@@ -272,11 +264,12 @@ WHERE a.animal_id IN (
 ORDER BY animal_id, TYPE;
 
 /*DELETE OLD OWNERS RELATIONSHIP*/
-DELETE FROM animal_agent WHERE id IN (3543,4095,5079,5113,5126,5256,5283,5339,5469);
+DELETE FROM animal_agent WHERE id IN (4438,6428,6056);
+DELETE FROM animal_agent WHERE id IN (3522,3533,6685,3682,6695,5438,5482,5490);
 
 /*INSERT CATALOGS*/
 INSERT INTO catalogs(`group`, number, category_id, tournament_id, animal_id)
-SELECT number AS 'group', catalog AS number, category AS category_id, 4 AS tournament_id, b.id AS animal_id
+SELECT number AS 'group', catalog AS number, category AS category_id, 5 AS tournament_id, b.id AS animal_id
 FROM temp1 a
 INNER JOIN animals b ON b.name = a.name AND b.prefix = a.prefix;
 
@@ -286,11 +279,7 @@ UPDATE categories c SET count_competitors = (
 	FROM catalogs
 	WHERE category_id = c.id
 	GROUP BY category_id
-) WHERE tournament_id = 4;
-
-
-/*DROP PREFIX COLUMNN TO ANIMALS*/
-ALTER TABLE animals DROP prefix;
+) WHERE tournament_id = 5;
 
 /*VERIFY AGENTS*/
 SELECT * FROM (
@@ -307,11 +296,36 @@ INNER JOIN agents c ON c.names = a.breeder AND c.prefix = a.prefix
 GROUP BY b.id
 )
 
+/*DROP PREFIX COLUMNN TO ANIMALS*/
+ALTER TABLE animals DROP prefix;
 
+/*UPDATE CODE AND BIRTHDATE FOR ANIMALS WITHOUT IT*/
+CREATE TABLE temp3 AS
+SELECT a.id, a.name, b.code, IF(b.birthdate <> '', STR_TO_DATE(b.birthdate, '%d/%m/%Y'), NULL) AS birthdate
+FROM animals a
+INNER JOIN temp1 b ON b.name = a.name
+WHERE id IN (
+SELECT animal_id
+FROM catalog_report
+WHERE tournament_id = 5
+AND NAME IS NOT NULL
+AND CODE IS NULL
+) GROUP BY a.id;
+	
+UPDATE animals a SET a.code = (
+	SELECT b.code
+	FROM temp3 b
+	WHERE b.id = a.id
+), a.birthdate = (
+	SELECT c.birthdate
+	FROM temp3 c
+	WHERE c.id = a.id
+) WHERE a.id IN (SELECT id FROM temp3);
+
+DROP TABLE temp3;
 
 /*INSERT MENORES*/
-INSERT INTO animals(NAME) VALUES ('EMILIA MARIA BACA-ALVAREZ TOMATIS');
-INSERT INTO animals(NAME) VALUES ('LUCIANA DRAGHI CRESPO');
+INSERT INTO animals(NAME) VALUES ('CONSTANZA DEMICHELLI GUIULFO');
 
-INSERT INTO catalogs (`group`, category_id, tournament_id, animal_id)
-VALUES (1,182,4,5686),(1,182,4,5687)
+INSERT INTO catalogs (category_id, tournament_id, animal_id)
+VALUES (259,5,5425),(259,5,6201),(259,5,5428);

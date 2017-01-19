@@ -2,7 +2,7 @@ CREATE OR REPLACE VIEW animal_report_short AS
 SELECT a.id, a.name, c.prefix, c.names
 FROM animals a
 LEFT JOIN animal_agent b ON b.animal_id = a.id AND b.type = 'breeder'
-INNER JOIN agents c ON c.id = b.agent_id
+LEFT JOIN agents c ON c.id = b.agent_id
 WHERE a.deleted_at IS NULL;
 
 CREATE OR REPLACE VIEW animal_report AS
