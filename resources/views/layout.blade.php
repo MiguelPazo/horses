@@ -15,13 +15,14 @@
     @yield('css')
 
     <link rel="stylesheet" href="{{ asset('/css/app.css') }}">
+    <link rel="stylesheet" href="{{ asset('/css/app-black.css') }}">
     <link rel="stylesheet" href="{{ asset('/css/print.css') }}" media="print">
 
     <script>
         var BASE_URL = '{{ asset('/')}}';
     </script>
 </head>
-<body>
+<body class="{{ isset($classResult) ? $classResult : ''  }}">
 
 <div class="container-fluid">
     @include('_partials.popup')

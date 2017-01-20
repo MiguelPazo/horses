@@ -21,8 +21,8 @@
                     <th width="8%" class="center">Selección</th>
                     <th width="10%" class="center">Modo</th>
                     <th width="14%" class="center">Etapa Actual</th>
-                    <th width="17%" class="center">Cantidad de Competidores</th>
-                    <th width="8%" class="center">Opciones</th>
+                    <th width="15%" class="center">Cantidad de Competidores</th>
+                    <th width="10%" class="center">Opciones</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -53,6 +53,12 @@
                         <td class="center">{{ $category->count_competitors }}</td>
                         <td class="center">
                             @if($oTournament->status != \Horses\Constants\ConstDb::STATUS_FINAL)
+                                <a href="{{ url('/admin/category/restart', $category->id ) }}"
+                                   rel="¿Esta seguro de reiniciar la categoría {{ $category->description }}?"
+                                   role="button" class="btn btn_link_prevent">
+                                    <span class="glyphicon glyphicon-retweet"></span>
+                                </a>
+
                                 @if($category->status == \Horses\Constants\ConstDb::STATUS_INACTIVE)
                                     <a href="{{ url('/admin/category/edit', $category->id ) }}"
                                        role="button" class="btn">
@@ -60,7 +66,7 @@
                                     </a>
 
                                     <a href="{{ url('/admin/category/destroy', $category->id) }}"
-                                       rel="¿Esta seguro de eliminar la categoría {{ $category->description }} ?"
+                                       rel="¿Esta seguro de eliminar la categoría {{ $category->description }}?"
                                        role="button" class="btn btn_link_prevent">
                                         <span class=" glyphicon glyphicon-trash"></span>
                                     </a>

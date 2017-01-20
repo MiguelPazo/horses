@@ -1,5 +1,5 @@
-body{
-	background-color: #fcfcfc;
+body {
+    background-color: #fcfcfc;
 }
 
 table .center {
@@ -226,12 +226,18 @@ form.formuppertext input {
     color: #FFFFFF;
     font-weight: bold;
 }
-.content-bold tr td{
-	font-weight: bold;
+
+.content-bold tr td {
+    font-weight: bold;
     font-size: 13px;
 }
-.active-diriment{
-	background: #ccc !important;
+
+.active-diriment {
+    background: #ccc !important;
+}
+
+.big-number {
+    font-size: 20px !important;
 }
 
 #space_verify ul {

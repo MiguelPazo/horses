@@ -1,4 +1,8 @@
-<?php $position = 1; ?>
+<?php
+$position = 1;
+$bigNumber = (!Auth::check()) ? 'big-number' : '';
+?>
+
 @foreach($lstCompetitorWinners as $competitor)
     <tr>
         @if($limp)
@@ -21,21 +25,21 @@
         <?php $acum = 0 ?>
         @foreach($competitor->stages as $stage)
             @if($stage->stage == \Horses\Constants\ConstDb::STAGE_CLASSIFY_1)
-                <td class="center {{ ($stage->jury->id == $juryDiriment->user_id) ? 'active active-diriment':'' }}">{{ $stage->position }}</td>
+                <td class="center {{ $bigNumber }} {{ ($stage->jury->id == $juryDiriment->user_id) ? 'active active-diriment':'' }}">{{ $stage->position }}</td>
                 <?php $acum += $stage->position ?>
             @endif
         @endforeach
-        <td class="center result-final">{{ $acum }}</td>
+        <td class="center {{ $bigNumber }} result-final">{{ $acum }}</td>
 
         @if($showSecond)
             <?php $acum = 0 ?>
             @foreach($competitor->stages as $stage)
                 @if($stage->stage == \Horses\Constants\ConstDb::STAGE_CLASSIFY_2)
-                    <td class="center {{ ($stage->jury->id == $juryDiriment->user_id) ? 'active active-diriment':'' }}">{{ $stage->position }}</td>
+                    <td class="center {{ $bigNumber }} {{ ($stage->jury->id == $juryDiriment->user_id) ? 'active active-diriment':'' }}">{{ $stage->position }}</td>
                     <?php $acum += $stage->position ?>
                 @endif
             @endforeach
-            <td class="center result-final">{{ $acum }}</td>
+            <td class="center {{ $bigNumber }} result-final">{{ $acum }}</td>
         @endif
     </tr>
     <?php $position++; ?>
@@ -58,11 +62,11 @@
         <?php $acum = 0 ?>
         @foreach($competitor->stages as $stage)
             @if($stage->stage == \Horses\Constants\ConstDb::STAGE_CLASSIFY_1)
-                <td class="center {{ ($stage->jury->id == $juryDiriment->user_id) ? 'active active-diriment':'' }}">{{ $stage->position }}</td>
+                <td class="center {{ $bigNumber }} {{ ($stage->jury->id == $juryDiriment->user_id) ? 'active active-diriment':'' }}">{{ $stage->position }}</td>
                 <?php $acum += $stage->position ?>
             @endif
         @endforeach
-        <td class="center result-final">{{ $acum }}</td>
+        <td class="center {{ $bigNumber }} result-final">{{ $acum }}</td>
     </tr>
     <?php $position++; ?>
 @endforeach

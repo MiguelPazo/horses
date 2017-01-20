@@ -26,7 +26,7 @@
 @section('scripts')
     <script src="{{ asset('/js/libs/bootstrap-multiselect/dist/js/bootstrap-multiselect.js') }}"></script>
     <script src="{{ asset('/js/libs/jquery-ui/jquery-ui.min.js') }}"></script>
-    <script src="{{ asset('/js/libs/jquery-ui/ui/minified/i18n/datepicker-es.min.js') }}"></script>
+    <script src="{{ asset('/js/libs/jquery-ui/ui/minified/i18n/datepicker-es.js') }}"></script>
     <script src="{{ asset('/js/libs/devbridge-autocomplete/dist/jquery.autocomplete.min.js') }}"></script>
     <script src="{{ asset('/js/app/oper/animal/maintenance_common.js') }}"></script>
     <script src="{{ asset('/js/app/oper/animal/maintenance.js') }}"></script>

@@ -75,7 +75,7 @@
 
 @section('scripts')
     <script src="{{ asset('/js/libs/jquery-ui/jquery-ui.min.js') }}"></script>
-    <script src="{{ asset('/js/libs/jquery-ui/ui/minified/i18n/datepicker-es.min.js') }}"></script>
+    <script src="{{ asset('/js/libs/jquery-ui/ui/minified/i18n/datepicker-es.js') }}"></script>
     <script src="{{ asset('/js/libs/devbridge-autocomplete/dist/jquery.autocomplete.min.js') }}"></script>
     <script>
         var group = {{ ($oCategory->mode == \Horses\Constants\ConstDb::MODE_PERSONAL) ? 'false':'true'  }};
