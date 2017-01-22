@@ -27,6 +27,6 @@ DELETE FROM stages WHERE category_id = 229;
 SELECT a.dirimente, a.actual_stage, b.names, b.lastname
 FROM category_users a
 INNER JOIN users b ON b.id = a.user_id
-WHERE category_id = 231
+WHERE category_id = 240
 
 
