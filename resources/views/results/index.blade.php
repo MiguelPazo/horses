@@ -1,4 +1,4 @@
-@extends('layout')
+@extends('layout', ['classResult' => (!Auth::check()) ? 'black-ground' : ''])
 
 @section('content')
     @include('results._partials.header')

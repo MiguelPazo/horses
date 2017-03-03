@@ -24,6 +24,6 @@
 
 @section('scripts')
     <script src="{{ asset('/js/libs/jquery-ui/jquery-ui.min.js') }}"></script>
-    <script src="{{ asset('/js/libs/jquery-ui/ui/minified/i18n/datepicker-es.min.js') }}"></script>
+    <script src="{{ asset('/js/libs/jquery-ui/ui/minified/i18n/datepicker-es.js') }}"></script>
     <script src="{{ asset('/js/app/admin/tournament.js') }}"></script>
 @endsection
