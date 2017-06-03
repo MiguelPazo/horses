@@ -1,16 +1,16 @@
-a, button, .nav-pills{
-	display: none !important;
+a, button, .nav-pills, .hide-print {
+    display: none !important;
 }
 
-.label_category{
-	display: block;
+.label_category {
+    display: block;
 }
 
 body {
-	font-size:10px !important;
+    font-size: 10px !important;
 }
 
-.content-bold tr td{
-	font-weight: bold;
+.content-bold tr td {
+    font-weight: bold;
     font-size: 10px;
 }

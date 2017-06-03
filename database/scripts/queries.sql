@@ -43,9 +43,12 @@ SELECT COUNT(*) FROM temp1
 UPDATE temp1 SET NAME = REPLACE(NAME, '?', 'Ñ'), mom_name = REPLACE(mom_name, '?', 'Ñ'), dad_name = REPLACE(dad_name, '?', 'Ñ'),
 breeder = REPLACE(breeder, '?', 'Ñ'), OWNER = REPLACE(OWNER, '?', 'Ñ');
 
-UPDATE agents SET NAMES = 'JUAN MANUEL RIZO PATRON BARUA' WHERE NAMES = 'JUAN MANUEL RIZO PATRON B. E HIJAS';
-UPDATE agents SET NAMES = 'EDUARDO EDGARDO CHAMAN COMOTTO' WHERE NAMES = 'EDUARDO EDGARDO CHAMAN COMMOTTO';
+UPDATE agents SET NAMES = 'EDUARDO EDGARDO CHAMAN COMOTTO' WHERE NAMES = 'EDUARDO EDGARDO CHAMAN COMOTTO';
+UPDATE agents SET NAMES = 'FERNANDO JARQUIN PIRA' WHERE NAMES = 'FERNANDO JARQUIN PIRA / LEO COHEN MUGRABI';
+UPDATE agents SET NAMES = 'GIL JORGE CANTUARIAS DALL´ORSO' WHERE NAMES = 'GIL JORGE CANTUARIAS DALLÑORSO';
 
+UPDATE temp1 SET breeder = 'ALBERT ALEX FORSYTH SOLARI / BEGOÑA VEREAU GORBITZ DE FORSYTH' WHERE breeder = 'ALBERT ALEX FORSYTH SOLARI / BEGOÑA VEREAU GORBITZ DE';
+UPDATE temp1 SET OWNER = 'ALBERT ALEX FORSYTH SOLARI / BEGOÑA VEREAU GORBITZ DE FORSYTH' WHERE OWNER = 'ALBERT ALEX FORSYTH SOLARI / BEGOÑA VEREAU GORBITZ DE';
 UPDATE temp1 SET breeder = 'CRIADERO JOSE ANTONIO ONRUBIA ROMERO S.A.' WHERE breeder = 'CRIADERO JOSE ANTONIO ONRUBIA ROMERO S.A';
 UPDATE temp1 SET OWNER = 'CRIADERO JOSE ANTONIO ONRUBIA ROMERO S.A.' WHERE OWNER = 'CRIADERO JOSE ANTONIO ONRUBIA ROMERO S.A';
 /**********************************/
@@ -264,12 +267,13 @@ WHERE a.animal_id IN (
 ORDER BY animal_id, TYPE;
 
 /*DELETE OLD OWNERS RELATIONSHIP*/
-DELETE FROM animal_agent WHERE id IN (4438,6428,6056);
-DELETE FROM animal_agent WHERE id IN (3522,3533,6685,3682,6695,5438,5482,5490);
+DELETE FROM animal_agent WHERE id IN (5022,3523,3529,3554,3603,3604,7327,4307,5072,5088,5099,5127,5154,5183,5184,5198,5213,5231,5254);
+DELETE FROM animal_agent WHERE id IN (5274,5281,5328,5330,5333,5354,5402,7351,5459,5462,5481,5487,5488,6246,6291,6811,6821);
+DELETE FROM animal_agent WHERE id IN (4459);
 
 /*INSERT CATALOGS*/
 INSERT INTO catalogs(`group`, number, category_id, tournament_id, animal_id)
-SELECT number AS 'group', catalog AS number, category AS category_id, 5 AS tournament_id, b.id AS animal_id
+SELECT number AS 'group', catalog AS number, category AS category_id, 6 AS tournament_id, b.id AS animal_id
 FROM temp1 a
 INNER JOIN animals b ON b.name = a.name AND b.prefix = a.prefix;
 
@@ -279,7 +283,7 @@ UPDATE categories c SET count_competitors = (
 	FROM catalogs
 	WHERE category_id = c.id
 	GROUP BY category_id
-) WHERE tournament_id = 5;
+) WHERE tournament_id = 6;
 
 /*VERIFY AGENTS*/
 SELECT * FROM (
@@ -296,6 +300,8 @@ INNER JOIN agents c ON c.names = a.breeder AND c.prefix = a.prefix
 GROUP BY b.id
 )
 
+
+
 /*DROP PREFIX COLUMNN TO ANIMALS*/
 ALTER TABLE animals DROP prefix;
 
@@ -307,7 +313,7 @@ INNER JOIN temp1 b ON b.name = a.name
 WHERE id IN (
 SELECT animal_id
 FROM catalog_report
-WHERE tournament_id = 5
+WHERE tournament_id = 6
 AND NAME IS NOT NULL
 AND CODE IS NULL
 ) GROUP BY a.id;
@@ -325,7 +331,21 @@ UPDATE animals a SET a.code = (
 DROP TABLE temp3;
 
 /*INSERT MENORES*/
-INSERT INTO animals(NAME) VALUES ('CONSTANZA DEMICHELLI GUIULFO');
+INSERT INTO animals(NAME) VALUES ('ISABELLA YZAGA MANNUCCI');
 
 INSERT INTO catalogs (category_id, tournament_id, animal_id)
-VALUES (259,5,5425),(259,5,6201),(259,5,5428);
+VALUES (287,6,6717),(287,6,5687);
+
+DELETE FROM catalogs WHERE category_id = 287
+
+/*******************************************/
+/*Tournament 6*/
+SELECT * FROM animals 
+WHERE NAME LIKE '%ISABELLA%'
+
+SELECT * FROM animal_agent WHERE animal_id IN (3899,6412)
+
+INSERT INTO animal_agent(animal_id, agent_id, TYPE) VALUES (6412, 2356, 'breeder');
+
+SELECT * FROM agents WHERE NAMES LIKE '%JAIME OMAR MUJICA CALDERON%'
+
