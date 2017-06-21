@@ -74,4 +74,12 @@ class ResultsController extends Controller
             return redirect()->route('tournament.results', $tournament);
         }
     }
+
+    public function tournaments()
+    {
+        $lstTournaments = Tournament::status(ConstDb::STATUS_FINAL)->get();
+
+        return view('results.tournaments')
+            ->with('lstTournaments', $lstTournaments);
+    }
 }

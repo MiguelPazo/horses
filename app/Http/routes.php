@@ -205,6 +205,11 @@ Route::group([
 Route::group([
     'prefix' => '/results'
 ], function () {
+    Route::get('/tournaments', [
+        'as' => 'tournaments.list',
+        'uses' => 'ResultsController@tournaments'
+    ]);
+
     Route::get('/tournament/{tournament}', [
         'as' => 'tournament.results',
         'uses' => 'ResultsController@index'
